@@ -125,7 +125,7 @@ class Trace:
     seg_tokens: dict[str, array]
     sha256: str
     path: str | None = None
-    provenance: dict = field(default_factory=dict)
+    generation: dict = field(default_factory=dict)
 
     def tokens(self, node: LLMNode) -> array:
         """Return the token ids of a call's prompt followed by its recorded output."""
@@ -310,7 +310,7 @@ def from_dict(d: dict, *, require_jobs: int | None = None, sha256: str | None = 
         trace_id=d["trace_id"], family=d["family"], split=d.get("split", ""),
         description=d.get("description", ""), memory=mem, engine=eng, jobs=jobs,
         segments={s: d["segments"][s]["text"] for s in sids}, seg_tokens=seg_tokens,
-        sha256=sha256, provenance=d.get("provenance", {}),
+        sha256=sha256, generation=d.get("generation", {}),
     )
     for _, node in trace.llm_nodes():
         node.hashes = tuple(chain_hashes(trace.tokens(node), mem.block_size))
@@ -331,13 +331,13 @@ class TraceBuilder:
     """
 
     def __init__(self, trace_id: str, family: str, split: str, *, num_blocks: int, block_size: int = 256,
-                 description: str = "", engine: dict | None = None, provenance: dict | None = None):
+                 description: str = "", engine: dict | None = None, generation: dict | None = None):
         self.d = {
             "schema": SCHEMA, "trace_id": trace_id, "family": family, "split": split,
             "description": description, "tokenizer": tokenizer.TOKENIZER_NAME,
             "memory": {"num_blocks": num_blocks, "block_size": block_size},
             "engine": engine or {"max_num_seqs": 16, "max_num_batched_tokens": 8192},
-            "provenance": provenance or {}, "segments": {}, "jobs": [],
+            "generation": generation or {}, "segments": {}, "jobs": [],
         }
 
     def seg(self, text: str) -> str:

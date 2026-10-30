@@ -269,8 +269,8 @@ Implementation points come from staff tests that check the same contracts as the
 | Tokenizer | Qwen/Qwen3-0.6B tokenizer (shared by all Qwen3 sizes) | Apache-2.0 |
 | Simulator | microsoft/vidur @ 25e0082dbbfb | MIT |
 
-Each trace's `provenance` field names its sources and revisions.
+Each trace's `generation` field records the generator, seed, and settings that produced it, and the exact source datasets and revisions.
 
 ## Acknowledgments
 
-The evaluator uses Vidur's vLLM V1 scheduler and cache manager, with adapters for the assignment's policy hooks and job dependencies. The Part 1 agent is adapted from LangChain's *Deep Research from Scratch* (MIT), and its report-with-sources interface follows Stanford CS329a HW3. The workloads come from the public traces and datasets above; we thank their authors for releasing them.
+The evaluator uses Vidur's vLLM V1 scheduler and cache manager, with adapters for the assignment's policy hooks and job dependencies. The Part 1 agent is adapted from LangChain's *Deep Research from Scratch* (MIT). The workloads come from the public traces and datasets above; we thank their authors for releasing them.

@@ -13,7 +13,7 @@
   "max_num_seqs": 16,
   "max_num_batched_tokens": 8192
  },
- "provenance": {
+ "generation": {
   "generator": "tracegen.wfam.mixed",
   "seed": 3,
   "knobs": {
@@ -26,7 +26,7 @@
    {
     "family": "W3",
     "trace_id": "dev-M2-3-a",
-    "provenance": {
+    "generation": {
      "generator": "tracegen.wfam.docqa",
      "seed": 1003,
      "knobs": {
@@ -66,7 +66,7 @@
    {
     "family": "W5",
     "trace_id": "dev-M2-3-b",
-    "provenance": {
+    "generation": {
      "generator": "tracegen.wfam.reasoning",
      "seed": 1003,
      "knobs": {

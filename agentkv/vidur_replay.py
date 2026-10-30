@@ -38,7 +38,7 @@ def prepare_trace(trace):
     if tokens % 16:
         raise ValueError("The KV token quota must be divisible by 16")
     return replace(trace, jobs=jobs, memory=Memory(tokens // 16, 16),
-                   engine=EngineConfig(16, 4096), provenance={**trace.provenance,
+                   engine=EngineConfig(16, 4096), generation={**trace.generation,
                    "evaluator": "vidur-v1", "workload_encoding": "frozen-token-lengths-and-prefix-identities"})
 
 

@@ -18,7 +18,7 @@ One JSON file per trace:
   "tokenizer": "qwen3-0.6b@c1899de2",
   "memory": {"num_blocks": 192, "block_size": 256},
   "engine": {"max_num_seqs": 16, "max_num_batched_tokens": 8192},
-  "provenance": {"generator": "tracegen.dfam", "seed": 0, "sources": ["data/corpus (English Wikipedia, CC BY-SA 4.0)"]},
+  "generation": {"generator": "tracegen.dfam", "seed": 0, "sources": ["data/corpus (English Wikipedia, CC BY-SA 4.0)"]},
   "segments": {
     "s3f2a...": {"text": "<|im_start|>system\n...<|im_end|>\n", "n_tokens": 812}
   },
@@ -55,7 +55,7 @@ Enforced by `agentkv.trace.validate`:
   `arrival`.
 - `stage` is a short label (`plan`, `extract`, `chat`, `answer`, `agent`, ...). The policy
   only ever sees it rekeyed to an opaque id; `family`, `split`, `trace_id`,
-  `description`, `provenance` and `meta` are never shown to a policy.
+  `description`, `generation` and `meta` are never shown to a policy.
 - Exactly 16 jobs for graded splits, sorted by `arrival`.
 - Every single LLM call must fit in half of memory:
   `ceil((prompt + output) / block_size) <= num_blocks // 2`.

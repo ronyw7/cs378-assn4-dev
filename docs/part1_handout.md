@@ -283,8 +283,7 @@ Include in your team's Canvas archive (see the README):
 | Implementation correctness on staff tests with new inputs and failure conditions: concurrency cap (2), research graph (6), analysis functions (4) | 12 |
 | Answers to Q1–Q4, with the requested plots and tables | 8 |
 
-The skeleton is adapted from LangChain's *Deep Research from Scratch* (MIT),
-and the report-with-sources interface follows Stanford CS329a HW3.
+The skeleton is adapted from LangChain's *Deep Research from Scratch* (MIT).
 
 ## Optional: research a topic on the web
 

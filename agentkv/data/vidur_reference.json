@@ -2,11 +2,11 @@
   "evaluator": "vidur-v1",
   "configurations": {
     "1": {
-      "sim": "vidur-bc35f1a339cc07a1bb19417f",
-      "b0_sha256": "1a1b9071880b74516faf358274e0f504ef75b92c1fd0f3d64dffcd1427c60939",
+      "sim": "vidur-bc0a9cd09d868418945729c5",
+      "b0_sha256": "671dcf500a15cec4c23fe3203281481813f25fbd122b9d578a057d1071146275",
       "replicas": 1,
       "traces": {
-        "b41cf8c806a0040a92fabd31ca5e99936110f941ce9e314cd6c8dbaf197fd380": {
+        "13d27697adbe5bcce7ed0e635f8a913828a15421e7e2b7084e1a2830dab37f73": {
           "trace_id": "dev-D-0",
           "flows": [
             11.103730577520434,
@@ -44,14 +44,14 @@
             "replica_busy_time": [
               56.66199801816097
             ],
-            "policy_cpu_s": 0.2003202460000097,
-            "max_hook_cpu_s": 0.00010225000000001205,
+            "policy_cpu_s": 0.21731693000000335,
+            "max_hook_cpu_s": 0.00017208299999998955,
             "target_concurrency_calls": 95,
             "choose_victim_calls": 7237,
             "events": 43567,
-            "wall_s": 1.4909719170536846,
+            "wall_s": 1.7662869160994887,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 38912,
@@ -92,7 +92,7 @@
             }
           }
         },
-        "e6124908af861aa96dc4555a11e9485e1e0f898b407090a8a7a8c6fd1a951228": {
+        "53733ad22ed3c098bd07c9228d96dbad04ac245ab5bd114b72735995227a9ecc": {
           "trace_id": "dev-D-1",
           "flows": [
             8.05777052890226,
@@ -130,14 +130,14 @@
             "replica_busy_time": [
               117.43067675541876
             ],
-            "policy_cpu_s": 0.8754519420000235,
-            "max_hook_cpu_s": 8.112499999990419e-05,
+            "policy_cpu_s": 0.928890443000014,
+            "max_hook_cpu_s": 0.00015274999999981276,
             "target_concurrency_calls": 2332,
             "choose_victim_calls": 51257,
             "events": 210895,
-            "wall_s": 3.9809726669918746,
+            "wall_s": 4.969920041039586,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 12288,
@@ -178,7 +178,7 @@
             }
           }
         },
-        "5ff104c4edb02296393d6207fd12ea88ca9770d2455c1a617574e2a93d3272da": {
+        "6f2b52f44cac16b11a378da8ed6c9cabb580fe40a96d11d13aea2668d823680a": {
           "trace_id": "dev-D-2",
           "flows": [
             14.496899642570101,
@@ -216,14 +216,14 @@
             "replica_busy_time": [
               67.97425163344329
             ],
-            "policy_cpu_s": 0.41309027599999293,
-            "max_hook_cpu_s": 9.54999999999151e-05,
+            "policy_cpu_s": 0.4712293950000348,
+            "max_hook_cpu_s": 0.00015858400000001716,
             "target_concurrency_calls": 605,
             "choose_victim_calls": 22772,
             "events": 97560,
-            "wall_s": 1.9616550409700722,
+            "wall_s": 2.6310930422041565,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 14848,
@@ -264,7 +264,7 @@
             }
           }
         },
-        "8429838a4a8c71be361c1017d0974a5c2c2884d5cf85021ebfc3236375037679": {
+        "840c917a32041a2151ba784c5f3bb889df490f147ee5d134c7295e2e701b504a": {
           "trace_id": "dev-D-3",
           "flows": [
             8.876373690170166,
@@ -302,14 +302,14 @@
             "replica_busy_time": [
               48.09731294975256
             ],
-            "policy_cpu_s": 0.11001350999998678,
-            "max_hook_cpu_s": 5.8834000000063114e-05,
+            "policy_cpu_s": 0.11878154499999603,
+            "max_hook_cpu_s": 0.00021170800000003265,
             "target_concurrency_calls": 436,
             "choose_victim_calls": 8597,
             "events": 48087,
-            "wall_s": 1.0879593330901116,
+            "wall_s": 1.2934689579997212,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 24064,
@@ -350,7 +350,7 @@
             }
           }
         },
-        "415ffdf0a10f7a2c3b4682697a71d48795e1c8ffc97403c5d8d92035f6427754": {
+        "81c107129cacced47cadee3942a420181318f013dc92a8f7d32d09f2a01b3bc7": {
           "trace_id": "dev-M1-0",
           "flows": [
             5.721758827210523,
@@ -388,14 +388,14 @@
             "replica_busy_time": [
               89.54292225728403
             ],
-            "policy_cpu_s": 2.666267684,
-            "max_hook_cpu_s": 0.0003720409999998786,
+            "policy_cpu_s": 2.7815660259999095,
+            "max_hook_cpu_s": 0.00048045800000018346,
             "target_concurrency_calls": 255,
             "choose_victim_calls": 40307,
             "events": 164877,
-            "wall_s": 5.696537625044584,
+            "wall_s": 5.958849959075451,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 50688,
@@ -436,7 +436,7 @@
             }
           }
         },
-        "ef861aec36bdb1d0941cda90ae91ec891bfdf8e40c231d8b1ae7a3e5de9c165e": {
+        "e89a2006d8b4a2e8046fe0187cdb0f8282c41593deea6e4ae0c71413c0a4ebf2": {
           "trace_id": "dev-M1-1",
           "flows": [
             34.23218583051115,
@@ -474,14 +474,14 @@
             "replica_busy_time": [
               58.246014713244946
             ],
-            "policy_cpu_s": 1.0890697449999762,
-            "max_hook_cpu_s": 0.0002227080000000159,
+            "policy_cpu_s": 1.1272195800000453,
+            "max_hook_cpu_s": 0.0004766669999999862,
             "target_concurrency_calls": 231,
             "choose_victim_calls": 16814,
             "events": 77946,
-            "wall_s": 2.902504541911185,
+            "wall_s": 3.1523879999294877,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 69888,
@@ -522,7 +522,7 @@
             }
           }
         },
-        "fc4c9fb5b0887a2027af538bd504349d8cdbfb2c2583de5758ed04e4d7694380": {
+        "35fb6d8a10103fc020381a0507238c8fe88120f1b0e530147e29441d361db2d0": {
           "trace_id": "dev-M1-2",
           "flows": [
             126.57676787042033,
@@ -560,14 +560,14 @@
             "replica_busy_time": [
               142.62936669928058
             ],
-            "policy_cpu_s": 6.77040475200031,
-            "max_hook_cpu_s": 0.0005420000000002645,
+            "policy_cpu_s": 7.142105422999746,
+            "max_hook_cpu_s": 0.0008641249999996603,
             "target_concurrency_calls": 588,
             "choose_victim_calls": 64809,
             "events": 219547,
-            "wall_s": 11.977081542136148,
+            "wall_s": 13.138891500188038,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 76288,
@@ -608,7 +608,7 @@
             }
           }
         },
-        "35bbe83f1314c700e3b6c7aaad58fc44c0d6afd8dd8eb0fbca2d7a429a5314a2": {
+        "840de47662c22d1e2201e57d2289bbb0bfe67570640bc1d92a5cb1ad960944ab": {
           "trace_id": "dev-M1-3",
           "flows": [
             27.44373844777445,
@@ -646,14 +646,14 @@
             "replica_busy_time": [
               48.16547348547196
             ],
-            "policy_cpu_s": 0.6227454090000102,
-            "max_hook_cpu_s": 0.0004314579999999957,
+            "policy_cpu_s": 0.6271714549999929,
+            "max_hook_cpu_s": 0.00019300000000010975,
             "target_concurrency_calls": 151,
             "choose_victim_calls": 12790,
             "events": 63776,
-            "wall_s": 2.301639625104144,
+            "wall_s": 2.412627042038366,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 71936,
@@ -694,7 +694,7 @@
             }
           }
         },
-        "894b6b0c5d917c4b1f2750062de9e4d003931a8d99a839db2b1a402f0ff9f0ae": {
+        "006d106f5ad05a4da717bceb560d57bffbf1e129cf44f0febd5d224eae0dfa37": {
           "trace_id": "dev-M2-0",
           "flows": [
             78.45517881851835,
@@ -732,14 +732,14 @@
             "replica_busy_time": [
               154.25790675545682
             ],
-            "policy_cpu_s": 2.8005677359997807,
-            "max_hook_cpu_s": 0.00029300000000009874,
+            "policy_cpu_s": 2.894643413000002,
+            "max_hook_cpu_s": 0.00046904200000019713,
             "target_concurrency_calls": 480,
             "choose_victim_calls": 48830,
             "events": 179892,
-            "wall_s": 6.384220542153344,
+            "wall_s": 7.342964041978121,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 40192,
@@ -780,7 +780,7 @@
             }
           }
         },
-        "710aab2ddb68a6f808d230efa9cb6da6c14710ffe65985097b9aa594dfeadddb": {
+        "b063fba246224445db893ecfdb000851b018364e85ebca60a0f58c88d9877f77": {
           "trace_id": "dev-M2-1",
           "flows": [
             26.773786742869852,
@@ -818,14 +818,14 @@
             "replica_busy_time": [
               249.1782356547963
             ],
-            "policy_cpu_s": 6.108998815999921,
-            "max_hook_cpu_s": 0.0003663329999987752,
+            "policy_cpu_s": 6.378011682999922,
+            "max_hook_cpu_s": 0.0004967499999999347,
             "target_concurrency_calls": 1569,
             "choose_victim_calls": 100260,
             "events": 342378,
-            "wall_s": 13.137893083039671,
+            "wall_s": 14.626316874986514,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 39424,
@@ -866,7 +866,7 @@
             }
           }
         },
-        "61f7cc1d40cdfd0469fab1f0d83af51932ce2a691d85623445e5562acd680d25": {
+        "ecdc3fe81d46fdf54950fbdd2c5db209d41bb1e390c17e07a95df9365ab0aa78": {
           "trace_id": "dev-M2-2",
           "flows": [
             201.9640271505691,
@@ -904,14 +904,14 @@
             "replica_busy_time": [
               259.38332670247246
             ],
-            "policy_cpu_s": 0.846801525999989,
-            "max_hook_cpu_s": 0.00024208300000005956,
+            "policy_cpu_s": 0.9234315579999933,
+            "max_hook_cpu_s": 0.0003043750000002454,
             "target_concurrency_calls": 94,
             "choose_victim_calls": 29281,
             "events": 116103,
-            "wall_s": 4.298575958935544,
+            "wall_s": 5.030503708869219,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 33536,
@@ -952,7 +952,7 @@
             }
           }
         },
-        "c18da33c3955ddc02fe2b52656cb7c7005cc181d237380dd1a92dbd96459ecb9": {
+        "3e417949e49789d06c099541da80e2f6978e826f4910418b05676024e73ae1fd": {
           "trace_id": "dev-M2-3",
           "flows": [
             29.164847895407352,
@@ -990,14 +990,14 @@
             "replica_busy_time": [
               183.92488126043858
             ],
-            "policy_cpu_s": 0.46914460099998,
-            "max_hook_cpu_s": 0.00010641600000005358,
+            "policy_cpu_s": 0.4920543259999595,
+            "max_hook_cpu_s": 0.00027124999999994515,
             "target_concurrency_calls": 225,
             "choose_victim_calls": 19552,
             "events": 86460,
-            "wall_s": 2.8183458750136197,
+            "wall_s": 2.9221419158857316,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 32256,
@@ -1038,7 +1038,7 @@
             }
           }
         },
-        "f7abe5fcc349d5ff782497f5bc5035670d1f50be4d2f1f8fd8e3a17116e1ec4f": {
+        "2274f7fb9d5cb3d840d6400b86bdf1ac5542e84702dd5a3296c652584277835d": {
           "trace_id": "dev-W1-0",
           "flows": [
             12.28340277247029,
@@ -1076,14 +1076,14 @@
             "replica_busy_time": [
               62.56289671620717
             ],
-            "policy_cpu_s": 0.22752887499999547,
-            "max_hook_cpu_s": 0.0001363750000000219,
+            "policy_cpu_s": 0.23998276200001142,
+            "max_hook_cpu_s": 0.00020162499999998307,
             "target_concurrency_calls": 20,
             "choose_victim_calls": 7295,
             "events": 41415,
-            "wall_s": 1.4067546660080552,
+            "wall_s": 1.5638532498851418,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 55808,
@@ -1124,7 +1124,7 @@
             }
           }
         },
-        "97021c3885a6b70349dbc5e606938f8a3645e5f76c2a4596449c583d92ce6ab7": {
+        "71511b57b31ea37c991c85d1d10dbb62c4111168ef8a2f330c8eedbacee2ad63": {
           "trace_id": "dev-W1-1",
           "flows": [
             14.56269334056501,
@@ -1162,14 +1162,14 @@
             "replica_busy_time": [
               54.024639620377954
             ],
-            "policy_cpu_s": 0.36697251800001984,
-            "max_hook_cpu_s": 0.00015491700000003217,
+            "policy_cpu_s": 0.37876807900001663,
+            "max_hook_cpu_s": 0.0001707920000000307,
             "target_concurrency_calls": 8,
             "choose_victim_calls": 10986,
             "events": 44678,
-            "wall_s": 1.8813596670515835,
+            "wall_s": 1.9055631658993661,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 64512,
@@ -1210,7 +1210,7 @@
             }
           }
         },
-        "bcca3e6cd4cd3e3856e74d5c2baed8f618423cd1d136dfa30bc84b32c55243f8": {
+        "735a51043b2b8c193e247ceaa82571ba53288ec5540fc513a91b83d14912220e": {
           "trace_id": "dev-W1-2",
           "flows": [
             27.675570919520162,
@@ -1248,14 +1248,14 @@
             "replica_busy_time": [
               114.34306852040834
             ],
-            "policy_cpu_s": 5.252573504000036,
-            "max_hook_cpu_s": 0.0010569579999999412,
+            "policy_cpu_s": 5.448011913000095,
+            "max_hook_cpu_s": 0.0009204170000000067,
             "target_concurrency_calls": 714,
             "choose_victim_calls": 34743,
             "events": 165055,
-            "wall_s": 8.714402999961749,
+            "wall_s": 9.307682666927576,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 106496,
@@ -1296,7 +1296,7 @@
             }
           }
         },
-        "e6aab130b7b3133792ec2870057e0463f8e95cec670a969abd33475cf4c1b9c3": {
+        "0c2166d9f18b90f682ff03575e4575dc35f1c25f58840d713584ec424ead9e25": {
           "trace_id": "dev-W1-3",
           "flows": [
             73.10488662317688,
@@ -1334,14 +1334,14 @@
             "replica_busy_time": [
               64.534575098702
             ],
-            "policy_cpu_s": 0.23713683399999386,
-            "max_hook_cpu_s": 0.0001299169999999794,
+            "policy_cpu_s": 0.2686415790000001,
+            "max_hook_cpu_s": 0.0002567500000000278,
             "target_concurrency_calls": 9,
             "choose_victim_calls": 10037,
             "events": 42237,
-            "wall_s": 1.558148000156507,
+            "wall_s": 1.9343151671346277,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 52480,
@@ -1382,7 +1382,7 @@
             }
           }
         },
-        "efe99e95fa820ed5e4406b18d3ec45379a1bc6db7e055c8f74ada6d63ba6217f": {
+        "e27e845064d86bf214c51533d1095f5042232ca56e0c7074ca1bf0a015a3ba66": {
           "trace_id": "dev-W2-0",
           "flows": [
             23.678976959826976,
@@ -1420,14 +1420,14 @@
             "replica_busy_time": [
               527.0100717782261
             ],
-            "policy_cpu_s": 11.909138252000174,
-            "max_hook_cpu_s": 0.00043166600000010824,
+            "policy_cpu_s": 12.044874138001525,
+            "max_hook_cpu_s": 0.00035062500000027086,
             "target_concurrency_calls": 1833,
             "choose_victim_calls": 196813,
             "events": 1473467,
-            "wall_s": 26.6502012910787,
+            "wall_s": 27.386392791988328,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 45056,
@@ -1468,7 +1468,7 @@
             }
           }
         },
-        "7f9280178783b8f8401771eb4b7c0dd5a7041e73453c9cacec6f1bd5650c1cff": {
+        "9560b1164e4743540c6fcc6f1ec0c28c968dda7b25600428c45c361a836de7e0": {
           "trace_id": "dev-W2-1",
           "flows": [
             229.33241751075875,
@@ -1506,14 +1506,14 @@
             "replica_busy_time": [
               525.2399681133198
             ],
-            "policy_cpu_s": 12.535100155999556,
-            "max_hook_cpu_s": 0.00042791600000002816,
+            "policy_cpu_s": 12.662413401999535,
+            "max_hook_cpu_s": 0.00040195799999942494,
             "target_concurrency_calls": 3108,
             "choose_victim_calls": 191362,
             "events": 1454832,
-            "wall_s": 27.091189707862213,
+            "wall_s": 27.59489079215564,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 46592,
@@ -1554,7 +1554,7 @@
             }
           }
         },
-        "204ec23a916eeebf9f762d917c75a0be2785ff2fca3db822d0e45a3d6ad7f9fe": {
+        "23432da160f2503b57a50f3ca6d67ebc4cdcc075b8c4c294448ebb3abf030af6": {
           "trace_id": "dev-W2-2",
           "flows": [
             84.21071567355969,
@@ -1592,14 +1592,14 @@
             "replica_busy_time": [
               827.6237824971341
             ],
-            "policy_cpu_s": 25.330173170002546,
-            "max_hook_cpu_s": 0.0006602910000026441,
+            "policy_cpu_s": 25.507125562999867,
+            "max_hook_cpu_s": 0.0005967499999999237,
             "target_concurrency_calls": 3360,
             "choose_victim_calls": 369619,
             "events": 2674135,
-            "wall_s": 53.67111400002614,
+            "wall_s": 54.12819370883517,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 46080,
@@ -1640,7 +1640,7 @@
             }
           }
         },
-        "07d42c80458e91da7e83ebf83ae97a2b24580c57959ac51b67f1153bad444466": {
+        "970ed04088927a25187bfa62acee53bbbd390d0dfd577163b0678399bbb90cbc": {
           "trace_id": "dev-W2-3",
           "flows": [
             45.31644767883416,
@@ -1678,14 +1678,14 @@
             "replica_busy_time": [
               433.2949388884207
             ],
-            "policy_cpu_s": 9.59654440300074,
-            "max_hook_cpu_s": 0.0005244590000010874,
+            "policy_cpu_s": 9.6957241019999,
+            "max_hook_cpu_s": 0.00036237499999991485,
             "target_concurrency_calls": 1662,
             "choose_victim_calls": 164232,
             "events": 1410584,
-            "wall_s": 23.007506916997954,
+            "wall_s": 23.352611207868904,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 42496,
@@ -1726,7 +1726,7 @@
             }
           }
         },
-        "5f7e5599f3f7a0fece461de03d53e7b22b3a9776f2ffddf84f0904bf49e88890": {
+        "d6e6a520efdf80eb250ef525ff62255f09fb51a86e2def81c391e717642e9116": {
           "trace_id": "dev-W3-0",
           "flows": [
             32.210086490660665,
@@ -1764,14 +1764,14 @@
             "replica_busy_time": [
               28.255521163459537
             ],
-            "policy_cpu_s": 0.2692818409999767,
-            "max_hook_cpu_s": 0.00015970799999998064,
+            "policy_cpu_s": 0.25773206999999476,
+            "max_hook_cpu_s": 8.937500000000265e-05,
             "target_concurrency_calls": 109,
             "choose_victim_calls": 9264,
             "events": 101692,
-            "wall_s": 1.7022487500216812,
+            "wall_s": 1.6048160418868065,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 60928,
@@ -1812,7 +1812,7 @@
             }
           }
         },
-        "2c45f01fae5318dca69c3c5afb910200c0e66480f2b3d81c696eeb6916c3b263": {
+        "0994172ad5d8c660617aeadd207b7f78796f9a2757d3979c666b1c1b2ca2b5cf": {
           "trace_id": "dev-W3-1",
           "flows": [
             5.290634958152021,
@@ -1850,14 +1850,14 @@
             "replica_busy_time": [
               37.863590519300196
             ],
-            "policy_cpu_s": 0.3220545010000149,
-            "max_hook_cpu_s": 0.00014675000000000105,
+            "policy_cpu_s": 0.3142714359999967,
+            "max_hook_cpu_s": 0.00011020900000002776,
             "target_concurrency_calls": 54,
             "choose_victim_calls": 14220,
             "events": 98574,
-            "wall_s": 2.2899544169194996,
+            "wall_s": 2.2245096669066697,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 42496,
@@ -1898,7 +1898,7 @@
             }
           }
         },
-        "a68ca41680bdcfd777ac44414d4d84b2f23f0a6a313b76d8644363e0300a0419": {
+        "0a959c9b0969e8921274ec696b5c460b60b85294881456d8000ad6a10dc21a86": {
           "trace_id": "dev-W3-2",
           "flows": [
             20.342189006228725,
@@ -1936,14 +1936,14 @@
             "replica_busy_time": [
               30.97579563305564
             ],
-            "policy_cpu_s": 0.2922913610000246,
-            "max_hook_cpu_s": 0.0001371669999999936,
+            "policy_cpu_s": 0.2870208630000397,
+            "max_hook_cpu_s": 8.787499999995951e-05,
             "target_concurrency_calls": 125,
             "choose_victim_calls": 11495,
             "events": 84205,
-            "wall_s": 1.9020980841014534,
+            "wall_s": 1.870321584166959,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 62976,
@@ -1984,7 +1984,7 @@
             }
           }
         },
-        "2a23303e78b7c2701f759502af8dad606b399b3eda87ed9183a2a36200d24ce8": {
+        "c07a00d88d32a1dbcd37aaa00b0de87d4239433e018e5b47c2674470504d1cea": {
           "trace_id": "dev-W3-3",
           "flows": [
             14.296599302502367,
@@ -2022,14 +2022,14 @@
             "replica_busy_time": [
               39.24299253517385
             ],
-            "policy_cpu_s": 0.40297743199996433,
-            "max_hook_cpu_s": 0.00013204199999994337,
+            "policy_cpu_s": 0.40687679699999224,
+            "max_hook_cpu_s": 0.00013724999999986665,
             "target_concurrency_calls": 77,
             "choose_victim_calls": 15022,
             "events": 94724,
-            "wall_s": 2.1384443340357393,
+            "wall_s": 2.2144350830931216,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 51456,
@@ -2070,7 +2070,7 @@
             }
           }
         },
-        "22c494035dafd7c2b25d8e9ec913a48c7bbd442183302814824304425d369170": {
+        "0fc60fbc9a01580f3b6459f97215c0d059fe68d6e1271ee317caaa58eaab50b0": {
           "trace_id": "dev-W4-0",
           "flows": [
             40.566499561403376,
@@ -2108,14 +2108,14 @@
             "replica_busy_time": [
               66.43667782242237
             ],
-            "policy_cpu_s": 0.3204682449999916,
-            "max_hook_cpu_s": 0.00012091699999999816,
+            "policy_cpu_s": 0.3202201480000052,
+            "max_hook_cpu_s": 9.220899999995424e-05,
             "target_concurrency_calls": 948,
             "choose_victim_calls": 11673,
             "events": 169129,
-            "wall_s": 1.7778459158726037,
+            "wall_s": 1.7520407089032233,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 32256,
@@ -2156,7 +2156,7 @@
             }
           }
         },
-        "de425aabdc87be3ed34c833b472777f5723337e8d92986fcab0f4e3b785648f6": {
+        "09a57d2f1fcd78babb72255577c0cdf70410816a228a1995a6186a4b3eba8498": {
           "trace_id": "dev-W4-1",
           "flows": [
             117.98472084281073,
@@ -2194,14 +2194,14 @@
             "replica_busy_time": [
               128.14624890115994
             ],
-            "policy_cpu_s": 1.7187043580000112,
-            "max_hook_cpu_s": 0.00022404200000003538,
+            "policy_cpu_s": 1.7481043080000436,
+            "max_hook_cpu_s": 0.00041570900000009736,
             "target_concurrency_calls": 1796,
             "choose_victim_calls": 46371,
             "events": 395809,
-            "wall_s": 5.30486987484619,
+            "wall_s": 5.824054124997929,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 29184,
@@ -2242,7 +2242,7 @@
             }
           }
         },
-        "78956328f390a7e0636e0c8d9cdd5a115a8fd2e426454a753987cf3b636c1ff0": {
+        "b6a4b8fb111fad09fcd65119c22a3b713629cbddb9df13ed98c3f6ccf49c68b5": {
           "trace_id": "dev-W4-2",
           "flows": [
             28.677360582318087,
@@ -2280,14 +2280,14 @@
             "replica_busy_time": [
               112.06207751265752
             ],
-            "policy_cpu_s": 0.8001595640000885,
-            "max_hook_cpu_s": 9.04590000000427e-05,
+            "policy_cpu_s": 0.8342278949999873,
+            "max_hook_cpu_s": 0.0003661249999999949,
             "target_concurrency_calls": 1490,
             "choose_victim_calls": 30140,
             "events": 266284,
-            "wall_s": 3.634510917123407,
+            "wall_s": 3.888565625064075,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 25856,
@@ -2328,7 +2328,7 @@
             }
           }
         },
-        "853930de596229909f059f0f5419cd5d4e09dbac518489c26fc1aa7a7e594522": {
+        "41fb0aab5f68d33ed51f489f141629ddbdab1dac8101697e404b3c28ac4be77d": {
           "trace_id": "dev-W4-3",
           "flows": [
             35.84175396040042,
@@ -2366,14 +2366,14 @@
             "replica_busy_time": [
               81.87059511160162
             ],
-            "policy_cpu_s": 0.5459561920000391,
-            "max_hook_cpu_s": 0.00010645799999986494,
+            "policy_cpu_s": 0.5715124810000167,
+            "max_hook_cpu_s": 0.00021579200000010346,
             "target_concurrency_calls": 1462,
             "choose_victim_calls": 22016,
             "events": 230934,
-            "wall_s": 2.8019630410708487,
+            "wall_s": 3.012664042180404,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 25088,
@@ -2414,7 +2414,7 @@
             }
           }
         },
-        "fec47c3b5ac759a27d055bee5f964940dd3d3e59f65280663f8da5f37c5c4936": {
+        "837de1eaeca73c7fc402f1df855d9f6584aa32617d1b516ddd93b96848c27c67": {
           "trace_id": "dev-W5-0",
           "flows": [
             208.92117439504804,
@@ -2452,14 +2452,14 @@
             "replica_busy_time": [
               230.54618415594038
             ],
-            "policy_cpu_s": 0.05621844599999537,
-            "max_hook_cpu_s": 5.9500000000003994e-05,
+            "policy_cpu_s": 0.05910301099999897,
+            "max_hook_cpu_s": 0.00013179199999996394,
             "target_concurrency_calls": 16,
             "choose_victim_calls": 2539,
             "events": 14047,
-            "wall_s": 1.5878123340662569,
+            "wall_s": 1.672455915948376,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 32768,
@@ -2500,7 +2500,7 @@
             }
           }
         },
-        "d3b24253287b69cc8be487255ed405c76975f6af32b90d8ad94a67622430f0a9": {
+        "8b24e5e0ff8e6cd66e63b3c08ec1eddec5b95c12c486469931b964273ea2dc82": {
           "trace_id": "dev-W5-1",
           "flows": [
             20.88802665170716,
@@ -2538,14 +2538,14 @@
             "replica_busy_time": [
               239.64376326294015
             ],
-            "policy_cpu_s": 0.12667919799999816,
-            "max_hook_cpu_s": 0.0001409169999999904,
+            "policy_cpu_s": 0.12524660999999537,
+            "max_hook_cpu_s": 9.141599999999694e-05,
             "target_concurrency_calls": 527,
             "choose_victim_calls": 4397,
             "events": 20645,
-            "wall_s": 1.9131101248785853,
+            "wall_s": 1.9655406249221414,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 51712,
@@ -2586,7 +2586,7 @@
             }
           }
         },
-        "38a45e3dabc070a26fcda97114ea49b3a3d34086429625cb261f939d3f8c8559": {
+        "ccf7e065f800e007c8cf2cc77187914b8e646d8d3680baf1473eb7c8066b1d83": {
           "trace_id": "dev-W5-2",
           "flows": [
             27.648981048927013,
@@ -2624,14 +2624,14 @@
             "replica_busy_time": [
               240.75963950821495
             ],
-            "policy_cpu_s": 0.34270846300000846,
-            "max_hook_cpu_s": 0.00016399999999999748,
+            "policy_cpu_s": 0.34638929300000243,
+            "max_hook_cpu_s": 0.00014379200000003145,
             "target_concurrency_calls": 680,
             "choose_victim_calls": 8304,
             "events": 36428,
-            "wall_s": 2.775179791962728,
+            "wall_s": 2.8498545829206705,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 51712,
@@ -2672,7 +2672,7 @@
             }
           }
         },
-        "a340ebc209fe641920011a772e68d2a6b8ae3fbebc382dbe20ad50c4d7949429": {
+        "f71b772af2ad5cf27ff5f8429bc28d51b5d5ecfb11b4ba19702bafe5af1d6852": {
           "trace_id": "dev-W5-3",
           "flows": [
             25.2433202316788,
@@ -2710,14 +2710,14 @@
             "replica_busy_time": [
               374.79946624789494
             ],
-            "policy_cpu_s": 5.9289754139995425,
-            "max_hook_cpu_s": 0.0003430830000006324,
+            "policy_cpu_s": 5.933628806999928,
+            "max_hook_cpu_s": 0.00013599999999991397,
             "target_concurrency_calls": 1280,
             "choose_victim_calls": 112487,
             "events": 371063,
-            "wall_s": 15.330206208163872,
+            "wall_s": 14.580313374986872,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 37888,
@@ -2758,7 +2758,7 @@
             }
           }
         },
-        "70e71704cf3c68e6f57636ae8b831ef5a833d77a1de6adf00635667b7d217a45": {
+        "195d77fe4865a5e654e702c8619f71c6358939b6602113df174f308917f009f2": {
           "trace_id": "val-D-0",
           "flows": [
             23.13693454361405,
@@ -2796,14 +2796,14 @@
             "replica_busy_time": [
               79.75802613515651
             ],
-            "policy_cpu_s": 0.4931672170000078,
-            "max_hook_cpu_s": 8.491599999999044e-05,
+            "policy_cpu_s": 0.4769613170000072,
+            "max_hook_cpu_s": 5.729200000004209e-05,
             "target_concurrency_calls": 1883,
             "choose_victim_calls": 31951,
             "events": 134511,
-            "wall_s": 2.6027635000646114,
+            "wall_s": 2.4819737910293043,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 11776,
@@ -2844,7 +2844,7 @@
             }
           }
         },
-        "56cf3e8ff3112651275fe6f1a84fb3736973843923fa9b4a85cb3234121b02ad": {
+        "f62a05b9c4b94779a14d0ae1224e250c4db7889855f58d357cab029f69360298": {
           "trace_id": "val-D-1",
           "flows": [
             15.870319808891892,
@@ -2882,14 +2882,14 @@
             "replica_busy_time": [
               47.24339201720204
             ],
-            "policy_cpu_s": 0.2191257090000137,
-            "max_hook_cpu_s": 9.620800000009755e-05,
+            "policy_cpu_s": 0.2136064830000135,
+            "max_hook_cpu_s": 5.862499999997883e-05,
             "target_concurrency_calls": 764,
             "choose_victim_calls": 12736,
             "events": 63338,
-            "wall_s": 1.4021158749237657,
+            "wall_s": 1.2947779579553753,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 19968,
@@ -2930,7 +2930,7 @@
             }
           }
         },
-        "a9485c686c26d0b49cf5d4475e466be9420bc7c547f781f5330f473861a6d4b4": {
+        "0d20204553a6e1d355643f74107e010ce22f70caae6cd079eb8e1f14dec01751": {
           "trace_id": "val-M1-0",
           "flows": [
             52.22663183010561,
@@ -2968,14 +2968,14 @@
             "replica_busy_time": [
               86.42504238400251
             ],
-            "policy_cpu_s": 3.3275610600000447,
-            "max_hook_cpu_s": 0.00044879200000003117,
+            "policy_cpu_s": 3.3060846210000254,
+            "max_hook_cpu_s": 0.00018495799999995732,
             "target_concurrency_calls": 467,
             "choose_victim_calls": 41366,
             "events": 164030,
-            "wall_s": 6.26148920902051,
+            "wall_s": 6.415456499904394,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 57600,
@@ -3016,7 +3016,7 @@
             }
           }
         },
-        "184dbe20d9783321ae7d2dc3868eb1ad699fb7a33faedc72a99699cf0b4cd5dd": {
+        "1d7398fbc6368dd6fec7015d9d3dfb583b70aed9b3de8931de95758ba59f9496": {
           "trace_id": "val-M1-1",
           "flows": [
             16.053805324555565,
@@ -3054,14 +3054,14 @@
             "replica_busy_time": [
               35.36400992790488
             ],
-            "policy_cpu_s": 0.5190971539999847,
-            "max_hook_cpu_s": 0.00024216600000004362,
+            "policy_cpu_s": 0.5121832189999989,
+            "max_hook_cpu_s": 0.00017625000000004443,
             "target_concurrency_calls": 118,
             "choose_victim_calls": 9699,
             "events": 53483,
-            "wall_s": 1.6404000408947468,
+            "wall_s": 1.5659097088500857,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 59904,
@@ -3102,7 +3102,7 @@
             }
           }
         },
-        "0c6957a4b396aaeafda99ec9f79bd210bd641beb64738e8cc82935db0bf98698": {
+        "a4afb8d2d9aaad0fef2a5fe514ec21ce95ccb9f1fd2bc4d84134df03a6e9d843": {
           "trace_id": "val-M2-0",
           "flows": [
             37.73715927703558,
@@ -3140,14 +3140,14 @@
             "replica_busy_time": [
               233.88853028891398
             ],
-            "policy_cpu_s": 0.2619561969999908,
-            "max_hook_cpu_s": 0.0001051249999999837,
+            "policy_cpu_s": 0.2581045400000009,
+            "max_hook_cpu_s": 9.729099999999935e-05,
             "target_concurrency_calls": 36,
             "choose_victim_calls": 5549,
             "events": 54141,
-            "wall_s": 2.193493625149131,
+            "wall_s": 2.166255917167291,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 49152,
@@ -3188,7 +3188,7 @@
             }
           }
         },
-        "16c734bf2de38a6229c082621dd9f881f237acd2b15f2620743994cc038bb338": {
+        "319a56f8f36d23d204288cede8ab9bcf16d758e14bc2e6bac224e2337d0274e0": {
           "trace_id": "val-M2-1",
           "flows": [
             10.814871427732118,
@@ -3226,14 +3226,14 @@
             "replica_busy_time": [
               258.6617132655695
             ],
-            "policy_cpu_s": 0.7472932659999808,
-            "max_hook_cpu_s": 0.00016979199999997419,
+            "policy_cpu_s": 0.7411104910000259,
+            "max_hook_cpu_s": 0.00014654100000000003,
             "target_concurrency_calls": 47,
             "choose_victim_calls": 24511,
             "events": 95389,
-            "wall_s": 4.507425290998071,
+            "wall_s": 4.478973291115835,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 51200,
@@ -3274,7 +3274,7 @@
             }
           }
         },
-        "f80d42ae87d93975f0f5d284e877f24a282e593e4a8f9b62a60b900b61f47549": {
+        "df32a52bb2c7374b7a1fce76b7653fb8695259665415c34ca36a6f37887bdf11": {
           "trace_id": "val-W1-0",
           "flows": [
             99.00067462190087,
@@ -3312,14 +3312,14 @@
             "replica_busy_time": [
               103.61647583531806
             ],
-            "policy_cpu_s": 4.367837919999841,
-            "max_hook_cpu_s": 0.0005100000000002325,
+            "policy_cpu_s": 4.304598418999776,
+            "max_hook_cpu_s": 0.0005052500000006788,
             "target_concurrency_calls": 688,
             "choose_victim_calls": 45625,
             "events": 221675,
-            "wall_s": 7.9998487920966,
+            "wall_s": 7.5410168340895325,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 65536,
@@ -3360,7 +3360,7 @@
             }
           }
         },
-        "d86ed9c29efe11d34b8fe040a414f3ecd7db7b70df21b82975025329ffef1b8d": {
+        "91e78309c4c99bac9012c18511b0a5e8ab44cc49fc481d81b6838e313f2a7182": {
           "trace_id": "val-W1-1",
           "flows": [
             9.918409285670737,
@@ -3398,14 +3398,14 @@
             "replica_busy_time": [
               54.2479290611288
             ],
-            "policy_cpu_s": 0.19325543900000608,
-            "max_hook_cpu_s": 0.00030716600000002536,
+            "policy_cpu_s": 0.17681245599998222,
+            "max_hook_cpu_s": 0.00026120799999995725,
             "target_concurrency_calls": 6,
             "choose_victim_calls": 6006,
             "events": 40772,
-            "wall_s": 1.654997792094946,
+            "wall_s": 1.5576137078460306,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 83456,
@@ -3446,7 +3446,7 @@
             }
           }
         },
-        "a4021eb63aa0eeaf5fd634be6dee01688d28d0b6b9d203e877eb97c96fc9b6a1": {
+        "46ebc9274613841374a0d385eb17c388102028c0109d57634c40a404c0a1a431": {
           "trace_id": "val-W2-0",
           "flows": [
             29.26573801958225,
@@ -3484,14 +3484,14 @@
             "replica_busy_time": [
               640.1922975463588
             ],
-            "policy_cpu_s": 16.396194079999404,
-            "max_hook_cpu_s": 0.0005081669999995597,
+            "policy_cpu_s": 16.197104091999506,
+            "max_hook_cpu_s": 0.0004739590000002458,
             "target_concurrency_calls": 4162,
             "choose_victim_calls": 274424,
             "events": 1996196,
-            "wall_s": 35.59356787498109,
+            "wall_s": 33.004843791015446,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 47104,
@@ -3532,7 +3532,7 @@
             }
           }
         },
-        "fbcc275c16c9d44f93f773fb3aeb90d23cabed07de97461cc72f5f71544def4b": {
+        "9256c4c6f4c90525b7fad609d6e9fa7aedf5d1d4a13552cf8e5dac0ea3dc49a1": {
           "trace_id": "val-W2-1",
           "flows": [
             637.7331578533633,
@@ -3570,14 +3570,14 @@
             "replica_busy_time": [
               778.9169130374163
             ],
-            "policy_cpu_s": 17.740833909999886,
-            "max_hook_cpu_s": 0.0005725829999994048,
+            "policy_cpu_s": 17.339474911998977,
+            "max_hook_cpu_s": 0.0004132910000009815,
             "target_concurrency_calls": 5035,
             "choose_victim_calls": 343058,
             "events": 2536428,
-            "wall_s": 39.256413917057216,
+            "wall_s": 37.967228166991845,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 44032,
@@ -3618,7 +3618,7 @@
             }
           }
         },
-        "ac1ddafd6c1222cd4e2d7d193a2bae4425cedf8b50d6ac8a9e7e97e8cd26f4a6": {
+        "cd97ac7e28be3460b1d9f6bb5bb5a99dd4d44c1ab961624149379e1db425490d": {
           "trace_id": "val-W3-0",
           "flows": [
             9.791758526851552,
@@ -3656,14 +3656,14 @@
             "replica_busy_time": [
               17.974085219214224
             ],
-            "policy_cpu_s": 0.08001726000000339,
-            "max_hook_cpu_s": 0.00014429200000001807,
+            "policy_cpu_s": 0.07748274799999985,
+            "max_hook_cpu_s": 7.316700000001286e-05,
             "target_concurrency_calls": 67,
             "choose_victim_calls": 3247,
             "events": 89665,
-            "wall_s": 0.676779167028144,
+            "wall_s": 0.6989203330595046,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 49152,
@@ -3704,7 +3704,7 @@
             }
           }
         },
-        "9012b6f5b48f3fb84d7c978f24b04b1b8b07bb405d781946eaf6a805b57abce5": {
+        "b1375f9af02818a752f179734f19005e48f7d232441370f27e04994b6612b904": {
           "trace_id": "val-W3-1",
           "flows": [
             11.948887152709284,
@@ -3742,14 +3742,14 @@
             "replica_busy_time": [
               37.73181597332283
             ],
-            "policy_cpu_s": 0.29334931399999653,
-            "max_hook_cpu_s": 0.00018616700000001485,
+            "policy_cpu_s": 0.2886467170000298,
+            "max_hook_cpu_s": 7.504199999996963e-05,
             "target_concurrency_calls": 86,
             "choose_victim_calls": 13042,
             "events": 110960,
-            "wall_s": 1.9891302078031003,
+            "wall_s": 1.851836167043075,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 51200,
@@ -3790,7 +3790,7 @@
             }
           }
         },
-        "de19eda0d490f2d090b8d6b8de4558d444f5864427ecfd79f2f64c993ad01a6b": {
+        "4f3045513bc3ba8d8088d365e167cea3c021ea3e1a86fc9481c7ac5e7719ad2a": {
           "trace_id": "val-W4-0",
           "flows": [
             19.572680205142184,
@@ -3828,14 +3828,14 @@
             "replica_busy_time": [
               61.68004406484625
             ],
-            "policy_cpu_s": 0.09147312200000537,
-            "max_hook_cpu_s": 6.48340000000136e-05,
+            "policy_cpu_s": 0.09328607500000494,
+            "max_hook_cpu_s": 5.400000000002625e-05,
             "target_concurrency_calls": 162,
             "choose_victim_calls": 6208,
             "events": 127538,
-            "wall_s": 1.0489320829510689,
+            "wall_s": 1.079661041032523,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 23552,
@@ -3876,7 +3876,7 @@
             }
           }
         },
-        "41badd55a80e2d7776928875dcfdf643f096fb47e79ddef68b33ea37d5694971": {
+        "cc39ccf4bf816f235aa1f37ae9ff49938ee1deac099e1efe7dbd668b7d136a46": {
           "trace_id": "val-W4-1",
           "flows": [
             61.74212686994935,
@@ -3914,14 +3914,14 @@
             "replica_busy_time": [
               75.09896073169752
             ],
-            "policy_cpu_s": 0.5371260670000131,
-            "max_hook_cpu_s": 0.00023858300000001442,
+            "policy_cpu_s": 0.5158040429999937,
+            "max_hook_cpu_s": 8.570899999998938e-05,
             "target_concurrency_calls": 1517,
             "choose_victim_calls": 19111,
             "events": 224543,
-            "wall_s": 2.650034041143954,
+            "wall_s": 2.430892667034641,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 28416,
@@ -3962,7 +3962,7 @@
             }
           }
         },
-        "032e972617b02dbe2c984a114a86da1a9571afa98bca8160d94b77fa894f1d8a": {
+        "c45297fa6b7492cc53d014f33d076659c77d8a68dd0df7e41f3095e29e66cfe0": {
           "trace_id": "val-W5-0",
           "flows": [
             32.375440919309106,
@@ -4000,14 +4000,14 @@
             "replica_busy_time": [
               234.41634257312748
             ],
-            "policy_cpu_s": 0.3769720930000012,
-            "max_hook_cpu_s": 0.0003026660000000625,
+            "policy_cpu_s": 0.3478332700000016,
+            "max_hook_cpu_s": 9.604099999993565e-05,
             "target_concurrency_calls": 939,
             "choose_victim_calls": 8899,
             "events": 39621,
-            "wall_s": 2.733129624975845,
+            "wall_s": 2.6491384159307927,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 35328,
@@ -4048,7 +4048,7 @@
             }
           }
         },
-        "a254bfac89e4ddf47dfcbbf6bb0c8e978d65a6db094e409b433ef7c7568b8374": {
+        "5b9a8e12c823fe1d5ad72b95d741aaa0674b3b1ef1617196c4774ffc2a96706f": {
           "trace_id": "val-W5-1",
           "flows": [
             20.209309169053185,
@@ -4086,14 +4086,14 @@
             "replica_busy_time": [
               196.5982549020863
             ],
-            "policy_cpu_s": 0.07193682700000073,
-            "max_hook_cpu_s": 8.1208999999971e-05,
+            "policy_cpu_s": 0.06874015899999925,
+            "max_hook_cpu_s": 6.08750000000019e-05,
             "target_concurrency_calls": 500,
             "choose_victim_calls": 3736,
             "events": 18224,
-            "wall_s": 1.5066109581384808,
+            "wall_s": 1.509458167012781,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-bc35f1a339cc07a1bb19417f",
+            "sim_fingerprint": "vidur-bc0a9cd09d868418945729c5",
             "replicas": 1,
             "block_size": 16,
             "kv_tokens_per_replica": 39424,
@@ -4137,11 +4137,11 @@
       }
     },
     "2": {
-      "sim": "vidur-05b73b57962caa8c9cabcd72",
-      "b0_sha256": "1a1b9071880b74516faf358274e0f504ef75b92c1fd0f3d64dffcd1427c60939",
+      "sim": "vidur-5795bc84c4f6fe63571fed60",
+      "b0_sha256": "671dcf500a15cec4c23fe3203281481813f25fbd122b9d578a057d1071146275",
       "replicas": 2,
       "traces": {
-        "b41cf8c806a0040a92fabd31ca5e99936110f941ce9e314cd6c8dbaf197fd380": {
+        "13d27697adbe5bcce7ed0e635f8a913828a15421e7e2b7084e1a2830dab37f73": {
           "trace_id": "dev-D-0",
           "flows": [
             9.313530963054795,
@@ -4180,14 +4180,14 @@
               53.10279205153733,
               48.60972221584104
             ],
-            "policy_cpu_s": 0.18524614999999392,
-            "max_hook_cpu_s": 0.0001503330000000025,
+            "policy_cpu_s": 0.18519221400000213,
+            "max_hook_cpu_s": 0.00015383299999999211,
             "target_concurrency_calls": 88,
             "choose_victim_calls": 5244,
             "events": 41574,
-            "wall_s": 1.876371166901663,
+            "wall_s": 1.9177832920104265,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 38912,
@@ -4228,7 +4228,7 @@
             }
           }
         },
-        "e6124908af861aa96dc4555a11e9485e1e0f898b407090a8a7a8c6fd1a951228": {
+        "53733ad22ed3c098bd07c9228d96dbad04ac245ab5bd114b72735995227a9ecc": {
           "trace_id": "dev-D-1",
           "flows": [
             8.236213907487453,
@@ -4267,14 +4267,14 @@
               43.75602854657135,
               39.69574902204663
             ],
-            "policy_cpu_s": 0.1363295139999969,
-            "max_hook_cpu_s": 6.654200000000277e-05,
+            "policy_cpu_s": 0.13855322499998918,
+            "max_hook_cpu_s": 7.745800000003022e-05,
             "target_concurrency_calls": 816,
             "choose_victim_calls": 11896,
             "events": 56500,
-            "wall_s": 1.5430712921079248,
+            "wall_s": 1.477668167091906,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 12288,
@@ -4315,7 +4315,7 @@
             }
           }
         },
-        "5ff104c4edb02296393d6207fd12ea88ca9770d2455c1a617574e2a93d3272da": {
+        "6f2b52f44cac16b11a378da8ed6c9cabb580fe40a96d11d13aea2668d823680a": {
           "trace_id": "dev-D-2",
           "flows": [
             12.036507898590633,
@@ -4354,14 +4354,14 @@
               46.201472957502865,
               35.42681951927875
             ],
-            "policy_cpu_s": 0.12344637700001089,
-            "max_hook_cpu_s": 8.154199999999001e-05,
+            "policy_cpu_s": 0.12390931500001255,
+            "max_hook_cpu_s": 6.183300000001113e-05,
             "target_concurrency_calls": 346,
             "choose_victim_calls": 9162,
             "events": 44974,
-            "wall_s": 1.335999625036493,
+            "wall_s": 1.3434712090529501,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 14848,
@@ -4402,7 +4402,7 @@
             }
           }
         },
-        "8429838a4a8c71be361c1017d0974a5c2c2884d5cf85021ebfc3236375037679": {
+        "840c917a32041a2151ba784c5f3bb889df490f147ee5d134c7295e2e701b504a": {
           "trace_id": "dev-D-3",
           "flows": [
             8.818178193398305,
@@ -4441,14 +4441,14 @@
               44.05406508291526,
               39.76661418168132
             ],
-            "policy_cpu_s": 0.13864040700000513,
-            "max_hook_cpu_s": 9.3333000000001e-05,
+            "policy_cpu_s": 0.13767800000000055,
+            "max_hook_cpu_s": 6.87499999999508e-05,
             "target_concurrency_calls": 176,
             "choose_victim_calls": 7879,
             "events": 45801,
-            "wall_s": 1.5994169998448342,
+            "wall_s": 1.609526958083734,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 24064,
@@ -4489,7 +4489,7 @@
             }
           }
         },
-        "415ffdf0a10f7a2c3b4682697a71d48795e1c8ffc97403c5d8d92035f6427754": {
+        "81c107129cacced47cadee3942a420181318f013dc92a8f7d32d09f2a01b3bc7": {
           "trace_id": "dev-M1-0",
           "flows": [
             4.375785542444112,
@@ -4528,14 +4528,14 @@
               29.217597132701144,
               25.14927566072361
             ],
-            "policy_cpu_s": 0.3613938689999827,
-            "max_hook_cpu_s": 0.00015191599999997418,
+            "policy_cpu_s": 0.3591463720000059,
+            "max_hook_cpu_s": 0.00016091699999987163,
             "target_concurrency_calls": 31,
             "choose_victim_calls": 7527,
             "events": 58347,
-            "wall_s": 2.2085874169133604,
+            "wall_s": 2.159619041951373,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 50688,
@@ -4576,7 +4576,7 @@
             }
           }
         },
-        "ef861aec36bdb1d0941cda90ae91ec891bfdf8e40c231d8b1ae7a3e5de9c165e": {
+        "e89a2006d8b4a2e8046fe0187cdb0f8282c41593deea6e4ae0c71413c0a4ebf2": {
           "trace_id": "dev-M1-1",
           "flows": [
             17.745375418846802,
@@ -4615,14 +4615,14 @@
               35.69944454006247,
               29.89536652952953
             ],
-            "policy_cpu_s": 0.28219204699999134,
-            "max_hook_cpu_s": 0.0001715840000000024,
+            "policy_cpu_s": 0.28665272299999645,
+            "max_hook_cpu_s": 0.0002047089999999141,
             "target_concurrency_calls": 30,
             "choose_victim_calls": 4907,
             "events": 56223,
-            "wall_s": 2.244356459006667,
+            "wall_s": 2.3084168338682503,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 69888,
@@ -4663,7 +4663,7 @@
             }
           }
         },
-        "fc4c9fb5b0887a2027af538bd504349d8cdbfb2c2583de5758ed04e4d7694380": {
+        "35fb6d8a10103fc020381a0507238c8fe88120f1b0e530147e29441d361db2d0": {
           "trace_id": "dev-M1-2",
           "flows": [
             23.747367858469186,
@@ -4702,14 +4702,14 @@
               38.55376619484613,
               33.03898775296938
             ],
-            "policy_cpu_s": 0.5471801989999865,
-            "max_hook_cpu_s": 0.00024141700000024358,
+            "policy_cpu_s": 0.5495077339999841,
+            "max_hook_cpu_s": 0.0002766249999999193,
             "target_concurrency_calls": 78,
             "choose_victim_calls": 9243,
             "events": 74263,
-            "wall_s": 3.452150542056188,
+            "wall_s": 3.492365667130798,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 76288,
@@ -4750,7 +4750,7 @@
             }
           }
         },
-        "35bbe83f1314c700e3b6c7aaad58fc44c0d6afd8dd8eb0fbca2d7a429a5314a2": {
+        "840de47662c22d1e2201e57d2289bbb0bfe67570640bc1d92a5cb1ad960944ab": {
           "trace_id": "dev-M1-3",
           "flows": [
             8.840507275019867,
@@ -4789,14 +4789,14 @@
               32.88829036143028,
               24.36872419743454
             ],
-            "policy_cpu_s": 0.3120994570000008,
-            "max_hook_cpu_s": 0.00021574999999995903,
+            "policy_cpu_s": 0.3135602350000096,
+            "max_hook_cpu_s": 0.00036379200000014045,
             "target_concurrency_calls": 30,
             "choose_victim_calls": 4463,
             "events": 53839,
-            "wall_s": 1.956114999949932,
+            "wall_s": 1.965678749838844,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 71936,
@@ -4837,7 +4837,7 @@
             }
           }
         },
-        "894b6b0c5d917c4b1f2750062de9e4d003931a8d99a839db2b1a402f0ff9f0ae": {
+        "006d106f5ad05a4da717bceb560d57bffbf1e129cf44f0febd5d224eae0dfa37": {
           "trace_id": "dev-M2-0",
           "flows": [
             20.79962573150071,
@@ -4876,14 +4876,14 @@
               86.16465378259765,
               58.870715391287526
             ],
-            "policy_cpu_s": 0.21436022499999557,
-            "max_hook_cpu_s": 0.00014445800000006948,
+            "policy_cpu_s": 0.2136344349999975,
+            "max_hook_cpu_s": 0.0001504170000000693,
             "target_concurrency_calls": 36,
             "choose_victim_calls": 5032,
             "events": 55884,
-            "wall_s": 1.8518263751175255,
+            "wall_s": 1.8456435420084745,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 40192,
@@ -4924,7 +4924,7 @@
             }
           }
         },
-        "710aab2ddb68a6f808d230efa9cb6da6c14710ffe65985097b9aa594dfeadddb": {
+        "b063fba246224445db893ecfdb000851b018364e85ebca60a0f58c88d9877f77": {
           "trace_id": "dev-M2-1",
           "flows": [
             21.97831166890662,
@@ -4963,14 +4963,14 @@
               107.72555353915602,
               76.46107933139436
             ],
-            "policy_cpu_s": 0.5183621049999381,
-            "max_hook_cpu_s": 0.0001318339999998308,
+            "policy_cpu_s": 0.5270569660000528,
+            "max_hook_cpu_s": 0.00010775000000018409,
             "target_concurrency_calls": 42,
             "choose_victim_calls": 14721,
             "events": 79597,
-            "wall_s": 3.7021157920826226,
+            "wall_s": 3.726172290975228,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 39424,
@@ -5011,7 +5011,7 @@
             }
           }
         },
-        "61f7cc1d40cdfd0469fab1f0d83af51932ce2a691d85623445e5562acd680d25": {
+        "ecdc3fe81d46fdf54950fbdd2c5db209d41bb1e390c17e07a95df9365ab0aa78": {
           "trace_id": "dev-M2-2",
           "flows": [
             170.56435763872636,
@@ -5050,14 +5050,14 @@
               170.56435763872636,
               228.44037525246566
             ],
-            "policy_cpu_s": 0.655657985000035,
-            "max_hook_cpu_s": 0.0001767910000001205,
+            "policy_cpu_s": 0.6587176359999729,
+            "max_hook_cpu_s": 0.00010233399999970416,
             "target_concurrency_calls": 39,
             "choose_victim_calls": 19617,
             "events": 79067,
-            "wall_s": 5.312134374864399,
+            "wall_s": 5.477452791994438,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 33536,
@@ -5098,7 +5098,7 @@
             }
           }
         },
-        "c18da33c3955ddc02fe2b52656cb7c7005cc181d237380dd1a92dbd96459ecb9": {
+        "3e417949e49789d06c099541da80e2f6978e826f4910418b05676024e73ae1fd": {
           "trace_id": "dev-M2-3",
           "flows": [
             21.560480308496626,
@@ -5137,14 +5137,14 @@
               165.03155337116823,
               85.34375296945724
             ],
-            "policy_cpu_s": 0.5944920289999751,
-            "max_hook_cpu_s": 0.00015016700000014538,
+            "policy_cpu_s": 0.6036923119999871,
+            "max_hook_cpu_s": 0.00013104199999997013,
             "target_concurrency_calls": 117,
             "choose_victim_calls": 16989,
             "events": 72469,
-            "wall_s": 3.9131204169243574,
+            "wall_s": 4.056887166807428,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 32256,
@@ -5185,7 +5185,7 @@
             }
           }
         },
-        "f7abe5fcc349d5ff782497f5bc5035670d1f50be4d2f1f8fd8e3a17116e1ec4f": {
+        "2274f7fb9d5cb3d840d6400b86bdf1ac5542e84702dd5a3296c652584277835d": {
           "trace_id": "dev-W1-0",
           "flows": [
             10.69087181502754,
@@ -5224,14 +5224,14 @@
               58.75802277420057,
               35.838893410094975
             ],
-            "policy_cpu_s": 0.21235708899999034,
-            "max_hook_cpu_s": 0.00016249999999995435,
+            "policy_cpu_s": 0.22048682399999947,
+            "max_hook_cpu_s": 0.0001611249999999842,
             "target_concurrency_calls": 20,
             "choose_victim_calls": 4685,
             "events": 33307,
-            "wall_s": 1.7815455419477075,
+            "wall_s": 1.819102582987398,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 55808,
@@ -5272,7 +5272,7 @@
             }
           }
         },
-        "97021c3885a6b70349dbc5e606938f8a3645e5f76c2a4596449c583d92ce6ab7": {
+        "71511b57b31ea37c991c85d1d10dbb62c4111168ef8a2f330c8eedbacee2ad63": {
           "trace_id": "dev-W1-1",
           "flows": [
             11.165437157978376,
@@ -5311,14 +5311,14 @@
               43.44486219700106,
               32.39457923552477
             ],
-            "policy_cpu_s": 0.2686904489999891,
-            "max_hook_cpu_s": 0.00012704199999996613,
+            "policy_cpu_s": 0.2744468909999991,
+            "max_hook_cpu_s": 0.00013745899999995093,
             "target_concurrency_calls": 8,
             "choose_victim_calls": 6752,
             "events": 38094,
-            "wall_s": 2.1771761670242995,
+            "wall_s": 2.242960167117417,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 64512,
@@ -5359,7 +5359,7 @@
             }
           }
         },
-        "bcca3e6cd4cd3e3856e74d5c2baed8f618423cd1d136dfa30bc84b32c55243f8": {
+        "735a51043b2b8c193e247ceaa82571ba53288ec5540fc513a91b83d14912220e": {
           "trace_id": "dev-W1-2",
           "flows": [
             15.571292141763703,
@@ -5398,14 +5398,14 @@
               68.8842677505065,
               41.935541176152086
             ],
-            "policy_cpu_s": 0.5335069190000215,
-            "max_hook_cpu_s": 0.00044254200000004573,
+            "policy_cpu_s": 0.5316685500000151,
+            "max_hook_cpu_s": 0.0003068750000001508,
             "target_concurrency_calls": 334,
             "choose_victim_calls": 4464,
             "events": 71874,
-            "wall_s": 3.5743382920045406,
+            "wall_s": 3.558957624947652,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 106496,
@@ -5446,7 +5446,7 @@
             }
           }
         },
-        "e6aab130b7b3133792ec2870057e0463f8e95cec670a969abd33475cf4c1b9c3": {
+        "0c2166d9f18b90f682ff03575e4575dc35f1c25f58840d713584ec424ead9e25": {
           "trace_id": "dev-W1-3",
           "flows": [
             66.16299356323765,
@@ -5485,14 +5485,14 @@
               51.63186844346333,
               32.231962615682455
             ],
-            "policy_cpu_s": 0.25846897399999513,
-            "max_hook_cpu_s": 0.0001407079999999894,
+            "policy_cpu_s": 0.2597748540000091,
+            "max_hook_cpu_s": 0.00022279199999997168,
             "target_concurrency_calls": 9,
             "choose_victim_calls": 4908,
             "events": 35046,
-            "wall_s": 1.7321462500840425,
+            "wall_s": 1.754354959120974,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 52480,
@@ -5533,7 +5533,7 @@
             }
           }
         },
-        "efe99e95fa820ed5e4406b18d3ec45379a1bc6db7e055c8f74ada6d63ba6217f": {
+        "e27e845064d86bf214c51533d1095f5042232ca56e0c7074ca1bf0a015a3ba66": {
           "trace_id": "dev-W2-0",
           "flows": [
             24.68210523046152,
@@ -5572,14 +5572,14 @@
               192.63171043943439,
               159.99731458952317
             ],
-            "policy_cpu_s": 0.9394170360000631,
-            "max_hook_cpu_s": 0.00019695900000005206,
+            "policy_cpu_s": 0.9314974829999998,
+            "max_hook_cpu_s": 0.00043674999999998576,
             "target_concurrency_calls": 222,
             "choose_victim_calls": 23313,
             "events": 413201,
-            "wall_s": 6.984925166005269,
+            "wall_s": 6.9699231658596545,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 45056,
@@ -5620,7 +5620,7 @@
             }
           }
         },
-        "7f9280178783b8f8401771eb4b7c0dd5a7041e73453c9cacec6f1bd5650c1cff": {
+        "9560b1164e4743540c6fcc6f1ec0c28c968dda7b25600428c45c361a836de7e0": {
           "trace_id": "dev-W2-1",
           "flows": [
             115.87836722544246,
@@ -5659,14 +5659,14 @@
               190.99424963002676,
               181.48873342251196
             ],
-            "policy_cpu_s": 0.7299594109999015,
-            "max_hook_cpu_s": 0.0002698329999999416,
+            "policy_cpu_s": 0.7064194359999588,
+            "max_hook_cpu_s": 0.0003151249999999717,
             "target_concurrency_calls": 219,
             "choose_victim_calls": 14894,
             "events": 376046,
-            "wall_s": 5.786248125135899,
+            "wall_s": 5.815210874890909,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 46592,
@@ -5707,7 +5707,7 @@
             }
           }
         },
-        "204ec23a916eeebf9f762d917c75a0be2785ff2fca3db822d0e45a3d6ad7f9fe": {
+        "23432da160f2503b57a50f3ca6d67ebc4cdcc075b8c4c294448ebb3abf030af6": {
           "trace_id": "dev-W2-2",
           "flows": [
             41.01042605289461,
@@ -5746,14 +5746,14 @@
               143.31876840664168,
               134.4550057270941
             ],
-            "policy_cpu_s": 0.6628855459999371,
-            "max_hook_cpu_s": 0.0002071249999999747,
+            "policy_cpu_s": 0.6574563270001019,
+            "max_hook_cpu_s": 0.0001758329999999031,
             "target_concurrency_calls": 213,
             "choose_victim_calls": 17325,
             "events": 383563,
-            "wall_s": 5.3964988340158015,
+            "wall_s": 5.390097083058208,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 46080,
@@ -5794,7 +5794,7 @@
             }
           }
         },
-        "07d42c80458e91da7e83ebf83ae97a2b24580c57959ac51b67f1153bad444466": {
+        "970ed04088927a25187bfa62acee53bbbd390d0dfd577163b0678399bbb90cbc": {
           "trace_id": "dev-W2-3",
           "flows": [
             44.90403164904439,
@@ -5833,14 +5833,14 @@
               180.15949248016668,
               109.89998174534013
             ],
-            "policy_cpu_s": 0.5809460390000172,
-            "max_hook_cpu_s": 0.0001854589999998879,
+            "policy_cpu_s": 0.5744901749999719,
+            "max_hook_cpu_s": 0.0001435419999999965,
             "target_concurrency_calls": 209,
             "choose_victim_calls": 14785,
             "events": 366763,
-            "wall_s": 5.086503500118852,
+            "wall_s": 5.100920458091423,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 42496,
@@ -5881,7 +5881,7 @@
             }
           }
         },
-        "5f7e5599f3f7a0fece461de03d53e7b22b3a9776f2ffddf84f0904bf49e88890": {
+        "d6e6a520efdf80eb250ef525ff62255f09fb51a86e2def81c391e717642e9116": {
           "trace_id": "dev-W3-0",
           "flows": [
             22.60360106399791,
@@ -5920,14 +5920,14 @@
               15.17189272927889,
               12.547777725651589
             ],
-            "policy_cpu_s": 0.15833591700001165,
-            "max_hook_cpu_s": 0.0001459169999999954,
+            "policy_cpu_s": 0.15944445500000043,
+            "max_hook_cpu_s": 0.00015416600000006664,
             "target_concurrency_calls": 105,
             "choose_victim_calls": 3023,
             "events": 94265,
-            "wall_s": 1.1825609998777509,
+            "wall_s": 1.2181953329127282,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 60928,
@@ -5968,7 +5968,7 @@
             }
           }
         },
-        "2c45f01fae5318dca69c3c5afb910200c0e66480f2b3d81c696eeb6916c3b263": {
+        "0994172ad5d8c660617aeadd207b7f78796f9a2757d3979c666b1c1b2ca2b5cf": {
           "trace_id": "dev-W3-1",
           "flows": [
             4.583804928436633,
@@ -6007,14 +6007,14 @@
               23.011720475626678,
               11.272525158589275
             ],
-            "policy_cpu_s": 0.37394681900004817,
-            "max_hook_cpu_s": 0.00013516599999996437,
+            "policy_cpu_s": 0.3735530960000537,
+            "max_hook_cpu_s": 0.0001471250000000257,
             "target_concurrency_calls": 54,
             "choose_victim_calls": 8433,
             "events": 92111,
-            "wall_s": 2.2736973338760436,
+            "wall_s": 2.3043820410966873,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 42496,
@@ -6055,7 +6055,7 @@
             }
           }
         },
-        "a68ca41680bdcfd777ac44414d4d84b2f23f0a6a313b76d8644363e0300a0419": {
+        "0a959c9b0969e8921274ec696b5c460b60b85294881456d8000ad6a10dc21a86": {
           "trace_id": "dev-W3-2",
           "flows": [
             10.731864436764186,
@@ -6094,14 +6094,14 @@
               19.239840637852726,
               17.10131783905317
             ],
-            "policy_cpu_s": 0.5126643450000083,
-            "max_hook_cpu_s": 0.00021120899999993448,
+            "policy_cpu_s": 0.5168694869999915,
+            "max_hook_cpu_s": 0.0001657499999999923,
             "target_concurrency_calls": 73,
             "choose_victim_calls": 9082,
             "events": 81792,
-            "wall_s": 3.2310348749160767,
+            "wall_s": 3.169126291992143,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 62976,
@@ -6142,7 +6142,7 @@
             }
           }
         },
-        "2a23303e78b7c2701f759502af8dad606b399b3eda87ed9183a2a36200d24ce8": {
+        "c07a00d88d32a1dbcd37aaa00b0de87d4239433e018e5b47c2674470504d1cea": {
           "trace_id": "dev-W3-3",
           "flows": [
             12.218178314276429,
@@ -6181,14 +6181,14 @@
               20.129033604890815,
               14.426389524582733
             ],
-            "policy_cpu_s": 0.33613336799998894,
-            "max_hook_cpu_s": 0.00017608300000016008,
+            "policy_cpu_s": 0.34089413199997903,
+            "max_hook_cpu_s": 0.00016533400000007248,
             "target_concurrency_calls": 51,
             "choose_victim_calls": 6467,
             "events": 85039,
-            "wall_s": 2.2609070839826018,
+            "wall_s": 2.2344758328981698,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 51456,
@@ -6229,7 +6229,7 @@
             }
           }
         },
-        "22c494035dafd7c2b25d8e9ec913a48c7bbd442183302814824304425d369170": {
+        "0fc60fbc9a01580f3b6459f97215c0d059fe68d6e1271ee317caaa58eaab50b0": {
           "trace_id": "dev-W4-0",
           "flows": [
             32.10986695190699,
@@ -6268,14 +6268,14 @@
               50.29078050128751,
               46.10156361201203
             ],
-            "policy_cpu_s": 0.16772961200000253,
-            "max_hook_cpu_s": 0.0001064170000000253,
+            "policy_cpu_s": 0.1661345519999976,
+            "max_hook_cpu_s": 8.404200000000639e-05,
             "target_concurrency_calls": 1168,
             "choose_victim_calls": 5008,
             "events": 144692,
-            "wall_s": 1.65071487496607,
+            "wall_s": 1.6745296251028776,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 32256,
@@ -6316,7 +6316,7 @@
             }
           }
         },
-        "de425aabdc87be3ed34c833b472777f5723337e8d92986fcab0f4e3b785648f6": {
+        "09a57d2f1fcd78babb72255577c0cdf70410816a228a1995a6186a4b3eba8498": {
           "trace_id": "dev-W4-1",
           "flows": [
             46.632133154411534,
@@ -6355,14 +6355,14 @@
               55.102536993284204,
               45.614371850778134
             ],
-            "policy_cpu_s": 0.1929915750000094,
-            "max_hook_cpu_s": 8.487499999998427e-05,
+            "policy_cpu_s": 0.19135656300001513,
+            "max_hook_cpu_s": 8.412499999987944e-05,
             "target_concurrency_calls": 2413,
             "choose_victim_calls": 8009,
             "events": 175449,
-            "wall_s": 2.118436499964446,
+            "wall_s": 2.0709222089499235,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 29184,
@@ -6403,7 +6403,7 @@
             }
           }
         },
-        "78956328f390a7e0636e0c8d9cdd5a115a8fd2e426454a753987cf3b636c1ff0": {
+        "b6a4b8fb111fad09fcd65119c22a3b713629cbddb9df13ed98c3f6ccf49c68b5": {
           "trace_id": "dev-W4-2",
           "flows": [
             24.808130821386126,
@@ -6442,14 +6442,14 @@
               69.49640428853027,
               51.456490867589686
             ],
-            "policy_cpu_s": 0.17923395800000358,
-            "max_hook_cpu_s": 0.00010862499999997333,
+            "policy_cpu_s": 0.17594839100000026,
+            "max_hook_cpu_s": 6.174999999997155e-05,
             "target_concurrency_calls": 1106,
             "choose_victim_calls": 8697,
             "events": 160463,
-            "wall_s": 1.979677583090961,
+            "wall_s": 2.039740666979924,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 25856,
@@ -6490,7 +6490,7 @@
             }
           }
         },
-        "853930de596229909f059f0f5419cd5d4e09dbac518489c26fc1aa7a7e594522": {
+        "41fb0aab5f68d33ed51f489f141629ddbdab1dac8101697e404b3c28ac4be77d": {
           "trace_id": "dev-W4-3",
           "flows": [
             27.54544756938897,
@@ -6529,14 +6529,14 @@
               50.43760279021588,
               41.79251543863498
             ],
-            "policy_cpu_s": 0.13688884399998608,
-            "max_hook_cpu_s": 8.820800000003404e-05,
+            "policy_cpu_s": 0.13788401200000705,
+            "max_hook_cpu_s": 8.195900000002032e-05,
             "target_concurrency_calls": 1802,
             "choose_victim_calls": 7675,
             "events": 154013,
-            "wall_s": 1.7872054160106927,
+            "wall_s": 1.727760458132252,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 25088,
@@ -6577,7 +6577,7 @@
             }
           }
         },
-        "fec47c3b5ac759a27d055bee5f964940dd3d3e59f65280663f8da5f37c5c4936": {
+        "837de1eaeca73c7fc402f1df855d9f6584aa32617d1b516ddd93b96848c27c67": {
           "trace_id": "dev-W5-0",
           "flows": [
             209.6878528256243,
@@ -6616,14 +6616,14 @@
               209.6878528256243,
               222.33156211632613
             ],
-            "policy_cpu_s": 0.023659538999999702,
-            "max_hook_cpu_s": 5.816699999999786e-05,
+            "policy_cpu_s": 0.02322090500000068,
+            "max_hook_cpu_s": 8.333399999999047e-05,
             "target_concurrency_calls": 16,
             "choose_victim_calls": 715,
             "events": 12223,
-            "wall_s": 2.2342316249851137,
+            "wall_s": 2.2648608749732375,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 32768,
@@ -6664,7 +6664,7 @@
             }
           }
         },
-        "d3b24253287b69cc8be487255ed405c76975f6af32b90d8ad94a67622430f0a9": {
+        "8b24e5e0ff8e6cd66e63b3c08ec1eddec5b95c12c486469931b964273ea2dc82": {
           "trace_id": "dev-W5-1",
           "flows": [
             19.93351376051578,
@@ -6703,14 +6703,14 @@
               237.2454556353849,
               112.34250357835951
             ],
-            "policy_cpu_s": 0.057494512999999164,
-            "max_hook_cpu_s": 9.308299999999381e-05,
+            "policy_cpu_s": 0.055993002999997155,
+            "max_hook_cpu_s": 8.437499999999765e-05,
             "target_concurrency_calls": 883,
             "choose_victim_calls": 1525,
             "events": 17773,
-            "wall_s": 2.2473772498779,
+            "wall_s": 2.21894787508063,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 51712,
@@ -6751,7 +6751,7 @@
             }
           }
         },
-        "38a45e3dabc070a26fcda97114ea49b3a3d34086429625cb261f939d3f8c8559": {
+        "ccf7e065f800e007c8cf2cc77187914b8e646d8d3680baf1473eb7c8066b1d83": {
           "trace_id": "dev-W5-2",
           "flows": [
             24.045940247424216,
@@ -6790,14 +6790,14 @@
               96.28549012908177,
               229.8847991998777
             ],
-            "policy_cpu_s": 0.12351082100000377,
-            "max_hook_cpu_s": 0.00014095899999999606,
+            "policy_cpu_s": 0.12403417499999303,
+            "max_hook_cpu_s": 0.00013933399999999097,
             "target_concurrency_calls": 1098,
             "choose_victim_calls": 2602,
             "events": 20986,
-            "wall_s": 2.325385417090729,
+            "wall_s": 2.3423005829099566,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 51712,
@@ -6838,7 +6838,7 @@
             }
           }
         },
-        "a340ebc209fe641920011a772e68d2a6b8ae3fbebc382dbe20ad50c4d7949429": {
+        "f71b772af2ad5cf27ff5f8429bc28d51b5d5ecfb11b4ba19702bafe5af1d6852": {
           "trace_id": "dev-W5-3",
           "flows": [
             25.145194622448514,
@@ -6877,14 +6877,14 @@
               92.57174457350087,
               187.4692414883209
             ],
-            "policy_cpu_s": 0.06139044800000043,
-            "max_hook_cpu_s": 8.095799999999209e-05,
+            "policy_cpu_s": 0.06162528899999761,
+            "max_hook_cpu_s": 8.412500000001821e-05,
             "target_concurrency_calls": 2489,
             "choose_victim_calls": 1843,
             "events": 19213,
-            "wall_s": 1.8634989589918405,
+            "wall_s": 1.8896730421110988,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 37888,
@@ -6925,7 +6925,7 @@
             }
           }
         },
-        "70e71704cf3c68e6f57636ae8b831ef5a833d77a1de6adf00635667b7d217a45": {
+        "195d77fe4865a5e654e702c8619f71c6358939b6602113df174f308917f009f2": {
           "trace_id": "val-D-0",
           "flows": [
             8.678406976577742,
@@ -6964,14 +6964,14 @@
               46.84087810484091,
               41.36059083966227
             ],
-            "policy_cpu_s": 0.7355646229999698,
-            "max_hook_cpu_s": 0.00010566700000014251,
+            "policy_cpu_s": 0.7406302030000147,
+            "max_hook_cpu_s": 0.0001158749999998765,
             "target_concurrency_calls": 1313,
             "choose_victim_calls": 28170,
             "events": 120168,
-            "wall_s": 2.9755935419816524,
+            "wall_s": 2.7988498338963836,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 11776,
@@ -7012,7 +7012,7 @@
             }
           }
         },
-        "56cf3e8ff3112651275fe6f1a84fb3736973843923fa9b4a85cb3234121b02ad": {
+        "f62a05b9c4b94779a14d0ae1224e250c4db7889855f58d357cab029f69360298": {
           "trace_id": "val-D-1",
           "flows": [
             11.814723644019248,
@@ -7051,14 +7051,14 @@
               42.2685398662608,
               37.61257779992355
             ],
-            "policy_cpu_s": 0.1247308799999952,
-            "max_hook_cpu_s": 7.699999999999374e-05,
+            "policy_cpu_s": 0.1235328739999945,
+            "max_hook_cpu_s": 7.133400000003398e-05,
             "target_concurrency_calls": 870,
             "choose_victim_calls": 8580,
             "events": 43760,
-            "wall_s": 1.444964125053957,
+            "wall_s": 1.4999362081289291,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 19968,
@@ -7099,7 +7099,7 @@
             }
           }
         },
-        "a9485c686c26d0b49cf5d4475e466be9420bc7c547f781f5330f473861a6d4b4": {
+        "0d20204553a6e1d355643f74107e010ce22f70caae6cd079eb8e1f14dec01751": {
           "trace_id": "val-M1-0",
           "flows": [
             15.638668107296898,
@@ -7138,14 +7138,14 @@
               32.45834002992751,
               23.241557244703092
             ],
-            "policy_cpu_s": 0.33933844399999996,
-            "max_hook_cpu_s": 0.0001868340000000246,
+            "policy_cpu_s": 0.33757519499998395,
+            "max_hook_cpu_s": 0.00020529099999999634,
             "target_concurrency_calls": 48,
             "choose_victim_calls": 6221,
             "events": 59449,
-            "wall_s": 2.109394249971956,
+            "wall_s": 2.062412166967988,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 57600,
@@ -7186,7 +7186,7 @@
             }
           }
         },
-        "184dbe20d9783321ae7d2dc3868eb1ad699fb7a33faedc72a99699cf0b4cd5dd": {
+        "1d7398fbc6368dd6fec7015d9d3dfb583b70aed9b3de8931de95758ba59f9496": {
           "trace_id": "val-M1-1",
           "flows": [
             8.29016878115477,
@@ -7225,14 +7225,14 @@
               22.43957800444315,
               18.87144185736696
             ],
-            "policy_cpu_s": 0.08500756399999995,
-            "max_hook_cpu_s": 0.00018137499999998363,
+            "policy_cpu_s": 0.0841227449999974,
+            "max_hook_cpu_s": 0.0001311250000000097,
             "target_concurrency_calls": 29,
             "choose_victim_calls": 1592,
             "events": 40558,
-            "wall_s": 0.8188196660485119,
+            "wall_s": 0.8207391249015927,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 59904,
@@ -7273,7 +7273,7 @@
             }
           }
         },
-        "0c6957a4b396aaeafda99ec9f79bd210bd641beb64738e8cc82935db0bf98698": {
+        "a4afb8d2d9aaad0fef2a5fe514ec21ce95ccb9f1fd2bc4d84134df03a6e9d843": {
           "trace_id": "val-M2-0",
           "flows": [
             33.85687988283562,
@@ -7312,14 +7312,14 @@
               224.74934944126835,
               113.83952454564897
             ],
-            "policy_cpu_s": 0.12894342899999772,
-            "max_hook_cpu_s": 0.0001617499999999883,
+            "policy_cpu_s": 0.12229254500000279,
+            "max_hook_cpu_s": 0.00014058299999999968,
             "target_concurrency_calls": 36,
             "choose_victim_calls": 2224,
             "events": 50816,
-            "wall_s": 2.1974241249263287,
+            "wall_s": 2.18521700007841,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 49152,
@@ -7360,7 +7360,7 @@
             }
           }
         },
-        "16c734bf2de38a6229c082621dd9f881f237acd2b15f2620743994cc038bb338": {
+        "319a56f8f36d23d204288cede8ab9bcf16d758e14bc2e6bac224e2337d0274e0": {
           "trace_id": "val-M2-1",
           "flows": [
             6.365157296829276,
@@ -7399,14 +7399,14 @@
               231.33681348089718,
               47.94487435752085
             ],
-            "policy_cpu_s": 0.5943482910000625,
-            "max_hook_cpu_s": 0.000283416999999897,
+            "policy_cpu_s": 0.5994254300000045,
+            "max_hook_cpu_s": 0.00021183299999982808,
             "target_concurrency_calls": 55,
             "choose_victim_calls": 14610,
             "events": 78912,
-            "wall_s": 5.126675582956523,
+            "wall_s": 5.248472083127126,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 51200,
@@ -7447,7 +7447,7 @@
             }
           }
         },
-        "f80d42ae87d93975f0f5d284e877f24a282e593e4a8f9b62a60b900b61f47549": {
+        "df32a52bb2c7374b7a1fce76b7653fb8695259665415c34ca36a6f37887bdf11": {
           "trace_id": "val-W1-0",
           "flows": [
             33.052496266452806,
@@ -7486,14 +7486,14 @@
               33.581418680051975,
               32.07437222390047
             ],
-            "policy_cpu_s": 0.15623594399998103,
-            "max_hook_cpu_s": 0.00012533300000000525,
+            "policy_cpu_s": 0.15847714300001498,
+            "max_hook_cpu_s": 9.991599999997769e-05,
             "target_concurrency_calls": 389,
             "choose_victim_calls": 4416,
             "events": 32296,
-            "wall_s": 1.6922371669206768,
+            "wall_s": 1.6913094171322882,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 65536,
@@ -7534,7 +7534,7 @@
             }
           }
         },
-        "d86ed9c29efe11d34b8fe040a414f3ecd7db7b70df21b82975025329ffef1b8d": {
+        "91e78309c4c99bac9012c18511b0a5e8ab44cc49fc481d81b6838e313f2a7182": {
           "trace_id": "val-W1-1",
           "flows": [
             7.657422143690457,
@@ -7573,14 +7573,14 @@
               42.69964661472783,
               38.836817914733686
             ],
-            "policy_cpu_s": 0.06680340100000325,
-            "max_hook_cpu_s": 0.0001783750000000084,
+            "policy_cpu_s": 0.06710225300000124,
+            "max_hook_cpu_s": 0.0001794579999999657,
             "target_concurrency_calls": 6,
             "choose_victim_calls": 941,
             "events": 30333,
-            "wall_s": 0.978627874981612,
+            "wall_s": 0.9979588750284165,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 83456,
@@ -7621,7 +7621,7 @@
             }
           }
         },
-        "a4021eb63aa0eeaf5fd634be6dee01688d28d0b6b9d203e877eb97c96fc9b6a1": {
+        "46ebc9274613841374a0d385eb17c388102028c0109d57634c40a404c0a1a431": {
           "trace_id": "val-W2-0",
           "flows": [
             26.7790484539791,
@@ -7660,14 +7660,14 @@
               156.93764137116835,
               128.54981405539903
             ],
-            "policy_cpu_s": 2.340905133999901,
-            "max_hook_cpu_s": 0.00022783299999984408,
+            "policy_cpu_s": 2.3727051969999593,
+            "max_hook_cpu_s": 0.0004396250000002766,
             "target_concurrency_calls": 2877,
             "choose_victim_calls": 53442,
             "events": 499870,
-            "wall_s": 10.306626917095855,
+            "wall_s": 10.693481125170365,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 47104,
@@ -7708,7 +7708,7 @@
             }
           }
         },
-        "fbcc275c16c9d44f93f773fb3aeb90d23cabed07de97461cc72f5f71544def4b": {
+        "9256c4c6f4c90525b7fad609d6e9fa7aedf5d1d4a13552cf8e5dac0ea3dc49a1": {
           "trace_id": "val-W2-1",
           "flows": [
             80.84834234701104,
@@ -7747,14 +7747,14 @@
               166.95179271313162,
               154.06279645340504
             ],
-            "policy_cpu_s": 1.846814901999943,
-            "max_hook_cpu_s": 0.00023483299999993434,
+            "policy_cpu_s": 1.8722132720000715,
+            "max_hook_cpu_s": 0.00019558299999999917,
             "target_concurrency_calls": 1086,
             "choose_victim_calls": 52848,
             "events": 542482,
-            "wall_s": 10.082667500013486,
+            "wall_s": 10.446690457873046,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 44032,
@@ -7795,7 +7795,7 @@
             }
           }
         },
-        "ac1ddafd6c1222cd4e2d7d193a2bae4425cedf8b50d6ac8a9e7e97e8cd26f4a6": {
+        "cd97ac7e28be3460b1d9f6bb5bb5a99dd4d44c1ab961624149379e1db425490d": {
           "trace_id": "val-W3-0",
           "flows": [
             5.324962490690878,
@@ -7834,14 +7834,14 @@
               12.789403124984911,
               8.494796686246419
             ],
-            "policy_cpu_s": 0.049106160999999954,
-            "max_hook_cpu_s": 9.949999999997461e-05,
+            "policy_cpu_s": 0.05090664599999958,
+            "max_hook_cpu_s": 8.795899999999857e-05,
             "target_concurrency_calls": 55,
             "choose_victim_calls": 758,
             "events": 85884,
-            "wall_s": 0.5126318340189755,
+            "wall_s": 0.5216626669280231,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 49152,
@@ -7882,7 +7882,7 @@
             }
           }
         },
-        "9012b6f5b48f3fb84d7c978f24b04b1b8b07bb405d781946eaf6a805b57abce5": {
+        "b1375f9af02818a752f179734f19005e48f7d232441370f27e04994b6612b904": {
           "trace_id": "val-W3-1",
           "flows": [
             13.236706706247528,
@@ -7921,14 +7921,14 @@
               23.72976363831586,
               12.355448686022388
             ],
-            "policy_cpu_s": 0.2570621780000062,
-            "max_hook_cpu_s": 0.0001235419999999765,
+            "policy_cpu_s": 0.26297641600000965,
+            "max_hook_cpu_s": 0.00014570899999999387,
             "target_concurrency_calls": 63,
             "choose_victim_calls": 5768,
             "events": 103364,
-            "wall_s": 2.067734541138634,
+            "wall_s": 2.0779488750267774,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 51200,
@@ -7969,7 +7969,7 @@
             }
           }
         },
-        "de19eda0d490f2d090b8d6b8de4558d444f5864427ecfd79f2f64c993ad01a6b": {
+        "4f3045513bc3ba8d8088d365e167cea3c021ea3e1a86fc9481c7ac5e7719ad2a": {
           "trace_id": "val-W4-0",
           "flows": [
             19.31674576803064,
@@ -8008,14 +8008,14 @@
               57.15492839735169,
               49.358261151828025
             ],
-            "policy_cpu_s": 0.10285898499999625,
-            "max_hook_cpu_s": 8.40000000000285e-05,
+            "policy_cpu_s": 0.10493461099999192,
+            "max_hook_cpu_s": 7.845800000000347e-05,
             "target_concurrency_calls": 163,
             "choose_victim_calls": 4132,
             "events": 120594,
-            "wall_s": 1.394914458040148,
+            "wall_s": 1.4309132499620318,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 23552,
@@ -8056,7 +8056,7 @@
             }
           }
         },
-        "41badd55a80e2d7776928875dcfdf643f096fb47e79ddef68b33ea37d5694971": {
+        "cc39ccf4bf816f235aa1f37ae9ff49938ee1deac099e1efe7dbd668b7d136a46": {
           "trace_id": "val-W4-1",
           "flows": [
             29.81666430972435,
@@ -8095,14 +8095,14 @@
               46.72963746837265,
               44.82395548822623
             ],
-            "policy_cpu_s": 0.15241872199999573,
-            "max_hook_cpu_s": 0.00010704200000000164,
+            "policy_cpu_s": 0.15343181800000036,
+            "max_hook_cpu_s": 9.691600000000244e-05,
             "target_concurrency_calls": 1901,
             "choose_victim_calls": 5739,
             "events": 162531,
-            "wall_s": 1.7523057081270963,
+            "wall_s": 1.8023401671089232,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 28416,
@@ -8143,7 +8143,7 @@
             }
           }
         },
-        "032e972617b02dbe2c984a114a86da1a9571afa98bca8160d94b77fa894f1d8a": {
+        "c45297fa6b7492cc53d014f33d076659c77d8a68dd0df7e41f3095e29e66cfe0": {
           "trace_id": "val-W5-0",
           "flows": [
             30.631461779988854,
@@ -8182,14 +8182,14 @@
               89.72733716475497,
               221.460421926779
             ],
-            "policy_cpu_s": 0.03975250699999992,
-            "max_hook_cpu_s": 0.00010337499999996114,
+            "policy_cpu_s": 0.03962923200000046,
+            "max_hook_cpu_s": 0.00011729100000001935,
             "target_concurrency_calls": 1254,
             "choose_victim_calls": 1310,
             "events": 13910,
-            "wall_s": 1.917511709034443,
+            "wall_s": 1.9519913748372346,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 35328,
@@ -8230,7 +8230,7 @@
             }
           }
         },
-        "a254bfac89e4ddf47dfcbbf6bb0c8e978d65a6db094e409b433ef7c7568b8374": {
+        "5b9a8e12c823fe1d5ad72b95d741aaa0674b3b1ef1617196c4774ffc2a96706f": {
           "trace_id": "val-W5-1",
           "flows": [
             19.435974492436237,
@@ -8269,14 +8269,14 @@
               195.50874448649162,
               104.73366905722331
             ],
-            "policy_cpu_s": 0.06920110900000254,
-            "max_hook_cpu_s": 7.47500000000123e-05,
+            "policy_cpu_s": 0.06968574099999816,
+            "max_hook_cpu_s": 0.0001375840000000239,
             "target_concurrency_calls": 943,
             "choose_victim_calls": 2124,
             "events": 15334,
-            "wall_s": 1.9252370421309024,
+            "wall_s": 1.9836237500421703,
             "evaluator": "vidur-v1",
-            "sim_fingerprint": "vidur-05b73b57962caa8c9cabcd72",
+            "sim_fingerprint": "vidur-5795bc84c4f6fe63571fed60",
             "replicas": 2,
             "block_size": 16,
             "kv_tokens_per_replica": 39424,

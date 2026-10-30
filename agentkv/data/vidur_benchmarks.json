@@ -1,0 +1,71 @@
+{
+  "replicas": 2,
+  "sim_fingerprint": "vidur-8fcd0b87f751ecbde6ea8ec0",
+  "reference_sha256": "1a1b9071880b74516faf358274e0f504ef75b92c1fd0f3d64dffcd1427c60939",
+  "rows": [
+    {
+      "name": "Reference",
+      "source": "policies/reference.py",
+      "public_dev": {
+        "S": 1.0
+      },
+      "public_val": {
+        "S": 1.0
+      }
+    },
+    {
+      "name": "FIFO, cap 1",
+      "public_dev": {
+        "S": 0.19700033879372988
+      },
+      "public_val": {
+        "S": 0.2050557712663008
+      }
+    },
+    {
+      "name": "FIFO, cap 4",
+      "public_dev": {
+        "S": 0.8509963045702518
+      },
+      "public_val": {
+        "S": 0.8896631381271639
+      }
+    },
+    {
+      "name": "FIFO, cap 8",
+      "public_dev": {
+        "S": 1.013889045934849
+      },
+      "public_val": {
+        "S": 1.0413254569912922
+      }
+    },
+    {
+      "name": "LRU, cap 4",
+      "public_dev": {
+        "S": 0.8412569582533631
+      },
+      "public_val": {
+        "S": 0.8827198962970775
+      }
+    },
+    {
+      "name": "LRU, cap 8",
+      "public_dev": {
+        "S": 1.0
+      },
+      "public_val": {
+        "S": 1.0
+      }
+    },
+    {
+      "name": "Cache-aware, cap 8",
+      "public_dev": {
+        "S": 1.0712347577687011
+      },
+      "public_val": {
+        "S": 1.0915712432441893
+      }
+    }
+  ]
+}

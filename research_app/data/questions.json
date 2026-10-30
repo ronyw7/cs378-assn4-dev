@@ -1,0 +1,2510 @@
+{
+ "schema": "research-questions/1",
+ "note": "Staff-written questions over data/corpus. Public questions (Part 1) come only from '-a' groups; D-family traces for other splits draw from the remaining questions by whole group.",
+ "questions": [
+  {
+   "id": "consensus-a-01",
+   "topic": "consensus",
+   "group": "consensus-a",
+   "question": "How does Raft's leader election differ from the way Paxos chooses a proposer?",
+   "public": true,
+   "facets": [
+    {
+     "title": "Raft leader election",
+     "query": "raft leader election heartbeat timeout candidate"
+    },
+    {
+     "title": "Paxos proposers and ballots",
+     "query": "paxos proposer ballot number quorum"
+    },
+    {
+     "title": "Understandability trade-offs",
+     "query": "raft understandable alternative paxos"
+    }
+   ]
+  },
+  {
+   "id": "consensus-a-02",
+   "topic": "consensus",
+   "group": "consensus-a",
+   "question": "Why can two-phase commit block, and how does three-phase commit try to avoid it?",
+   "public": true,
+   "facets": [
+    {
+     "title": "Blocking in two-phase commit",
+     "query": "two-phase commit coordinator failure blocking"
+    },
+    {
+     "title": "Three-phase commit design",
+     "query": "three-phase commit pre-commit non-blocking"
+    },
+    {
+     "title": "Limits of three-phase commit",
+     "query": "three-phase commit network partition"
+    }
+   ]
+  },
+  {
+   "id": "consensus-a-03",
+   "topic": "consensus",
+   "group": "consensus-a",
+   "question": "What does it take for a system to tolerate Byzantine faults, and how many replicas are needed?",
+   "public": true,
+   "facets": [
+    {
+     "title": "Byzantine fault definition",
+     "query": "byzantine fault generals problem"
+    },
+    {
+     "title": "Replica requirements",
+     "query": "byzantine fault tolerance replicas 3f+1"
+    },
+    {
+     "title": "Practical BFT systems",
+     "query": "practical byzantine fault tolerance"
+    }
+   ]
+  },
+  {
+   "id": "consensus-a-04",
+   "topic": "consensus",
+   "group": "consensus-a",
+   "question": "How does state machine replication keep replicas consistent?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Deterministic state machines",
+     "query": "state machine replication deterministic"
+    },
+    {
+     "title": "Ordering inputs",
+     "query": "state machine replication order consensus inputs"
+    },
+    {
+     "title": "Handling failures",
+     "query": "state machine replication failure"
+    }
+   ]
+  },
+  {
+   "id": "consensus-a-05",
+   "topic": "consensus",
+   "group": "consensus-a",
+   "question": "What role does Apache ZooKeeper play in distributed systems, and what guarantees does it give?",
+   "public": false,
+   "facets": [
+    {
+     "title": "ZooKeeper's purpose",
+     "query": "zookeeper coordination service configuration"
+    },
+    {
+     "title": "Consistency guarantees",
+     "query": "zookeeper sequential consistency atomic"
+    },
+    {
+     "title": "Use in other systems",
+     "query": "zookeeper hadoop kafka"
+    }
+   ]
+  },
+  {
+   "id": "consensus-a-06",
+   "topic": "consensus",
+   "group": "consensus-a",
+   "question": "What is the FLP impossibility result, and how do practical consensus protocols work around it?",
+   "public": false,
+   "facets": [
+    {
+     "title": "FLP impossibility",
+     "query": "consensus impossibility asynchronous FLP"
+    },
+    {
+     "title": "Randomization and timing assumptions",
+     "query": "consensus randomized partial synchrony"
+    },
+    {
+     "title": "Practical protocols",
+     "query": "paxos raft consensus"
+    }
+   ]
+  },
+  {
+   "id": "consensus-a-07",
+   "topic": "consensus",
+   "group": "consensus-a",
+   "question": "How do Raft leaders and followers keep their logs consistent?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Log replication",
+     "query": "raft log replication entries"
+    },
+    {
+     "title": "Commitment and safety",
+     "query": "raft committed entries safety"
+    },
+    {
+     "title": "Membership changes",
+     "query": "raft cluster membership change"
+    }
+   ]
+  },
+  {
+   "id": "consensus-a-08",
+   "topic": "consensus",
+   "group": "consensus-a",
+   "question": "How does Multi-Paxos reduce the cost of agreeing on many values?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Multi-Paxos optimization",
+     "query": "multi-paxos leader phase"
+    },
+    {
+     "title": "Message delays",
+     "query": "paxos message delays round"
+    },
+    {
+     "title": "Leader failure",
+     "query": "paxos leader failure"
+    }
+   ]
+  },
+  {
+   "id": "consensus-a-09",
+   "topic": "consensus",
+   "group": "consensus-a",
+   "question": "When should a system use a consensus protocol rather than an atomic commitment protocol?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Atomic commitment",
+     "query": "two-phase commit atomic commitment participants"
+    },
+    {
+     "title": "The consensus problem",
+     "query": "consensus agreement validity termination"
+    },
+    {
+     "title": "Fault assumptions",
+     "query": "crash failure byzantine consensus"
+    }
+   ]
+  },
+  {
+   "id": "consensus-a-10",
+   "topic": "consensus",
+   "group": "consensus-a",
+   "question": "How do quorums ensure safety in replicated protocols?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Majority quorums",
+     "query": "quorum majority paxos acceptors"
+    },
+    {
+     "title": "Quorum intersection",
+     "query": "quorum intersection"
+    },
+    {
+     "title": "Quorums in ZooKeeper",
+     "query": "zookeeper ensemble quorum"
+    }
+   ]
+  },
+  {
+   "id": "consensus-b-01",
+   "topic": "consensus",
+   "group": "consensus-b",
+   "question": "What problem does Paxos solve, and why is it considered hard to understand?",
+   "public": false,
+   "facets": [
+    {
+     "title": "The problem Paxos solves",
+     "query": "paxos consensus unreliable processors"
+    },
+    {
+     "title": "Roles in Paxos",
+     "query": "paxos proposer acceptor learner"
+    },
+    {
+     "title": "Why it is difficult",
+     "query": "paxos difficult understand"
+    }
+   ]
+  },
+  {
+   "id": "consensus-b-02",
+   "topic": "consensus",
+   "group": "consensus-b",
+   "question": "How does Raft handle a leader crash during log replication?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Leader crash",
+     "query": "raft leader crash election timeout"
+    },
+    {
+     "title": "Repairing logs",
+     "query": "raft follower log inconsistent overwrite"
+    },
+    {
+     "title": "Election restriction",
+     "query": "raft election vote log"
+    }
+   ]
+  },
+  {
+   "id": "consensus-b-03",
+   "topic": "consensus",
+   "group": "consensus-b",
+   "question": "What are the phases of two-phase commit, and what messages are exchanged?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Commit-request phase",
+     "query": "two-phase commit voting phase prepare"
+    },
+    {
+     "title": "Commit phase",
+     "query": "two-phase commit completion phase acknowledgement"
+    },
+    {
+     "title": "Logging",
+     "query": "two-phase commit log coordinator"
+    }
+   ]
+  },
+  {
+   "id": "consensus-b-04",
+   "topic": "consensus",
+   "group": "consensus-b",
+   "question": "How do Byzantine faults differ from crash faults in their impact on protocol design?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Crash faults",
+     "query": "crash failure fail-stop"
+    },
+    {
+     "title": "Byzantine behavior",
+     "query": "byzantine arbitrary faults"
+    },
+    {
+     "title": "Cost of tolerance",
+     "query": "byzantine fault tolerance cost messages"
+    }
+   ]
+  },
+  {
+   "id": "consensus-b-05",
+   "topic": "consensus",
+   "group": "consensus-b",
+   "question": "Which real systems use ZooKeeper or Paxos-style replication for coordination?",
+   "public": false,
+   "facets": [
+    {
+     "title": "ZooKeeper users",
+     "query": "zookeeper used companies"
+    },
+    {
+     "title": "Paxos deployments",
+     "query": "paxos chubby google spanner"
+    },
+    {
+     "title": "Raft implementations",
+     "query": "raft implementations etcd"
+    }
+   ]
+  },
+  {
+   "id": "consensus-b-06",
+   "topic": "consensus",
+   "group": "consensus-b",
+   "question": "How does Raft's strong leader simplify consensus?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Strong leader",
+     "query": "raft leader log"
+    },
+    {
+     "title": "Terms",
+     "query": "raft terms election"
+    }
+   ]
+  },
+  {
+   "id": "consensus-b-07",
+   "topic": "consensus",
+   "group": "consensus-b",
+   "question": "What role do failure detectors and timeouts play in consensus?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Timeouts in Raft",
+     "query": "raft heartbeat timeout election"
+    },
+    {
+     "title": "Failure detection",
+     "query": "failure detector consensus asynchronous"
+    },
+    {
+     "title": "Liveness",
+     "query": "consensus liveness progress"
+    }
+   ]
+  },
+  {
+   "id": "consensus-b-08",
+   "topic": "consensus",
+   "group": "consensus-b",
+   "question": "How do replicated state machines bring lagging replicas up to date?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Checkpoints",
+     "query": "state machine replication checkpoint"
+    },
+    {
+     "title": "Log catch-up",
+     "query": "raft log follower snapshot"
+    },
+    {
+     "title": "Reconfiguration",
+     "query": "state machine replication reconfiguration"
+    }
+   ]
+  },
+  {
+   "id": "consensus-b-09",
+   "topic": "consensus",
+   "group": "consensus-b",
+   "question": "What are the trade-offs between two-phase and three-phase commit?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Extra message round",
+     "query": "three-phase commit round latency"
+    },
+    {
+     "title": "Fault tolerance",
+     "query": "three-phase commit coordinator failure recovery"
+    },
+    {
+     "title": "Use in practice",
+     "query": "two-phase commit databases transactions"
+    }
+   ]
+  },
+  {
+   "id": "consensus-b-10",
+   "topic": "consensus",
+   "group": "consensus-b",
+   "question": "How do consensus protocols define agreement, validity, and termination?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Agreement",
+     "query": "consensus agreement property"
+    },
+    {
+     "title": "Validity",
+     "query": "consensus validity integrity"
+    },
+    {
+     "title": "Termination",
+     "query": "consensus termination"
+    }
+   ]
+  },
+  {
+   "id": "storage-a-01",
+   "topic": "storage",
+   "group": "storage-a",
+   "question": "Why do LSM trees favor write-heavy workloads compared with B-trees?",
+   "public": true,
+   "facets": [
+    {
+     "title": "LSM write path",
+     "query": "log-structured merge-tree memtable writes"
+    },
+    {
+     "title": "B-tree updates",
+     "query": "b-tree insertion node split disk"
+    },
+    {
+     "title": "Read cost",
+     "query": "lsm tree read lookup levels"
+    }
+   ]
+  },
+  {
+   "id": "storage-a-02",
+   "topic": "storage",
+   "group": "storage-a",
+   "question": "How do Bloom filters speed up reads in LSM-based key-value stores?",
+   "public": true,
+   "facets": [
+    {
+     "title": "Bloom filter basics",
+     "query": "bloom filter false positive hash"
+    },
+    {
+     "title": "Use in storage engines",
+     "query": "bloom filter leveldb rocksdb"
+    },
+    {
+     "title": "Sizing trade-offs",
+     "query": "bloom filter bits element false positive rate"
+    }
+   ]
+  },
+  {
+   "id": "storage-a-03",
+   "topic": "storage",
+   "group": "storage-a",
+   "question": "What is write-ahead logging, and how does it provide durability?",
+   "public": true,
+   "facets": [
+    {
+     "title": "WAL definition",
+     "query": "write-ahead logging durability atomicity"
+    },
+    {
+     "title": "Recovery",
+     "query": "write-ahead log redo undo recovery crash"
+    },
+    {
+     "title": "Alternatives",
+     "query": "shadow paging copy-on-write"
+    }
+   ]
+  },
+  {
+   "id": "storage-a-04",
+   "topic": "storage",
+   "group": "storage-a",
+   "question": "How does RocksDB extend the design of LevelDB?",
+   "public": false,
+   "facets": [
+    {
+     "title": "LevelDB design",
+     "query": "leveldb google key value"
+    },
+    {
+     "title": "RocksDB additions",
+     "query": "rocksdb facebook features"
+    },
+    {
+     "title": "Compaction",
+     "query": "rocksdb compaction"
+    }
+   ]
+  },
+  {
+   "id": "storage-a-05",
+   "topic": "storage",
+   "group": "storage-a",
+   "question": "How does compaction work in LSM trees, and why is it needed?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Compaction process",
+     "query": "lsm tree compaction merge"
+    },
+    {
+     "title": "Compaction strategies",
+     "query": "leveled compaction tiered"
+    },
+    {
+     "title": "Write amplification",
+     "query": "write amplification compaction"
+    }
+   ]
+  },
+  {
+   "id": "storage-a-06",
+   "topic": "storage",
+   "group": "storage-a",
+   "question": "What is copy-on-write, and where is it used in storage systems?",
+   "public": false,
+   "facets": [
+    {
+     "title": "The idea",
+     "query": "copy-on-write shared resource modify"
+    },
+    {
+     "title": "File systems",
+     "query": "copy-on-write file system snapshots"
+    },
+    {
+     "title": "Virtual memory",
+     "query": "copy-on-write fork memory pages"
+    }
+   ]
+  },
+  {
+   "id": "storage-a-07",
+   "topic": "storage",
+   "group": "storage-a",
+   "question": "How does a log-structured file system organize data on disk?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Log structure",
+     "query": "log-structured file system sequential writes"
+    },
+    {
+     "title": "Garbage collection",
+     "query": "log-structured file system segment cleaning"
+    },
+    {
+     "title": "Crash recovery",
+     "query": "log-structured file system checkpoint recovery"
+    }
+   ]
+  },
+  {
+   "id": "storage-a-08",
+   "topic": "storage",
+   "group": "storage-a",
+   "question": "Why are B-trees well suited to disk-based storage?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Fan-out",
+     "query": "b-tree order branching block"
+    },
+    {
+     "title": "Balanced height",
+     "query": "b-tree balanced height"
+    },
+    {
+     "title": "Variants",
+     "query": "b+ tree variants"
+    }
+   ]
+  },
+  {
+   "id": "storage-a-09",
+   "topic": "storage",
+   "group": "storage-a",
+   "question": "What read, write, and space amplification trade-offs do storage engines make?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Read amplification",
+     "query": "lsm read amplification"
+    },
+    {
+     "title": "Write amplification",
+     "query": "write amplification"
+    },
+    {
+     "title": "Space amplification",
+     "query": "space amplification compaction"
+    }
+   ]
+  },
+  {
+   "id": "storage-a-10",
+   "topic": "storage",
+   "group": "storage-a",
+   "question": "How do LevelDB and RocksDB use memtables and SSTables?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Memtable",
+     "query": "memtable skiplist memory"
+    },
+    {
+     "title": "SSTable files",
+     "query": "sorted string table sstable"
+    },
+    {
+     "title": "Flushing",
+     "query": "memtable flush disk level"
+    }
+   ]
+  },
+  {
+   "id": "storage-b-01",
+   "topic": "storage",
+   "group": "storage-b",
+   "question": "How are deletes handled in an LSM tree?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Tombstones",
+     "query": "lsm tree tombstone delete"
+    },
+    {
+     "title": "Removal during compaction",
+     "query": "compaction tombstone"
+    },
+    {
+     "title": "Read impact",
+     "query": "delete markers read"
+    }
+   ]
+  },
+  {
+   "id": "storage-b-02",
+   "topic": "storage",
+   "group": "storage-b",
+   "question": "What makes the B+ tree variant popular in databases and file systems?",
+   "public": false,
+   "facets": [
+    {
+     "title": "B+ tree structure",
+     "query": "b+ tree leaf nodes"
+    },
+    {
+     "title": "Range scans",
+     "query": "b-tree range query sequential"
+    },
+    {
+     "title": "Usage",
+     "query": "b-tree databases file systems"
+    }
+   ]
+  },
+  {
+   "id": "storage-b-03",
+   "topic": "storage",
+   "group": "storage-b",
+   "question": "How does write-ahead logging interact with checkpoints?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Checkpointing",
+     "query": "write-ahead logging checkpoint"
+    },
+    {
+     "title": "Log truncation",
+     "query": "wal log truncate"
+    },
+    {
+     "title": "Performance",
+     "query": "write-ahead logging performance"
+    }
+   ]
+  },
+  {
+   "id": "storage-b-04",
+   "topic": "storage",
+   "group": "storage-b",
+   "question": "What variants of the Bloom filter support deletion or growth?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Counting Bloom filters",
+     "query": "counting bloom filter deletion"
+    },
+    {
+     "title": "Scalable variants",
+     "query": "scalable bloom filter"
+    },
+    {
+     "title": "Alternatives",
+     "query": "cuckoo filter quotient"
+    }
+   ]
+  },
+  {
+   "id": "storage-b-05",
+   "topic": "storage",
+   "group": "storage-b",
+   "question": "What workloads and deployments is RocksDB designed for?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Flash storage",
+     "query": "rocksdb flash ssd"
+    },
+    {
+     "title": "Embedded use",
+     "query": "rocksdb embedded library"
+    },
+    {
+     "title": "Users",
+     "query": "rocksdb mysql"
+    }
+   ]
+  },
+  {
+   "id": "storage-b-06",
+   "topic": "storage",
+   "group": "storage-b",
+   "question": "How does LevelDB organize its levels, and what are its limitations?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Levels",
+     "query": "leveldb levels sorted"
+    },
+    {
+     "title": "Limitations",
+     "query": "leveldb limitations process"
+    }
+   ]
+  },
+  {
+   "id": "storage-b-07",
+   "topic": "storage",
+   "group": "storage-b",
+   "question": "How do copy-on-write snapshots work?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Snapshots",
+     "query": "copy-on-write snapshot"
+    },
+    {
+     "title": "Reference counting",
+     "query": "copy-on-write reference count"
+    },
+    {
+     "title": "Costs",
+     "query": "copy-on-write fragmentation overhead"
+    }
+   ]
+  },
+  {
+   "id": "storage-b-08",
+   "topic": "storage",
+   "group": "storage-b",
+   "question": "What did the original log-structured file system research show about write performance?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Sprite LFS",
+     "query": "sprite lfs rosenblum ousterhout"
+    },
+    {
+     "title": "Write bandwidth",
+     "query": "log-structured file system write bandwidth"
+    },
+    {
+     "title": "Cleaning cost",
+     "query": "segment cleaning cost"
+    }
+   ]
+  },
+  {
+   "id": "storage-b-09",
+   "topic": "storage",
+   "group": "storage-b",
+   "question": "How are B-trees kept balanced during insertion and deletion?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Splitting",
+     "query": "b-tree split node insertion"
+    },
+    {
+     "title": "Merging",
+     "query": "b-tree deletion merge"
+    },
+    {
+     "title": "Invariants",
+     "query": "b-tree minimum keys node"
+    }
+   ]
+  },
+  {
+   "id": "storage-b-10",
+   "topic": "storage",
+   "group": "storage-b",
+   "question": "Why do modern key-value stores combine Bloom filters, write-ahead logs, and LSM trees?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Durability",
+     "query": "write-ahead log memtable durability"
+    },
+    {
+     "title": "Lookups",
+     "query": "bloom filter lookup disk"
+    },
+    {
+     "title": "Sorted runs",
+     "query": "lsm tree sorted runs merge"
+    }
+   ]
+  },
+  {
+   "id": "caching-a-01",
+   "topic": "caching",
+   "group": "caching-a",
+   "question": "How do LRU and LFU replacement policies differ, and when does each work well?",
+   "public": true,
+   "facets": [
+    {
+     "title": "LRU",
+     "query": "least recently used cache replacement"
+    },
+    {
+     "title": "LFU",
+     "query": "least frequently used cache"
+    },
+    {
+     "title": "Workload fit",
+     "query": "cache replacement hit rate workload"
+    }
+   ]
+  },
+  {
+   "id": "caching-a-02",
+   "topic": "caching",
+   "group": "caching-a",
+   "question": "What is Bélády's anomaly, and which page replacement algorithms suffer from it?",
+   "public": true,
+   "facets": [
+    {
+     "title": "The anomaly",
+     "query": "belady anomaly fifo page faults"
+    },
+    {
+     "title": "Stack algorithms",
+     "query": "stack algorithm lru anomaly"
+    },
+    {
+     "title": "Implications",
+     "query": "page replacement frames"
+    }
+   ]
+  },
+  {
+   "id": "caching-a-03",
+   "topic": "caching",
+   "group": "caching-a",
+   "question": "Why does the TLB matter for virtual memory performance?",
+   "public": true,
+   "facets": [
+    {
+     "title": "TLB role",
+     "query": "translation lookaside buffer address translation"
+    },
+    {
+     "title": "TLB misses",
+     "query": "tlb miss page walk"
+    },
+    {
+     "title": "Context switches",
+     "query": "tlb flush context switch"
+    }
+   ]
+  },
+  {
+   "id": "caching-a-04",
+   "topic": "caching",
+   "group": "caching-a",
+   "question": "How do cache coherence protocols keep multicore caches consistent?",
+   "public": false,
+   "facets": [
+    {
+     "title": "The coherence problem",
+     "query": "cache coherence shared data caches"
+    },
+    {
+     "title": "Snooping",
+     "query": "snooping protocol bus"
+    },
+    {
+     "title": "Directories",
+     "query": "directory-based coherence"
+    }
+   ]
+  },
+  {
+   "id": "caching-a-05",
+   "topic": "caching",
+   "group": "caching-a",
+   "question": "How is the memory hierarchy organized, and why?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Levels",
+     "query": "memory hierarchy registers cache main memory"
+    },
+    {
+     "title": "Locality",
+     "query": "locality of reference"
+    },
+    {
+     "title": "Latency and capacity",
+     "query": "memory hierarchy latency capacity"
+    }
+   ]
+  },
+  {
+   "id": "caching-a-06",
+   "topic": "caching",
+   "group": "caching-a",
+   "question": "How does the operating system page cache improve file I/O?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Page cache",
+     "query": "page cache file disk memory"
+    },
+    {
+     "title": "Write-back",
+     "query": "page cache dirty pages"
+    },
+    {
+     "title": "Memory pressure",
+     "query": "page cache free memory"
+    }
+   ]
+  },
+  {
+   "id": "caching-a-07",
+   "topic": "caching",
+   "group": "caching-a",
+   "question": "What is the optimal page replacement algorithm, and why is it impractical?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Optimal replacement",
+     "query": "optimal page replacement future"
+    },
+    {
+     "title": "Approximations",
+     "query": "lru approximation clock"
+    },
+    {
+     "title": "Use as a benchmark",
+     "query": "optimal algorithm comparison"
+    }
+   ]
+  },
+  {
+   "id": "caching-a-08",
+   "topic": "caching",
+   "group": "caching-a",
+   "question": "How are CPU caches organized into sets and ways?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Associativity",
+     "query": "cpu cache associativity set direct mapped"
+    },
+    {
+     "title": "Cache lines",
+     "query": "cache line block size tag"
+    },
+    {
+     "title": "Misses",
+     "query": "cache miss"
+    }
+   ]
+  },
+  {
+   "id": "caching-a-09",
+   "topic": "caching",
+   "group": "caching-a",
+   "question": "How does the CLOCK algorithm approximate LRU?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Clock algorithm",
+     "query": "clock page replacement reference bit"
+    },
+    {
+     "title": "Second chance",
+     "query": "second chance fifo"
+    },
+    {
+     "title": "Cost of LRU",
+     "query": "lru implementation cost"
+    }
+   ]
+  },
+  {
+   "id": "caching-a-10",
+   "topic": "caching",
+   "group": "caching-a",
+   "question": "Which replacement policies improve on LRU for scan-heavy workloads?",
+   "public": false,
+   "facets": [
+    {
+     "title": "ARC",
+     "query": "adaptive replacement cache"
+    },
+    {
+     "title": "LIRS and 2Q",
+     "query": "lirs 2q replacement"
+    },
+    {
+     "title": "Scan resistance",
+     "query": "scan resistant cache"
+    }
+   ]
+  },
+  {
+   "id": "caching-b-01",
+   "topic": "caching",
+   "group": "caching-b",
+   "question": "What write policies do CPU caches use?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Write-through",
+     "query": "write-through cache"
+    },
+    {
+     "title": "Write-back",
+     "query": "write-back cache dirty"
+    },
+    {
+     "title": "Write allocation",
+     "query": "write allocate"
+    }
+   ]
+  },
+  {
+   "id": "caching-b-02",
+   "topic": "caching",
+   "group": "caching-b",
+   "question": "How do MESI-style protocols track cache line states?",
+   "public": false,
+   "facets": [
+    {
+     "title": "MESI states",
+     "query": "mesi modified exclusive shared invalid"
+    },
+    {
+     "title": "Transitions",
+     "query": "cache coherence state"
+    },
+    {
+     "title": "Variants",
+     "query": "moesi mesif"
+    }
+   ]
+  },
+  {
+   "id": "caching-b-03",
+   "topic": "caching",
+   "group": "caching-b",
+   "question": "How do multi-level TLBs and large pages reduce translation overhead?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Multi-level TLBs",
+     "query": "tlb levels"
+    },
+    {
+     "title": "Large pages",
+     "query": "huge pages tlb"
+    },
+    {
+     "title": "Miss handling",
+     "query": "tlb miss handling hardware software"
+    }
+   ]
+  },
+  {
+   "id": "caching-b-04",
+   "topic": "caching",
+   "group": "caching-b",
+   "question": "How do random and FIFO replacement compare with LRU?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Random replacement",
+     "query": "random replacement cache"
+    },
+    {
+     "title": "FIFO",
+     "query": "first in first out replacement"
+    },
+    {
+     "title": "Trade-offs",
+     "query": "replacement policy overhead"
+    }
+   ]
+  },
+  {
+   "id": "caching-b-05",
+   "topic": "caching",
+   "group": "caching-b",
+   "question": "How does the working set model relate to page replacement?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Working set",
+     "query": "working set page replacement"
+    },
+    {
+     "title": "Thrashing",
+     "query": "thrashing page faults"
+    },
+    {
+     "title": "WSClock",
+     "query": "wsclock algorithm"
+    }
+   ]
+  },
+  {
+   "id": "caching-b-06",
+   "topic": "caching",
+   "group": "caching-b",
+   "question": "What is the difference between inclusive and exclusive cache hierarchies?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Inclusive caches",
+     "query": "inclusive cache"
+    },
+    {
+     "title": "Exclusive caches",
+     "query": "exclusive cache"
+    },
+    {
+     "title": "Multi-level caches",
+     "query": "cache levels l1 l2 l3"
+    }
+   ]
+  },
+  {
+   "id": "caching-b-07",
+   "topic": "caching",
+   "group": "caching-b",
+   "question": "How do operating systems unify the page cache and the buffer cache?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Unified cache",
+     "query": "unified page cache buffer cache"
+    },
+    {
+     "title": "Memory-mapped files",
+     "query": "memory-mapped files page cache"
+    },
+    {
+     "title": "Read-ahead",
+     "query": "page cache read"
+    }
+   ]
+  },
+  {
+   "id": "caching-b-08",
+   "topic": "caching",
+   "group": "caching-b",
+   "question": "Why does the growing processor-memory gap make caches more important?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Processor-memory gap",
+     "query": "memory processor speed gap"
+    },
+    {
+     "title": "Cache sizes",
+     "query": "cache size"
+    },
+    {
+     "title": "Prefetching",
+     "query": "cache prefetching"
+    }
+   ]
+  },
+  {
+   "id": "caching-b-09",
+   "topic": "caching",
+   "group": "caching-b",
+   "question": "What pathologies can occur in FIFO page replacement?",
+   "public": false,
+   "facets": [
+    {
+     "title": "More frames, more faults",
+     "query": "fifo frames page faults"
+    },
+    {
+     "title": "Reference strings",
+     "query": "belady anomaly reference string"
+    }
+   ]
+  },
+  {
+   "id": "caching-b-10",
+   "topic": "caching",
+   "group": "caching-b",
+   "question": "How do caches exploit temporal and spatial locality?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Temporal locality",
+     "query": "temporal locality"
+    },
+    {
+     "title": "Spatial locality",
+     "query": "spatial locality cache line"
+    },
+    {
+     "title": "Hit rate",
+     "query": "cache hit rate"
+    }
+   ]
+  },
+  {
+   "id": "networking-a-01",
+   "topic": "networking",
+   "group": "networking-a",
+   "question": "How does TCP congestion control use slow start and congestion avoidance?",
+   "public": true,
+   "facets": [
+    {
+     "title": "Slow start",
+     "query": "tcp slow start congestion window"
+    },
+    {
+     "title": "Congestion avoidance",
+     "query": "additive increase multiplicative decrease"
+    },
+    {
+     "title": "Loss recovery",
+     "query": "fast retransmit fast recovery"
+    }
+   ]
+  },
+  {
+   "id": "networking-a-02",
+   "topic": "networking",
+   "group": "networking-a",
+   "question": "What is bufferbloat, and how can it be mitigated?",
+   "public": true,
+   "facets": [
+    {
+     "title": "Cause",
+     "query": "bufferbloat large buffers latency"
+    },
+    {
+     "title": "Effects",
+     "query": "bufferbloat latency throughput"
+    },
+    {
+     "title": "Mitigation",
+     "query": "active queue management codel"
+    }
+   ]
+  },
+  {
+   "id": "networking-a-03",
+   "topic": "networking",
+   "group": "networking-a",
+   "question": "How does consistent hashing reduce data movement when servers join or leave?",
+   "public": true,
+   "facets": [
+    {
+     "title": "Hash ring",
+     "query": "consistent hashing ring"
+    },
+    {
+     "title": "Rebalancing",
+     "query": "consistent hashing keys remapped"
+    },
+    {
+     "title": "Virtual nodes",
+     "query": "consistent hashing virtual nodes"
+    }
+   ]
+  },
+  {
+   "id": "networking-a-04",
+   "topic": "networking",
+   "group": "networking-a",
+   "question": "How do content delivery networks reduce latency for users?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Edge servers",
+     "query": "content delivery network edge servers"
+    },
+    {
+     "title": "Request routing",
+     "query": "cdn request routing dns"
+    },
+    {
+     "title": "Caching content",
+     "query": "cdn caching content"
+    }
+   ]
+  },
+  {
+   "id": "networking-a-05",
+   "topic": "networking",
+   "group": "networking-a",
+   "question": "How does QUIC improve on TCP for web traffic?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Connection setup",
+     "query": "quic handshake 0-rtt"
+    },
+    {
+     "title": "Stream multiplexing",
+     "query": "quic streams head-of-line"
+    },
+    {
+     "title": "Deployment",
+     "query": "quic http/3 google"
+    }
+   ]
+  },
+  {
+   "id": "networking-a-06",
+   "topic": "networking",
+   "group": "networking-a",
+   "question": "What is head-of-line blocking, and where does it appear?",
+   "public": false,
+   "facets": [
+    {
+     "title": "In switches",
+     "query": "head-of-line blocking input buffer switch"
+    },
+    {
+     "title": "In HTTP",
+     "query": "http head-of-line blocking pipelining"
+    },
+    {
+     "title": "Remedies",
+     "query": "virtual output queues"
+    }
+   ]
+  },
+  {
+   "id": "networking-a-07",
+   "topic": "networking",
+   "group": "networking-a",
+   "question": "How does RDMA achieve low-latency networking?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Kernel bypass",
+     "query": "rdma zero-copy kernel bypass"
+    },
+    {
+     "title": "Transports",
+     "query": "rdma infiniband roce iwarp"
+    },
+    {
+     "title": "Use cases",
+     "query": "rdma data center storage"
+    }
+   ]
+  },
+  {
+   "id": "networking-a-08",
+   "topic": "networking",
+   "group": "networking-a",
+   "question": "What load balancing algorithms are used in distributed systems?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Static algorithms",
+     "query": "load balancing round robin static"
+    },
+    {
+     "title": "Dynamic algorithms",
+     "query": "dynamic load balancing"
+    },
+    {
+     "title": "Load balancer deployments",
+     "query": "load balancer hardware software"
+    }
+   ]
+  },
+  {
+   "id": "networking-a-09",
+   "topic": "networking",
+   "group": "networking-a",
+   "question": "How do TCP congestion control algorithms such as CUBIC and BBR differ?",
+   "public": false,
+   "facets": [
+    {
+     "title": "CUBIC",
+     "query": "tcp cubic"
+    },
+    {
+     "title": "BBR",
+     "query": "tcp bbr bandwidth"
+    },
+    {
+     "title": "Reno lineage",
+     "query": "tcp reno new reno"
+    }
+   ]
+  },
+  {
+   "id": "networking-a-10",
+   "topic": "networking",
+   "group": "networking-a",
+   "question": "How does consistent hashing help balance load across caches?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Distributed caches",
+     "query": "consistent hashing distributed cache"
+    },
+    {
+     "title": "Load distribution",
+     "query": "consistent hashing load"
+    },
+    {
+     "title": "Bounded loads",
+     "query": "consistent hashing bounded loads"
+    }
+   ]
+  },
+  {
+   "id": "networking-b-01",
+   "topic": "networking",
+   "group": "networking-b",
+   "question": "What role do queues and active queue management play in network latency?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Queuing delay",
+     "query": "queue delay latency"
+    },
+    {
+     "title": "Active queue management",
+     "query": "active queue management"
+    },
+    {
+     "title": "CoDel",
+     "query": "codel"
+    }
+   ]
+  },
+  {
+   "id": "networking-b-02",
+   "topic": "networking",
+   "group": "networking-b",
+   "question": "How does QUIC handle encryption and connection migration?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Encryption",
+     "query": "quic tls encryption"
+    },
+    {
+     "title": "Connection IDs",
+     "query": "quic connection migration"
+    },
+    {
+     "title": "Congestion control",
+     "query": "quic congestion control"
+    }
+   ]
+  },
+  {
+   "id": "networking-b-03",
+   "topic": "networking",
+   "group": "networking-b",
+   "question": "How do CDNs handle dynamic content and security threats?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Dynamic content",
+     "query": "cdn dynamic content"
+    },
+    {
+     "title": "Security",
+     "query": "cdn ddos"
+    },
+    {
+     "title": "Providers",
+     "query": "cdn providers akamai"
+    }
+   ]
+  },
+  {
+   "id": "networking-b-04",
+   "topic": "networking",
+   "group": "networking-b",
+   "question": "How does TCP detect congestion from loss and delay signals?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Loss signals",
+     "query": "packet loss congestion"
+    },
+    {
+     "title": "ECN",
+     "query": "explicit congestion notification"
+    },
+    {
+     "title": "Delay-based control",
+     "query": "delay-based congestion control vegas"
+    }
+   ]
+  },
+  {
+   "id": "networking-b-05",
+   "topic": "networking",
+   "group": "networking-b",
+   "question": "What hardware and software does RDMA require?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Network adapters",
+     "query": "rdma network adapter"
+    },
+    {
+     "title": "Programming interfaces",
+     "query": "rdma verbs api"
+    },
+    {
+     "title": "Limitations",
+     "query": "rdma security"
+    }
+   ]
+  },
+  {
+   "id": "networking-b-06",
+   "topic": "networking",
+   "group": "networking-b",
+   "question": "How do layer 4 and layer 7 load balancers differ?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Layer 4",
+     "query": "layer 4 load balancer"
+    },
+    {
+     "title": "Layer 7",
+     "query": "application layer load balancing http"
+    },
+    {
+     "title": "Health checks",
+     "query": "load balancer health failover"
+    }
+   ]
+  },
+  {
+   "id": "networking-b-07",
+   "topic": "networking",
+   "group": "networking-b",
+   "question": "How does head-of-line blocking affect HTTP/2 over TCP?",
+   "public": false,
+   "facets": [
+    {
+     "title": "HTTP/2 multiplexing",
+     "query": "http/2 multiplexing streams"
+    },
+    {
+     "title": "TCP-level blocking",
+     "query": "tcp packet loss head-of-line"
+    },
+    {
+     "title": "HTTP/3",
+     "query": "http/3 quic"
+    }
+   ]
+  },
+  {
+   "id": "networking-b-08",
+   "topic": "networking",
+   "group": "networking-b",
+   "question": "What fairness problems arise in TCP congestion control?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Fairness between flows",
+     "query": "tcp fairness flows"
+    },
+    {
+     "title": "RTT unfairness",
+     "query": "rtt fairness"
+    },
+    {
+     "title": "Competing algorithms",
+     "query": "competing congestion control"
+    }
+   ]
+  },
+  {
+   "id": "networking-b-09",
+   "topic": "networking",
+   "group": "networking-b",
+   "question": "How was bufferbloat identified and measured?",
+   "public": false,
+   "facets": [
+    {
+     "title": "History",
+     "query": "bufferbloat jim gettys"
+    },
+    {
+     "title": "Measurement",
+     "query": "bufferbloat tests"
+    },
+    {
+     "title": "Affected devices",
+     "query": "routers buffers"
+    }
+   ]
+  },
+  {
+   "id": "networking-b-10",
+   "topic": "networking",
+   "group": "networking-b",
+   "question": "How do content delivery networks use load balancing and hashing?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Server selection",
+     "query": "cdn load balancing server"
+    },
+    {
+     "title": "Content placement",
+     "query": "consistent hashing content"
+    },
+    {
+     "title": "Anycast",
+     "query": "anycast cdn"
+    }
+   ]
+  },
+  {
+   "id": "accelerators-a-01",
+   "topic": "accelerators",
+   "group": "accelerators-a",
+   "question": "How does a systolic array perform matrix multiplication, and why do TPUs use one?",
+   "public": true,
+   "facets": [
+    {
+     "title": "Systolic arrays",
+     "query": "systolic array data processing elements"
+    },
+    {
+     "title": "TPU matrix unit",
+     "query": "tensor processing unit matrix multiply unit"
+    },
+    {
+     "title": "Efficiency",
+     "query": "systolic array memory reuse"
+    }
+   ]
+  },
+  {
+   "id": "accelerators-a-02",
+   "topic": "accelerators",
+   "group": "accelerators-a",
+   "question": "What is the SIMT execution model, and how does it differ from SIMD?",
+   "public": true,
+   "facets": [
+    {
+     "title": "SIMT",
+     "query": "single instruction multiple threads warp"
+    },
+    {
+     "title": "Comparison with SIMD",
+     "query": "simd vector"
+    },
+    {
+     "title": "Divergence",
+     "query": "branch divergence threads"
+    }
+   ]
+  },
+  {
+   "id": "accelerators-a-03",
+   "topic": "accelerators",
+   "group": "accelerators-a",
+   "question": "Why is High Bandwidth Memory used in GPUs and accelerators?",
+   "public": false,
+   "facets": [
+    {
+     "title": "HBM design",
+     "query": "high bandwidth memory stacked dram"
+    },
+    {
+     "title": "Bandwidth",
+     "query": "hbm bandwidth bus width"
+    },
+    {
+     "title": "Adoption",
+     "query": "hbm gpu amd nvidia"
+    }
+   ]
+  },
+  {
+   "id": "accelerators-a-04",
+   "topic": "accelerators",
+   "group": "accelerators-a",
+   "question": "What does the roofline model reveal about kernel performance?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Arithmetic intensity",
+     "query": "roofline arithmetic intensity"
+    },
+    {
+     "title": "Memory-bound versus compute-bound",
+     "query": "roofline memory bound compute bound"
+    },
+    {
+     "title": "Ceilings",
+     "query": "roofline ceilings"
+    }
+   ]
+  },
+  {
+   "id": "accelerators-a-05",
+   "topic": "accelerators",
+   "group": "accelerators-a",
+   "question": "How did GPUs evolve from graphics hardware to general-purpose processors?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Graphics origins",
+     "query": "graphics processing unit history"
+    },
+    {
+     "title": "GPGPU",
+     "query": "general-purpose computing gpu"
+    },
+    {
+     "title": "Programming models",
+     "query": "cuda opencl"
+    }
+   ]
+  },
+  {
+   "id": "accelerators-a-06",
+   "topic": "accelerators",
+   "group": "accelerators-a",
+   "question": "What does CUDA provide to programmers?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Programming model",
+     "query": "cuda kernels threads blocks"
+    },
+    {
+     "title": "Memory hierarchy",
+     "query": "cuda shared memory global"
+    },
+    {
+     "title": "Ecosystem",
+     "query": "cuda libraries"
+    }
+   ]
+  },
+  {
+   "id": "accelerators-a-07",
+   "topic": "accelerators",
+   "group": "accelerators-a",
+   "question": "How do the generations of Google's TPU differ?",
+   "public": false,
+   "facets": [
+    {
+     "title": "First generation",
+     "query": "tpu first generation inference"
+    },
+    {
+     "title": "Later generations",
+     "query": "tpu v2 v3 v4 training"
+    },
+    {
+     "title": "Edge TPU",
+     "query": "edge tpu"
+    }
+   ]
+  },
+  {
+   "id": "accelerators-a-08",
+   "topic": "accelerators",
+   "group": "accelerators-a",
+   "question": "Which workloads benefit most from GPGPU computing?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Data parallelism",
+     "query": "gpgpu data parallel"
+    },
+    {
+     "title": "Applications",
+     "query": "gpgpu applications scientific"
+    },
+    {
+     "title": "Limits",
+     "query": "gpgpu limitations transfer"
+    }
+   ]
+  },
+  {
+   "id": "accelerators-a-09",
+   "topic": "accelerators",
+   "group": "accelerators-a",
+   "question": "How do GPUs hide memory latency?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Many threads",
+     "query": "gpu threads latency"
+    },
+    {
+     "title": "Memory bandwidth",
+     "query": "gpu memory bandwidth"
+    },
+    {
+     "title": "Caches",
+     "query": "gpu cache"
+    }
+   ]
+  },
+  {
+   "id": "accelerators-a-10",
+   "topic": "accelerators",
+   "group": "accelerators-a",
+   "question": "How does arithmetic intensity guide optimization on accelerators?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Definition",
+     "query": "arithmetic intensity flops bytes"
+    },
+    {
+     "title": "Optimization",
+     "query": "roofline optimization"
+    },
+    {
+     "title": "Examples",
+     "query": "roofline example"
+    }
+   ]
+  },
+  {
+   "id": "accelerators-b-01",
+   "topic": "accelerators",
+   "group": "accelerators-b",
+   "question": "What are the main components of a modern GPU?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Shader cores",
+     "query": "gpu shader cores"
+    },
+    {
+     "title": "Memory",
+     "query": "gpu memory gddr"
+    },
+    {
+     "title": "Integrated versus discrete",
+     "query": "integrated discrete gpu"
+    }
+   ]
+  },
+  {
+   "id": "accelerators-b-02",
+   "topic": "accelerators",
+   "group": "accelerators-b",
+   "question": "How does CUDA's thread hierarchy map onto GPU hardware?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Grids and blocks",
+     "query": "cuda grid block thread"
+    },
+    {
+     "title": "Warps",
+     "query": "cuda warp"
+    },
+    {
+     "title": "Streaming multiprocessors",
+     "query": "streaming multiprocessor"
+    }
+   ]
+  },
+  {
+   "id": "accelerators-b-03",
+   "topic": "accelerators",
+   "group": "accelerators-b",
+   "question": "How do HBM generations compare in bandwidth and capacity?",
+   "public": false,
+   "facets": [
+    {
+     "title": "HBM2",
+     "query": "hbm2"
+    },
+    {
+     "title": "HBM3",
+     "query": "hbm3"
+    },
+    {
+     "title": "Comparison with GDDR",
+     "query": "hbm gddr"
+    }
+   ]
+  },
+  {
+   "id": "accelerators-b-04",
+   "topic": "accelerators",
+   "group": "accelerators-b",
+   "question": "What are the limits of systolic arrays?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Flexibility",
+     "query": "systolic array limitations"
+    },
+    {
+     "title": "Applications",
+     "query": "systolic array applications"
+    },
+    {
+     "title": "History",
+     "query": "systolic array kung"
+    }
+   ]
+  },
+  {
+   "id": "accelerators-b-05",
+   "topic": "accelerators",
+   "group": "accelerators-b",
+   "question": "How did Google deploy TPUs in its data centers and cloud?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Deployment",
+     "query": "tpu google data center"
+    },
+    {
+     "title": "Cloud TPU",
+     "query": "cloud tpu"
+    },
+    {
+     "title": "Performance claims",
+     "query": "tpu performance watt"
+    }
+   ]
+  },
+  {
+   "id": "accelerators-b-06",
+   "topic": "accelerators",
+   "group": "accelerators-b",
+   "question": "How do GPUs handle control-flow divergence?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Divergence",
+     "query": "simt divergence"
+    },
+    {
+     "title": "Masking",
+     "query": "predication mask"
+    },
+    {
+     "title": "Performance cost",
+     "query": "divergence performance"
+    }
+   ]
+  },
+  {
+   "id": "accelerators-b-07",
+   "topic": "accelerators",
+   "group": "accelerators-b",
+   "question": "Which languages and APIs support GPGPU besides CUDA?",
+   "public": false,
+   "facets": [
+    {
+     "title": "OpenCL",
+     "query": "opencl"
+    },
+    {
+     "title": "Compute shaders",
+     "query": "compute shaders directx vulkan"
+    },
+    {
+     "title": "Other options",
+     "query": "hip sycl"
+    }
+   ]
+  },
+  {
+   "id": "accelerators-b-08",
+   "topic": "accelerators",
+   "group": "accelerators-b",
+   "question": "What does the roofline model assume, and where does it fall short?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Assumptions",
+     "query": "roofline model assumptions"
+    },
+    {
+     "title": "Extensions",
+     "query": "roofline cache-aware"
+    },
+    {
+     "title": "Tools",
+     "query": "roofline performance analysis tools"
+    }
+   ]
+  },
+  {
+   "id": "accelerators-b-09",
+   "topic": "accelerators",
+   "group": "accelerators-b",
+   "question": "How do memory bandwidth constraints shape accelerator design?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Bandwidth bottleneck",
+     "query": "memory bandwidth bottleneck"
+    },
+    {
+     "title": "On-chip memory",
+     "query": "on-chip memory accelerator"
+    },
+    {
+     "title": "Stacked memory",
+     "query": "stacked memory hbm"
+    }
+   ]
+  },
+  {
+   "id": "accelerators-b-10",
+   "topic": "accelerators",
+   "group": "accelerators-b",
+   "question": "How do GPUs and TPUs compare for machine learning?",
+   "public": false,
+   "facets": [
+    {
+     "title": "GPUs for training",
+     "query": "gpu deep learning"
+    },
+    {
+     "title": "TPU design",
+     "query": "tpu neural network"
+    },
+    {
+     "title": "Numeric precision",
+     "query": "bfloat16 tpu"
+    }
+   ]
+  },
+  {
+   "id": "dataparallel-a-01",
+   "topic": "dataparallel",
+   "group": "dataparallel-a",
+   "question": "How does MapReduce structure a computation and recover from failures?",
+   "public": true,
+   "facets": [
+    {
+     "title": "Map and reduce",
+     "query": "mapreduce map reduce functions"
+    },
+    {
+     "title": "Shuffle",
+     "query": "mapreduce shuffle sort"
+    },
+    {
+     "title": "Fault tolerance",
+     "query": "mapreduce worker failure"
+    }
+   ]
+  },
+  {
+   "id": "dataparallel-a-02",
+   "topic": "dataparallel",
+   "group": "dataparallel-a",
+   "question": "Why is Apache Spark faster than Hadoop MapReduce for iterative jobs?",
+   "public": false,
+   "facets": [
+    {
+     "title": "RDDs",
+     "query": "spark resilient distributed dataset"
+    },
+    {
+     "title": "In-memory processing",
+     "query": "spark in-memory iterative"
+    },
+    {
+     "title": "Hadoop comparison",
+     "query": "hadoop mapreduce disk"
+    }
+   ]
+  },
+  {
+   "id": "dataparallel-a-03",
+   "topic": "dataparallel",
+   "group": "dataparallel-a",
+   "question": "How do Amdahl's law and Gustafson's law differ in predicting speedup?",
+   "public": true,
+   "facets": [
+    {
+     "title": "Amdahl's law",
+     "query": "amdahl law serial fraction speedup"
+    },
+    {
+     "title": "Gustafson's law",
+     "query": "gustafson law scaled speedup"
+    },
+    {
+     "title": "Fixed versus scaled workloads",
+     "query": "strong scaling weak scaling"
+    }
+   ]
+  },
+  {
+   "id": "dataparallel-a-04",
+   "topic": "dataparallel",
+   "group": "dataparallel-a",
+   "question": "How does work stealing balance load in parallel runtimes?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Work stealing",
+     "query": "work stealing scheduler deque"
+    },
+    {
+     "title": "Efficiency",
+     "query": "work stealing bounds"
+    },
+    {
+     "title": "Implementations",
+     "query": "cilk work stealing"
+    }
+   ]
+  },
+  {
+   "id": "dataparallel-a-05",
+   "topic": "dataparallel",
+   "group": "dataparallel-a",
+   "question": "What is the bulk synchronous parallel model?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Supersteps",
+     "query": "bulk synchronous parallel superstep"
+    },
+    {
+     "title": "Cost model",
+     "query": "bsp cost model"
+    },
+    {
+     "title": "Systems",
+     "query": "bsp pregel"
+    }
+   ]
+  },
+  {
+   "id": "dataparallel-a-06",
+   "topic": "dataparallel",
+   "group": "dataparallel-a",
+   "question": "What are the main components of the Hadoop ecosystem?",
+   "public": false,
+   "facets": [
+    {
+     "title": "HDFS",
+     "query": "hadoop distributed file system"
+    },
+    {
+     "title": "YARN",
+     "query": "hadoop yarn"
+    },
+    {
+     "title": "MapReduce engine",
+     "query": "hadoop mapreduce"
+    }
+   ]
+  },
+  {
+   "id": "dataparallel-a-07",
+   "topic": "dataparallel",
+   "group": "dataparallel-a",
+   "question": "How does dataflow programming express parallelism?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Dataflow model",
+     "query": "dataflow programming graph"
+    },
+    {
+     "title": "Execution",
+     "query": "dataflow execution tokens"
+    },
+    {
+     "title": "Languages",
+     "query": "dataflow languages"
+    }
+   ]
+  },
+  {
+   "id": "dataparallel-a-08",
+   "topic": "dataparallel",
+   "group": "dataparallel-a",
+   "question": "What limits the speedup of parallel programs?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Serial fraction",
+     "query": "amdahl serial portion"
+    },
+    {
+     "title": "Overheads",
+     "query": "parallel overhead communication"
+    },
+    {
+     "title": "Scaling",
+     "query": "gustafson scaling"
+    }
+   ]
+  },
+  {
+   "id": "dataparallel-a-09",
+   "topic": "dataparallel",
+   "group": "dataparallel-a",
+   "question": "How does Spark's architecture distribute work across a cluster?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Driver and executors",
+     "query": "spark driver cluster manager"
+    },
+    {
+     "title": "DAG scheduling",
+     "query": "spark dag"
+    },
+    {
+     "title": "Libraries",
+     "query": "spark sql streaming mllib"
+    }
+   ]
+  },
+  {
+   "id": "dataparallel-a-10",
+   "topic": "dataparallel",
+   "group": "dataparallel-a",
+   "question": "How do MapReduce implementations deal with stragglers and data locality?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Stragglers",
+     "query": "mapreduce backup tasks"
+    },
+    {
+     "title": "Locality",
+     "query": "mapreduce data locality"
+    },
+    {
+     "title": "Combiners",
+     "query": "mapreduce combiner"
+    }
+   ]
+  },
+  {
+   "id": "dataparallel-b-01",
+   "topic": "dataparallel",
+   "group": "dataparallel-b",
+   "question": "What criticisms of MapReduce have been made?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Criticism",
+     "query": "mapreduce criticism"
+    },
+    {
+     "title": "Limitations",
+     "query": "mapreduce limitations iterative"
+    },
+    {
+     "title": "Alternatives",
+     "query": "dataflow spark"
+    }
+   ]
+  },
+  {
+   "id": "dataparallel-b-02",
+   "topic": "dataparallel",
+   "group": "dataparallel-b",
+   "question": "How does HDFS store and replicate data?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Blocks",
+     "query": "hdfs blocks"
+    },
+    {
+     "title": "Replication",
+     "query": "hdfs replication"
+    },
+    {
+     "title": "NameNode",
+     "query": "namenode datanode"
+    }
+   ]
+  },
+  {
+   "id": "dataparallel-b-03",
+   "topic": "dataparallel",
+   "group": "dataparallel-b",
+   "question": "How does BSP handle communication and synchronization?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Communication",
+     "query": "bsp communication"
+    },
+    {
+     "title": "Barriers",
+     "query": "bsp barrier synchronization"
+    },
+    {
+     "title": "Comparison with PRAM",
+     "query": "bsp pram"
+    }
+   ]
+  },
+  {
+   "id": "dataparallel-b-04",
+   "topic": "dataparallel",
+   "group": "dataparallel-b",
+   "question": "What variants of work stealing exist?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Child versus continuation stealing",
+     "query": "continuation stealing"
+    },
+    {
+     "title": "Multiprogrammed settings",
+     "query": "work stealing multiprogrammed"
+    },
+    {
+     "title": "Locality",
+     "query": "work stealing locality"
+    }
+   ]
+  },
+  {
+   "id": "dataparallel-b-05",
+   "topic": "dataparallel",
+   "group": "dataparallel-b",
+   "question": "How has Spark evolved, and who uses it?",
+   "public": false,
+   "facets": [
+    {
+     "title": "History",
+     "query": "spark berkeley amplab"
+    },
+    {
+     "title": "Adoption",
+     "query": "spark users"
+    },
+    {
+     "title": "Structured APIs",
+     "query": "spark dataframe"
+    }
+   ]
+  },
+  {
+   "id": "dataparallel-b-06",
+   "topic": "dataparallel",
+   "group": "dataparallel-b",
+   "question": "How does Gustafson's law change the view of parallel efficiency?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Scaled speedup",
+     "query": "gustafson scaled speedup"
+    },
+    {
+     "title": "Growing problem size",
+     "query": "gustafson problem size"
+    }
+   ]
+  },
+  {
+   "id": "dataparallel-b-07",
+   "topic": "dataparallel",
+   "group": "dataparallel-b",
+   "question": "How are dataflow ideas used in hardware and modern systems?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Dataflow hardware",
+     "query": "dataflow architecture"
+    },
+    {
+     "title": "Stream processing",
+     "query": "dataflow stream processing"
+    },
+    {
+     "title": "Visual languages",
+     "query": "visual dataflow languages"
+    }
+   ]
+  },
+  {
+   "id": "dataparallel-b-08",
+   "topic": "dataparallel",
+   "group": "dataparallel-b",
+   "question": "What determines the cost of a BSP algorithm?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Computation cost",
+     "query": "bsp computation cost"
+    },
+    {
+     "title": "Communication cost",
+     "query": "bsp h-relation"
+    },
+    {
+     "title": "Synchronization cost",
+     "query": "bsp synchronization cost"
+    }
+   ]
+  },
+  {
+   "id": "dataparallel-b-09",
+   "topic": "dataparallel",
+   "group": "dataparallel-b",
+   "question": "How does Hadoop schedule jobs and manage resources?",
+   "public": false,
+   "facets": [
+    {
+     "title": "JobTracker",
+     "query": "hadoop jobtracker tasktracker"
+    },
+    {
+     "title": "YARN scheduling",
+     "query": "yarn resource manager"
+    },
+    {
+     "title": "Schedulers",
+     "query": "hadoop fair scheduler capacity"
+    }
+   ]
+  },
+  {
+   "id": "dataparallel-b-10",
+   "topic": "dataparallel",
+   "group": "dataparallel-b",
+   "question": "How does Amdahl's law apply to optimizing one part of a system?",
+   "public": false,
+   "facets": [
+    {
+     "title": "Optimizing one part",
+     "query": "amdahl optimizing part"
+    },
+    {
+     "title": "Diminishing returns",
+     "query": "amdahl diminishing returns"
+    },
+    {
+     "title": "Examples",
+     "query": "amdahl example"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,35 @@
+{
+  "format": "agentkv-vidur-profile/1",
+  "commit": "25e0082dbbfb206fb0477c3ebbededa7ead78949",
+  "model": "meta-llama/Meta-Llama-3-8B",
+  "device": "A100 80GB",
+  "tensor_parallel_size": 1,
+  "pipeline_stages": 1,
+  "block_size": 16,
+  "max_request_tokens": 32768,
+  "max_aggregate_prefill_context": 262144,
+  "max_batch_tokens": 4096,
+  "max_batch_size": 16,
+  "kv_granularity": 64,
+  "prefill_granularity": 32,
+  "attention_prefill_batching_overhead_fraction": 0.0,
+  "attention_decode_batching_overhead_fraction": 0.0,
+  "skip_cpu_overhead_modeling": true,
+  "training": {
+    "estimator": "RandomForestRegressor",
+    "trees": 50,
+    "max_depth": 16,
+    "min_samples_split": 2,
+    "cv_folds": 2,
+    "seed": 42,
+    "numpy": "1.26.4",
+    "pandas": "2.2.2"
+  },
+  "profiles": {
+    "mlp.csv": "98c26488298e324e89db7349e213f75c856ae83dc6b17548a68636d2cb5efff0",
+    "attention.csv": "639aed6ad18c4f2f093c036871910227e57678d934f11956cf5e67d319e6f805"
+  },
+  "table_sha256": "f215d25336edf5d85c3c91409de6e069d86ce29bd6b0f769142c46e207b3771b",
+  "workload_encoding": "Token lengths and prefix identities from the frozen Qwen tokenizer; no Llama text generation or quality evaluation.",
+  "limitations": "Kernel-time predictions from upstream GPU measurements. CPU scheduler overhead is excluded. Context lengths above Llama-3's native 8K window are performance-only replays, not claims about model quality."
+}

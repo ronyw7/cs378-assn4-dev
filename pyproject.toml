@@ -1,0 +1,59 @@
+[project]
+name = "agentkv"
+version = "0.1.0"
+description = "CS378 Assignment 4: deep research agents and agent-discovered KV-cache policies"
+requires-python = ">=3.11"
+dependencies = [
+    "tokenizers>=0.21,<0.24",
+    "numpy>=1.26,<3",
+]
+
+[project.optional-dependencies]
+# Part 1: the deep research agent (LangGraph + Bedrock).
+agent = [
+    "langgraph>=1.0,<1.3",
+    "boto3>=1.35",
+    "httpx>=0.27",
+]
+# Staff only: source fetchers, trace generators, grader service.
+staff = [
+    "mwparserfromhell>=0.6",
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+    "httpx>=0.27",
+]
+# Staff GPU replay box (nano-vLLM fork). Not installable on macOS.
+gpu = [
+    "torch>=2.4",
+    "transformers>=4.51",
+    "xxhash",
+    "flash-attn",
+]
+# The notebooks students work in (plots and Jupyter).
+notebook = [
+    "matplotlib>=3.8",
+    "jupyterlab>=4.2",
+]
+dev = [
+    "pytest>=8",
+    "hypothesis>=6.100",
+    "nbclient>=0.10",
+]
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["agentkv*", "research_app*", "tracegen*", "grader*"]
+
+[tool.setuptools.package-data]
+agentkv = ["data/*.json", "data/vidur/*.json", "data/vidur/*.npz", "_vendor/vidur/LICENSE", "_vendor/vidur/UPSTREAM.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "gpu: needs a CUDA GPU and the nano-vLLM stack",
+    "slow: takes more than a few seconds",
+    "staff: needs staff-only data or packages",
+]

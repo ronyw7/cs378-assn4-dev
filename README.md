@@ -102,14 +102,13 @@ The values are on the course page, with your team's token budget. Part 1 can run
 | `candidates/` | 2, 3 | Policy experiments and every campaign candidate (create it) |
 | `runs/` | 1, 3 | Agent runs and campaign logs |
 
-### Time and points
+### Time and weight
 
-| Part | Deliverable | Estimated time | Points |
+| Part | Deliverable | Estimated time | Weight |
 |---|---|---|---|
-| 1 | Agent, analysis functions, three runs, answers to Q1–Q4 | 10–12 h | 20 |
-| 2 | Two policy files, sweeps, answers to Q1–Q3 | 7–8 h | 15 |
-| 3 | Research system, campaigns, selected policy, answers to Q1–Q6 | 15–18 h | 55 |
-| Individual check | Explain your code and results to staff | scheduled separately | 10 |
+| 1 | Agent, analysis functions, three runs, answers to Q1–Q4 | 10–12 h | 20% |
+| 2 | Two policy files, sweeps, answers to Q1–Q3 | 7–8 h | 20% |
+| 3 | Research system, campaigns, selected policy, answers to Q1–Q6 | 15–18 h | 60% |
 
 ## Part 1: Build and analyze a deep research agent
 
@@ -166,7 +165,7 @@ g_eff    = g - sum over families of max(0, 0.90 - S_f)
 points   = clip(10 + 20 × g_eff / 0.09, 0, 30)
 ```
 
-A valid policy that matches the reference earns 10 of 30 points; full credit needs `S ≥ 1.099` (a 9% latency reduction) with every family at or above 0.90. A family below 0.90 costs points in proportion to its shortfall. Invalid or incomplete evaluations earn 0.
+Performance (item 3.1) is worth 30% of the grade. A valid policy that matches the reference earns 10%; the full 30% needs `S ≥ 1.099` (a 9% latency reduction) with every family at or above 0.90. A family below 0.90 costs credit in proportion to its shortfall. Invalid or incomplete evaluations earn 0.
 
 | Split | Traces | Use |
 |---|---|---|
@@ -236,24 +235,39 @@ assignment4_report.pdf
 
 `assignment4_report.pdf` contains your team name, both members' names and EIDs, the `pytest` summary, and the answers to Part 1 Q1–Q4, Part 2 Q1–Q3, and Part 3 Q1–Q6 in order, each below its question, with the requested plots and tables. Include Bedrock token receipts (per-call input and output tokens, team total) and the model versions used. There is no page limit.
 
-Both team members must be able to explain all submitted code and analysis at the individual check. Late submissions lose 10% of the assignment's points per day, including weekends, unless arranged in advance with the instructor.
+Both team members must be able to explain all submitted code and analysis if asked by staff. Late submissions lose 10% of the assignment's points per day, including weekends, unless arranged in advance with the instructor.
 
 ## Grading
 
-| Item | Points |
-|---|---:|
-| Part 1 implementation: cap 2, graph 6, analysis 4 | 12 |
-| Part 1 analysis: Q1–Q4 | 8 |
-| Part 2 implementation: LRU 4, prefix-aware eviction 3, routing 2 | 9 |
-| Part 2 analysis: Q1–Q3 | 6 |
-| Part 3 policy performance on the hidden test set | 30 |
-| Part 3 report: Q1 and Q3 | 8 |
-| Part 3 report: Q2 and Q4 | 9 |
-| Part 3 report: Q5 and Q6 | 8 |
-| Individual check | 10 |
-| **Total** | **100** |
+Total: 100% (+10% extra credit)
 
-Implementation points come from staff tests that check the same contracts as the public tests on different inputs.
+**Part 1 — Deep research agent and workload analysis: 20%**
+
+- 1.1 Concurrency cap (correctness): 3%
+- 1.2 Research graph (correctness): 7%
+- 1.3 Workload analysis functions (correctness): 4%
+- 1.4 Runs and answers to Q1–Q4: 6%
+
+**Part 2 — KV-cache eviction and routing: 20%**
+
+- 2.1 LRU eviction (correctness): 5%
+- 2.2 Prefix-aware eviction (correctness): 4%
+- 2.3 Cache-affinity routing (correctness): 3%
+- 2.4 Sweeps and answers to Q1–Q3: 8%
+
+**Part 3 — Agent-driven policy research: 60%**
+
+- 3.1 Policy performance on the hidden test set: 30%
+- 3.2 Research system and autonomy (Q1, Q3): 10%
+- 3.3 Agents' contribution and cost (Q2, Q4): 10%
+- 3.4 Policy behavior and limitations (Q5, Q6): 10%
+
+**Extra credit: up to +10%**
+
+- Hidden-test speedup in the top 3% of teams: +5%
+- An exceptional research system or report, at staff discretion: +5%
+
+Correctness items are graded by staff tests that check the same contracts as the public tests on different inputs.
 
 ## Data and licenses
 

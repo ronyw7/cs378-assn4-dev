@@ -1,7 +1,7 @@
 # Part 3: Agent-driven policy research
 
-Allow 15–18 hours for this part, which is worth 55 points: 30 for policy
-performance and 25 for the research report. Use
+Allow 15–18 hours for this part, which is worth 60% of the grade: 30% for
+policy performance and 30% for the research report. Use
 [`notebooks/part3_policy_research.ipynb`](../notebooks/part3_policy_research.ipynb)
 to inspect workloads and analyze campaigns, and keep your research system
 (`research/`) and generated policies (`candidates/`) in files so that campaigns
@@ -146,10 +146,10 @@ points   = clip(10 + 20 × g_eff / 0.09, 0, 30)
 
 | Speedup S (no family below 0.90) | 0.98 | 1.00 | 1.02 | 1.04 | 1.06 | 1.08 | 1.099 or more |
 |---|---|---|---|---|---|---|---|
-| Performance points | 5.5 | 10.0 | 14.4 | 18.5 | 22.6 | 26.5 | 30.0 |
+| Performance credit (% of the grade, of 30%) | 5.5 | 10.0 | 14.4 | 18.5 | 22.6 | 26.5 | 30.0 |
 
 A family below 0.90 subtracts its shortfall from `g`: one family at 0.85 costs
-0.05, about 11 points. Invalid or incomplete evaluations earn 0. With two to
+0.05, about 11 percentage points of credit. Invalid or incomplete evaluations earn 0. With two to
 four traces per family, scores on different splits differ by a few percent for
 the same policy; compare finalists on both public splits and report the spread.
 
@@ -171,7 +171,7 @@ checked against your logs; put long logs and extra plots in appendices.
 
 **Q6. Where does it fail?** Report results per family on both public splits and examine one case where the policy does poorly. Predict its hidden-test performance with an uncertainty range. What do your experiments say about the strengths and limits of agents doing systems research?
 
-## Submission and grading (55 points)
+## Submission and grading (60%)
 
 Upload `policy.py`, an optional `params.json`, and `submission.json` to the
 [Gradescope leaderboard](../README.md#gradescope-part-3-leaderboard), and
@@ -179,9 +179,11 @@ include them in your team's Canvas archive with `research/`, `candidates/`,
 `runs/` (campaign logs, intervention logs, and token receipts), and
 `assignment4_report.pdf`.
 
-| Item | Points |
+| Item | Weight |
 |---|---:|
-| Policy performance on the hidden test set | 30 |
-| Report: Q1 and Q3 | 8 |
-| Report: Q2 and Q4 | 9 |
-| Report: Q5 and Q6 | 8 |
+| 3.1 Policy performance on the hidden test set | 30% |
+| 3.2 Research system and autonomy: Q1 and Q3 | 10% |
+| 3.3 Agents' contribution and cost: Q2 and Q4 | 10% |
+| 3.4 Policy behavior and limitations: Q5 and Q6 | 10% |
+| Extra credit: hidden-test speedup in the top 3% of teams | +5% |
+| Extra credit: an exceptional research system or report, at staff discretion | +5% |

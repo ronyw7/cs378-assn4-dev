@@ -1,6 +1,6 @@
 # Part 1: Build and analyze a deep research agent
 
-Allow 10–12 hours for this part, which is worth 20 points. Work through
+Allow 10–12 hours for this part, which is worth 20% of the grade. Work through
 [`notebooks/part1_deep_research.ipynb`](../notebooks/part1_deep_research.ipynb)
 and use this handout for the specifications.
 
@@ -276,12 +276,14 @@ Include in your team's Canvas archive (see the README):
 - the runs `runs/c2/`, `runs/c8/`, and `runs/c8-faults/`, and the backend you used;
 - answers to Q1–Q4, with the requested plots and tables, in `assignment4_report.pdf`.
 
-## Grading (20 points)
+## Grading (20%)
 
-| Item | Points |
+| Item | Weight |
 |---|---|
-| Implementation correctness on staff tests with new inputs and failure conditions: concurrency cap (2), research graph (6), analysis functions (4) | 12 |
-| Answers to Q1–Q4, with the requested plots and tables | 8 |
+| 1.1 Concurrency cap, on staff tests with new inputs | 3% |
+| 1.2 Research graph, on staff tests with new questions and failure conditions | 7% |
+| 1.3 Workload analysis functions, on staff tests with new runs | 4% |
+| 1.4 Runs and answers to Q1–Q4, with the requested plots and tables | 6% |
 
 The skeleton is adapted from LangChain's *Deep Research from Scratch* (MIT).
 

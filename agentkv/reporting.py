@@ -122,17 +122,17 @@ def score_summary(result, *, details=False):
                   and all(count == per_family for count in families.values()))
     if result.valid and full_split and result.backend == "sim" and replicas == 2:
         top = metric.MAX_POINTS
-        lines.append(f"Projected performance points on this split: {result.points:.1f}/{top:g}")
-        lines.append(f"The formula gives {metric.PARITY_POINTS:g}/{top:g} at parity and {top:g}/{top:g} for a "
+        lines.append(f"Projected performance credit on this split: {result.points:.1f}% of {top:g}%")
+        lines.append(f"The formula gives {metric.PARITY_POINTS:g}% at parity and {top:g}% for a "
                      f"{100 * result.g_target:g}% reduction in job latency (S = {1 / (1 - result.g_target):.4f}).")
         if result.capped:
-            lines.append(f"Points are reduced: categories below {metric.FAMILY_FLOOR:.2f}× subtract their shortfall from g.")
+            lines.append(f"Credit is reduced: categories below {metric.FAMILY_FLOOR:.2f}× subtract their shortfall from g.")
         lines.append("Final performance grading uses the hidden traces.")
     elif not result.valid:
         lines.append("Invalid or incomplete evaluations receive no performance credit.")
     elif replicas == 1:
         lines.append("This is a one-replica experiment. Part 3 scoring uses two replicas and all eight categories.")
     else:
-        lines.append("Scope: this result covers only the selected traces; projected assignment points are not shown.")
+        lines.append("Scope: this result covers only the selected traces; projected credit is not shown.")
         lines.append("Evaluate the full public_dev or public_val split to compare all eight categories.")
     return "\n".join(lines)

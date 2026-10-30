@@ -1,6 +1,6 @@
 # Part 2: KV-cache eviction and routing
 
-Allow 7–8 hours for this part, which is worth 15 points. Work through
+Allow 7–8 hours for this part, which is worth 20% of the grade. Work through
 [`notebooks/part2_lru_policy.ipynb`](../notebooks/part2_lru_policy.ipynb)
 and use this handout for the policy API and the specifications.
 
@@ -99,7 +99,7 @@ The small `BlockHarness` examples teach the eviction contract. They do not
 simulate GPU timing. Trace experiments use Vidur; see the
 [configuration and limitations](../README.md#evaluator-configuration).
 
-## Task 1: LRU (4 points)
+## Task 1: LRU (5%)
 
 Complete `policies/reference.py`: LRU eviction among cached blocks, with a fixed
 concurrency limit. `target_concurrency` already returns the `cap` parameter
@@ -161,7 +161,7 @@ and `Call.prefix` hold content ids; the same prefix can be resident on both
 replicas. `view.cached_prefix_len(call, replica)` counts how many leading
 blocks of a call's prompt are resident on a replica.
 
-## Task 2: Prefix-aware eviction (3 points)
+## Task 2: Prefix-aware eviction (4%)
 
 ![Evicting a root prevents reuse of its descendants; evicting a tail preserves the remaining prefix.](figures/evict_tail.svg)
 
@@ -180,7 +180,7 @@ block after it. In `policies/prefix_policy.py`, implement `__init__`,
   carries only the block id, so remember what you need. Do not read
   `view.blocks` in this hook: the tests call `choose_victim` with `view=None`.
 
-## Task 3: Cache-affinity routing (2 points)
+## Task 3: Cache-affinity routing (3%)
 
 With two replicas, a prefix cached on one replica is useless to a call sent to
 the other. In the same file, implement `route_call`: among replicas whose
@@ -197,7 +197,7 @@ pytest tests/test_part2_prefix.py
 With `tails=False` and `slack=-1`, `PrefixPolicy` makes the same decisions as
 the reference; one test checks this on a real trace.
 
-## Experiments and questions (6 points)
+## Experiments and questions (8%)
 
 The notebook compares concurrency caps on document QA and deep research
 traces, sweeps the cap over all eight families on one and two replicas,
@@ -230,14 +230,14 @@ Answer Q1–Q3 in `assignment4_report.pdf`, after Part 1, each below its questio
 - `PrefixPolicy` must stay within the sandbox limits on the largest traces:
   50 ms of CPU per hook call and 4 MiB of pickled state. Keep per-block state small.
 
-## Grading (15 points)
+## Grading (20%)
 
-| Item | Points |
+| Item | Weight |
 |---|---|
-| LRU (`policies/reference.py`) on staff access sequences | 4 |
-| Prefix-aware eviction on staff sequences | 3 |
-| Cache-affinity routing on staff views | 2 |
-| Answers to Q1–Q3 | 6 |
+| 2.1 LRU (`policies/reference.py`) on staff access sequences | 5% |
+| 2.2 Prefix-aware eviction on staff sequences | 4% |
+| 2.3 Cache-affinity routing on staff views | 3% |
+| 2.4 Sweeps and answers to Q1–Q3 | 8% |
 
 Include `policies/reference.py` and `policies/prefix_policy.py` in the team's
 Canvas archive.

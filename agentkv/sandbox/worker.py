@@ -110,8 +110,6 @@ def main() -> None:
                 out = rt.dispatch_order(msg["h"], msg["a"])
             elif op == "ao":
                 out = rt.admission_order(msg["h"], msg["a"])
-            elif op == "pf":
-                out = rt.prefill_first(msg["h"])
             elif op == "cp":
                 out = rt.choose_preempted(msg["h"], msg["a"])
             elif op == "rc":

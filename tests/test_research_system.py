@@ -12,11 +12,12 @@ def test_example_evaluator_keeps_measurements_and_rejects_invalid(monkeypatch):
     for valid in [True, False]:
         measured = {"valid": valid, "speedup": 1.1, "by_family": {"W3": 1.4},
                     "violations": [] if valid else ["invalid cap"]}
-        result = SimpleNamespace(**measured, to_json=lambda: dict(measured))
+        result = SimpleNamespace(**measured, to_json=lambda: dict(measured), summary=lambda details=False: "table")
         monkeypatch.setattr(evaluator, "score", lambda *a, **kw: result)
         feedback = evaluator.evaluate("policy.py")
         assert {k: feedback[k] for k in measured} == measured
         assert feedback["objective"] == (1.1 if valid else None)
+        assert feedback["diagnostics"] == "table"
 
 
 @pytest.mark.parametrize("objective", [float("nan"), float("inf"), None, "1.0", True])

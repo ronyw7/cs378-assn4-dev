@@ -9,7 +9,7 @@ at dispatch. Each replica has a separate cache.
 A policy module defines one Policy subclass, or selects one with POLICY.
 The sandbox allows no files, network, subprocesses, threads, or wall clock.
 Use state.rng for randomness. Each hook has a 50 ms CPU limit; policy state
-and instance attributes together must serialize to at most 1 MiB.
+and instance attributes together must serialize to at most 4 MiB.
 """
 
 from __future__ import annotations
@@ -21,9 +21,8 @@ from typing import Mapping, Sequence
 
 MAX_CONCURRENCY = 16          # application-wide cap across all replicas
 HOOK_CPU_LIMIT_S = 0.050
-STATE_LIMIT_BYTES = 1 << 20
-OPTIONAL_HOOKS = ("dispatch_order", "admission_order", "prefill_first", "choose_preempted",
-                  "route_call", "batch_token_budget")
+STATE_LIMIT_BYTES = 4 << 20
+OPTIONAL_HOOKS = ("dispatch_order", "admission_order", "choose_preempted", "route_call", "batch_token_budget")
 
 
 class Policy:
@@ -62,15 +61,6 @@ class Policy:
         already started are excluded from waiting and finish their prefill first.
         """
         return list(waiting)
-
-    def prefill_first(self, view: "View", state: "State") -> bool:
-        """Legacy hook, rejected by Vidur. Use batch_token_budget instead.
-
-        This hook is called when both choices are possible. The default returns
-        True, following nano-vLLM. After False, the simulator decodes until the
-        next event, such as a block filling or a call finishing, before asking again.
-        """
-        return True
 
     def choose_preempted(self, view: "View", running: Sequence[str], state: "State") -> str:
         """Return the running call that should release its blocks when memory runs out.
@@ -254,6 +244,29 @@ class View:
     @property
     def in_flight(self) -> int:
         return len(self.calls)
+
+    def cached_prefix_len(self, call: str, replica: int) -> int:
+        """Return how many leading full blocks of a ready or in-flight call's prompt are resident on a replica.
+
+        Matches `Call.prefix` against `Block.prefix` (content ids); the keys of
+        `blocks` are residence ids and never match a prefix.
+        """
+        c = self.ready.get(call) or self.calls.get(call)
+        if c is None:
+            raise KeyError(f"{call!r} is neither ready nor in flight")
+        resident = self.__dict__.get("_resident")
+        if resident is None:
+            resident = {}
+            for b in self.blocks.values():
+                resident.setdefault(b.replica, set()).add(b.prefix)
+            self.__dict__["_resident"] = resident
+        have = resident.get(replica, ())
+        n = 0
+        for p in c.prefix:
+            if p not in have:
+                break
+            n += 1
+        return n
 
 
 def readonly(d: dict) -> Mapping:

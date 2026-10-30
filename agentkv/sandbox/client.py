@@ -64,10 +64,6 @@ class InProcessClient:
         self._flush()
         return self.rt.admission_order(hdr, waiting)
 
-    def prefill_first(self, hdr: list):
-        self._flush()
-        return self.rt.prefill_first(hdr)
-
     def choose_preempted(self, hdr: list, running: list):
         self._flush()
         return self.rt.choose_preempted(hdr, running)
@@ -136,9 +132,6 @@ class WorkerClient:
 
     def admission_order(self, hdr: list, waiting: list):
         return self._call("ao", hdr, waiting)
-
-    def prefill_first(self, hdr: list):
-        return self._call("pf", hdr)
 
     def choose_preempted(self, hdr: list, running: list):
         return self._call("cp", hdr, running)

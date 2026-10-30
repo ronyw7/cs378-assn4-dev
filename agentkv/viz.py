@@ -6,7 +6,8 @@ breaks down by family.
     viz.timeline(rec)              # one row per job: tools, waits, and LLM calls
     viz.memory(rec)                # active, cached and empty blocks over time
     viz.job_dag(rec.trace, "J03")  # one job's DAG with its critical path
-    viz.families(score_result)     # speedup over the baseline by family
+    viz.families(score_result)     # speedup over the reference by family
+    viz.speedup_grid(grid, rows, cols)      # a speedup table as a heatmap
     viz.landmarks({"c041": (1.03, 1.01)})   # your candidates among the published policies
     viz.run_timeline("runs/c8/trace.jsonl") # a Part 1 run, one row per report
     viz.critical_path(trace, "J03")         # node ids on a job's longest path
@@ -19,12 +20,14 @@ sandboxed evaluation. The plotting functions require matplotlib
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 from .replay import Replay, RunResult
 from .sandbox.client import InProcessClient
-from .trace import LLMNode, Trace, load
+from .trace import LLMNode, Memory, Trace, load
+
+EDGE = {"edgecolor": "white", "linewidth": 0.6}   # separates consecutive operations in one lane
 
 # Colors shared by every plot so the notebooks read the same way.
 COLORS = {"slot": "#f2d16b", "memory": "#e8833a", "running": "#3b75af", "tool": "#8c8c8c",
@@ -68,11 +71,16 @@ class _Tap:
         return getattr(self.client, name)
 
 
-def record(trace, policy, *, params: dict | None = None, seed: int = 0, replicas: int = 1) -> Record:
+def record(trace, policy, *, params: dict | None = None, seed: int = 0, replicas: int = 1,
+           kv_tokens: int | None = None) -> Record:
     """Replay `trace` (a path or a Trace) under `policy` (a path or a Policy class).
-    Raises ValueError with the violation if the policy breaks a rule."""
+
+    kv_tokens replaces the trace's KV-cache capacity per replica (rounded down to
+    16-token blocks). Raises ValueError with the violation if the policy breaks a rule."""
     if isinstance(trace, (str, Path)):
         trace = load(trace)
+    if kv_tokens is not None:
+        trace = replace(trace, memory=Memory(kv_tokens // 16, 16))
     from .vidur_replay import VidurReplay, prepare_trace
     trace = prepare_trace(trace)
     m = trace.memory
@@ -144,10 +152,12 @@ def timeline(rec: Record, ax=None, *, jobs: list[str] | None = None, title: str 
             lane = len(free) - 1
         free[lane] = c["done"]
         c["_lane"] = lane
+    used = set()
     for t in rec.tools:
         if t["job"] in row:
-            color = COLORS["think"] if t["stage"] == "think" else COLORS["tool"]
-            ax.barh(row[t["job"]], t["end"] - t["start"], left=t["start"], height=0.8, color=color, linewidth=0)
+            kind = "think" if t["stage"] == "think" else "tool"
+            used.add(kind)
+            ax.barh(row[t["job"]], t["end"] - t["start"], left=t["start"], height=0.8, color=COLORS[kind], linewidth=0)
     for c in rec.calls:
         if c["job"] not in row or c["done"] is None:
             continue
@@ -155,22 +165,30 @@ def timeline(rec: Record, ax=None, *, jobs: list[str] | None = None, title: str 
         h = 0.8 / n
         y = row[c["job"]] - 0.4 + h * c["_lane"] + h / 2
         admit = c["admit"] if c["admit"] is not None else c["done"]
-        for start, end, color in ((c["ready"], c["dispatch"], COLORS["slot"]), (c["dispatch"], admit, COLORS["memory"]),
-                                  (admit, c["done"], COLORS["running"])):
+        for start, end, kind in ((c["ready"], c["dispatch"], "slot"), (c["dispatch"], admit, "memory"),
+                                 (admit, c["done"], "running")):
             if end > start:
-                ax.barh(y, end - start, left=start, height=h * 0.9, color=color, linewidth=0)
+                used.add(kind)
+                ax.barh(y, end - start, left=start, height=h * 0.9, color=COLORS[kind], linewidth=0)
     for j in order:
         ax.plot([arrival[j]], [row[j]], marker="|", color="black", markersize=10)
     ax.set_yticks(range(len(order)), order)
     ax.invert_yaxis()
+    ax.set_xlim(0, _end(rec))
     ax.set_xlabel("time (s)")
     flows = rec.result.flows
     ax.set_title(title or f"{rec.trace.trace_id}: mean job latency {sum(flows) / len(flows):.2f} s")
     ax.legend(handles=[Patch(color=COLORS[k], label=v) for k, v in
                        (("slot", "waiting for a slot"), ("memory", "waiting to be admitted"),
-                        ("running", "admitted"), ("tool", "tool"), ("think", "think time"))],
+                        ("running", "admitted"), ("tool", "tool"), ("think", "think time")) if k in used],
               loc="upper left", bbox_to_anchor=(1.0, 1.0), fontsize=8, frameon=False)
     return ax
+
+
+def _end(rec: Record) -> float:
+    """Last event time of a replay, so stacked timeline and memory plots share an x range."""
+    ends = [c["done"] for c in rec.calls if c["done"] is not None] + [t["end"] for t in rec.tools]
+    return max(ends + [m[0] for m in rec.memory] + [1e-9])
 
 
 def memory(rec: Record, ax=None, *, title: str | None = None):
@@ -183,6 +201,7 @@ def memory(rec: Record, ax=None, *, title: str | None = None):
                  colors=[COLORS["active"], COLORS["cached"], COLORS["empty"]], labels=["active", "cached", "empty"],
                  step="post")
     ax.set_ylim(0, total)
+    ax.set_xlim(0, _end(rec))
     ax.set_xlabel("time (s)")
     ax.set_ylabel("blocks")
     ax.set_title(title or f"{rec.trace.trace_id}: {total} blocks of {rec.trace.memory.block_size} tokens")
@@ -277,19 +296,54 @@ def job_dag(trace: Trace, job_id: str, ax=None, *, rec: Record | None = None):
 
 
 def families(result, ax=None, *, title: str | None = None):
-    """Bar chart of speedup over the baseline per family (a ScoreResult or a dict)."""
+    """Speedup over the reference per family (a ScoreResult or a dict), drawn from 1.0
+    on a log scale, with the per-family penalty threshold and the full-credit speedup."""
+    from . import metric
+
     by_family = result if isinstance(result, dict) else result.by_family
     ax = _axes(ax, (7, 3))
     names = list(by_family)
     vals = [by_family[f] for f in names]
-    ax.bar(names, vals, color=[COLORS["running"] if v >= 1 else COLORS["memory"] for v in vals])
+    ax.bar(names, [v - 1.0 for v in vals], bottom=1.0,
+           color=[COLORS["running"] if v >= 1 else COLORS["memory"] for v in vals])
+    ax.set_yscale("log")
     ax.axhline(1.0, color="black", lw=1)
-    ax.set_ylabel("Speedup over baseline")
-    lo, hi = min(vals + [1.0]), max(vals + [1.0])
-    ax.set_ylim(lo - 0.05 * (hi - lo + 0.1), hi + 0.05 * (hi - lo + 0.1))
+    floor, full = metric.FAMILY_FLOOR, metric.FULL_CREDIT_SPEEDUP
+    ax.axhline(floor, color=COLORS["critical"], lw=0.8, ls="--", label=f"family penalty below {floor:.2f}")
+    ax.axhline(full, color="#555555", lw=0.8, ls=":", label=f"full credit at S = {full:.3f}")
+    ax.set_ylabel("Speedup over reference")
+    lo, hi = min(vals + [floor]) / 1.02, max(vals + [full]) * 1.02
+    ax.set_ylim(lo, hi)
+    from matplotlib.ticker import FixedLocator, FuncFormatter, NullLocator
+    ticks = [t / 20 for t in range(int(lo * 20), int(hi * 20) + 1) if lo <= t / 20 <= hi]
+    ax.yaxis.set_major_locator(FixedLocator(ticks))
+    ax.yaxis.set_minor_locator(NullLocator())
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v:.2f}×"))
+    ax.legend(loc="upper left", bbox_to_anchor=(1.0, 1.0), fontsize=8, frameon=False)
     if title is None and not isinstance(result, dict):
         title = f"S = {result.speedup:.3f} on {result.split}"
     ax.set_title(title or "")
+    return ax
+
+
+def speedup_grid(grid, rows, cols, ax=None, *, xlabel: str = "", title: str = ""):
+    """Heatmap of speedups on a log2 color scale centered at 1 (blue faster, red slower)."""
+    import math
+    from matplotlib.colors import TwoSlopeNorm
+
+    ax = _axes(ax, (0.75 * len(cols) + 2.5, 0.42 * len(rows) + 1.3))
+    logs = [[math.log2(v) for v in row] for row in grid]
+    im = ax.imshow(logs, cmap="RdBu", norm=TwoSlopeNorm(0.0, -1.0, 1.0), aspect="auto")
+    ax.set_xticks(range(len(cols)), cols)
+    ax.set_yticks(range(len(rows)), rows)
+    for i, row in enumerate(grid):
+        for j, v in enumerate(row):
+            ax.text(j, i, f"{v:.2f}", ha="center", va="center", fontsize=8,
+                    color="white" if abs(math.log2(v)) > 0.55 else "black")
+    bar = ax.figure.colorbar(im, ax=ax, ticks=[-1, -0.5, 0, 0.5, 1])
+    bar.ax.set_yticklabels(["≤0.5×", "0.71×", "1×", "1.41×", "≥2×"])
+    ax.set_xlabel(xlabel)
+    ax.set_title(title)
     return ax
 
 
@@ -330,8 +384,8 @@ def landmarks(candidates: dict[str, tuple[float, float]] | None = None, ax=None)
 
 def run_timeline(trace_jsonl, ax=None, *, title: str | None = None):
     """Gantt chart of a Part 1 run (`research_app.run` writes trace.jsonl): one
-    row per report. Yellow: an LLM call waiting for a slot under the cap C.
-    Blue: an LLM call running. Gray: tool calls (search, fetch, validate)."""
+    row per report, one bar per operation, packed into lanes. Yellow: an LLM call
+    waiting for a slot under the cap C. Blue: an LLM call running. Gray: tool calls."""
     import json
     from matplotlib.patches import Patch
 
@@ -375,10 +429,10 @@ def run_timeline(trace_jsonl, ax=None, *, title: str | None = None):
             first = op.get("slot_acquired")
             if first is None:
                 first = min((a[0] for a in attempts.get(op_id, [])), default=ready)
-            ax.barh(y, first - ready, left=ready, height=h * 0.9, color=COLORS["slot"], linewidth=0)
-            ax.barh(y, op["end"] - first, left=first, height=h * 0.9, color=COLORS["running"], linewidth=0)
+            ax.barh(y, first - ready, left=ready, height=h * 0.9, color=COLORS["slot"], **EDGE)
+            ax.barh(y, op["end"] - first, left=first, height=h * 0.9, color=COLORS["running"], **EDGE)
         else:
-            ax.barh(y, op["end"] - op["start"], left=op["start"], height=h * 0.9, color=COLORS["tool"], linewidth=0)
+            ax.barh(y, op["end"] - op["start"], left=op["start"], height=h * 0.9, color=COLORS["tool"], **EDGE)
     for r in order:
         ax.plot([reports[r]], [row[r]], marker="|", color="black", markersize=10)
     ax.set_yticks(range(len(order)), order)

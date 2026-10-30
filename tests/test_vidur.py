@@ -86,7 +86,6 @@ def test_sandbox_matches_local(chat_trace):
 @pytest.mark.parametrize("method", [
     "def route_call(self, view, call, state): return 2",
     "def batch_token_budget(self, view, state): return 8192",
-    "def prefill_first(self, view, state): return True",
 ])
 def test_invalid_hooks_rejected(chat_trace, tmp_path, method):
     path = write_policy(tmp_path, "from agentkv.policy import Policy\nclass Bad(Policy):\n"

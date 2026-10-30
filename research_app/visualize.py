@@ -127,10 +127,10 @@ def plot_prefix_reuse(calls, share_function):
     stages = {}
     total_tokens, previous_shared = 0, 0.0
     for i, call in enumerate(calls):
-        total_tokens += call["prompt_tokens"]
+        total_tokens += call.prompt_tokens
         shared = share_function(calls[:i + 1]) * total_tokens
-        row = stages.setdefault(call["stage"], {"tokens": 0, "shared": 0.0, "calls": 0})
-        row["tokens"] += call["prompt_tokens"]
+        row = stages.setdefault(call.stage, {"tokens": 0, "shared": 0.0, "calls": 0})
+        row["tokens"] += call.prompt_tokens
         row["shared"] += shared - previous_shared
         row["calls"] += 1
         previous_shared = shared
@@ -210,35 +210,28 @@ def plot_run_timelines(directories):
     return fig
 
 
-def plot_research_dag(trace_path, report_id="R00"):
-    """Show the dependency path with the longest recorded service time, excluding slot waits."""
-    _, all_ops = read_run(trace_path)
+def plot_research_dag(run_path, report_id="R00"):
+    """Draw one report's DAG and highlight the critical path from analysis.critical_path."""
+    from .analysis import critical_path, load_run
+
+    _, all_ops = read_run(run_path)
     nodes = {key: op for key, op in all_ops.items() if op["report_id"] == report_id and "end" in op}
     if not nodes:
         raise ValueError(f"no completed operations for report {report_id}")
-    duration = {key: sum(a["duration"] + a.get("backoff", 0) for a in op["attempts_detail"])
-                for key, op in nodes.items()}
-    finish, predecessor, depth = {}, {}, {}
+    run = load_run(run_path)
+    steps = critical_path(run, report_id)
+    path = [step.op_id for step in steps]
+    wait = {key: run.ops[key].slot_wait for key in nodes}
+    service = {key: run.ops[key].end - run.ops[key].start - wait[key] for key in nodes}
+    depth = {}
 
-    def visit(key):
-        if key not in finish:
-            deps = nodes[key]["deps"]
-            for dep in deps:
-                visit(dep)
-            prev = max(deps, key=lambda d: finish[d], default=None)
-            predecessor[key] = prev
-            finish[key] = duration[key] + (finish[prev] if prev else 0)
-            depth[key] = 1 + max((depth[d] for d in deps), default=-1)
-        return finish[key]
+    def level(key):
+        if key not in depth:
+            depth[key] = 1 + max((level(d) for d in nodes[key]["deps"] if d in nodes), default=-1)
+        return depth[key]
 
     for key in nodes:
-        visit(key)
-    sinks = set(nodes) - {dep for op in nodes.values() for dep in op["deps"]}
-    last = max(sinks, key=lambda key: finish[key])
-    path, cursor = [], last
-    while cursor is not None:
-        path.append(cursor); cursor = predecessor[cursor]
-    path.reverse()
+        level(key)
     # Remove redundant display edges, such as plan -> write when plan already
     # reaches write through an extraction. This does not change the trace DAG.
     ancestors = {}
@@ -276,7 +269,7 @@ def plot_research_dag(trace_path, report_id="R00"):
         label = STAGES.get(node["stage"], node["stage"])
         if node["stage"] == "fetch":
             label += " " + key.rsplit("fetch", 1)[-1]
-        label += f"\n{duration[key]:.2f} s"
+        label += f"\n{service[key]:.2f} s" + (f" + {wait[key]:.1f} s wait" if wait[key] >= 0.05 else "")
         boxes[key] = ax.text(x, y, label, ha="center", va="center", fontsize=10, zorder=3,
                 bbox={"boxstyle": "round,pad=.45", "fc": "#edf3fa" if node["kind"] == "llm" else "#f4f4f4",
                       "ec": CRITICAL if key in path else "#b8bec5", "lw": 1.6 if key in path else .8})
@@ -292,6 +285,89 @@ def plot_research_dag(trace_path, report_id="R00"):
     ax.set_ylim(min(y for _, y in positions.values()) - 1, max(y for _, y in positions.values()) + 1.6)
     ax.axis("off")
     ax.set_title(f"Dependencies for report {report_id}", loc="left", pad=12)
-    fig.text(.5, .01, f"Red: longest service-time path ({finish[last]:.2f} s), excluding LLM-slot waits.",
-             ha="center", fontsize=10, color=CRITICAL)
-    return fig, path
+    total = {k: sum(getattr(step, k) for step in steps) for k in ("gap", "wait", "service")}
+    fig.text(.5, .01, f"Red: critical path. Latency {sum(total.values()):.2f} s = service {total['service']:.2f} s "
+             f"+ slot wait {total['wait']:.2f} s + gaps {total['gap']:.2f} s.", ha="center", fontsize=10, color=CRITICAL)
+    return fig, steps
+
+
+def plot_critical_paths(run_dirs):
+    """Stacked bars per report: where each report's latency went along its critical path."""
+    from .analysis import critical_path, load_run
+
+    parts = [("wait", "Waiting for an LLM slot", WAITING), ("llm", "LLM service", RUNNING),
+             ("tool", "Tool service", TOOL), ("gap", "Gaps between operations", "#d9dde1")]
+    fig, axes = plt.subplots(1, len(run_dirs), figsize=(6 * len(run_dirs), 5.5), sharex=True, sharey=True,
+                             squeeze=False, layout="constrained")
+    totals = []
+    for ax, directory in zip(axes[0], run_dirs):
+        run = load_run(directory)
+        reports = sorted(run.arrivals)
+        total = dict.fromkeys(("wait", "llm", "tool", "gap"), 0.0)
+        for i, report in enumerate(reports):
+            steps = critical_path(run, report)
+            v = {"wait": sum(s.wait for s in steps), "gap": sum(s.gap for s in steps),
+                 "llm": sum(s.service for s in steps if s.kind == "llm"),
+                 "tool": sum(s.service for s in steps if s.kind != "llm")}
+            left = 0.0
+            for key, _, color in parts:
+                ax.barh(i, v[key], left=left, color=color, height=.7)
+                left += v[key]
+                total[key] += v[key]
+        name = f"{Path(directory).name} (C = {run.cap})"
+        totals.append({"run": name, "cap": run.cap, **{k: v / len(reports) for k, v in total.items()}})
+        ax.set_yticks(range(len(reports)), reports)
+        ax.invert_yaxis()
+        ax.set_title(name, loc="left")
+        ax.set_xlabel("Seconds on the critical path")
+        ax.spines[["top", "right"]].set_visible(False)
+    fig.legend(handles=[Patch(color=c, label=label) for _, label, c in parts], loc="outside upper center",
+               ncol=4, frameon=False)
+    return fig, totals
+
+
+def plot_reuse_gaps(run_dirs):
+    """Cumulative distribution of how long reused prefix blocks sat unused, by the reusing stage."""
+    from .analysis import load_run, reuse_gaps
+
+    fig, axes = plt.subplots(1, len(run_dirs), figsize=(6 * len(run_dirs), 3.8), sharex=True, sharey=True,
+                             squeeze=False, layout="constrained")
+    for ax, directory in zip(axes[0], run_dirs):
+        run = load_run(directory)
+        by_stage = defaultdict(list)
+        for r in reuse_gaps(run.llm_calls()):
+            by_stage[r.stage].append(r.gap)
+        for stage, gaps in sorted(by_stage.items()):
+            gaps.sort()
+            ax.step(gaps, [(i + 1) / len(gaps) for i in range(len(gaps))], where="post",
+                    label=f"{STAGES.get(stage, stage)} ({len(gaps)} reuses)")
+        ax.set_xscale("symlog", linthresh=0.1)
+        ax.set(xlabel="Seconds since the block was last held", ylabel="Fraction of reuses", ylim=(0, 1.02),
+               title=f"{Path(directory).name} (C = {run.cap})")
+        ax.legend(frameon=False, fontsize=9, loc="lower right")
+        ax.spines[["top", "right"]].set_visible(False)
+    return fig
+
+
+def plot_kv_footprint(run_dirs):
+    """KV-cache memory held by running LLM calls, with and without sharing identical prefix blocks."""
+    from .analysis import kv_footprint, load_run
+
+    fig, ax = plt.subplots(figsize=(11, 3.8), layout="constrained")
+    peaks = []
+    for color, directory in zip([RUNNING, "#23856b", "#8e5ea2", WAITING], run_dirs):
+        run = load_run(directory)
+        fp = kv_footprint(run.llm_calls())
+        t = [f.t for f in fp]
+        name = Path(directory).name
+        ax.step(t, [f.private / 1e9 for f in fp], where="post", color=color, lw=1, alpha=.45,
+                label=f"{name}, every call stores its own prompt")
+        ax.step(t, [f.shared / 1e9 for f in fp], where="post", color=color, lw=1.8,
+                label=f"{name}, identical prefix blocks stored once")
+        peaks.append({"run": name, "cap": run.cap, "calls": max((f.calls for f in fp), default=0),
+                      "private_gb": max((f.private for f in fp), default=0) / 1e9,
+                      "shared_gb": max((f.shared for f in fp), default=0) / 1e9})
+    ax.set(xlabel="Time since the run started (s)", ylabel="KV cache of running calls (GB)")
+    ax.legend(frameon=False, fontsize=9, loc="upper left", bbox_to_anchor=(1, 1))
+    ax.spines[["top", "right"]].set_visible(False)
+    return fig, peaks

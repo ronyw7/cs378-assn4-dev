@@ -1,78 +1,90 @@
 # Part 3: Agent-driven policy research
 
-Allow about 14 hours for this part (70 points: 50 for policy performance, 20 for the research report). Use [`notebooks/part3_policy_research.ipynb`](../notebooks/part3_policy_research.ipynb) to inspect workloads and analyze campaign logs, and keep your research system (`research/`) and generated candidate policies (`candidates/`) in separate code files.
+Allow 15–18 hours for this part, which is worth 55 points: 30 for policy
+performance and 25 for the research report. Use
+[`notebooks/part3_policy_research.ipynb`](../notebooks/part3_policy_research.ipynb)
+to inspect workloads and analyze campaigns, and keep your research system
+(`research/`) and generated policies (`candidates/`) in files so that campaigns
+run from the command line.
 
 ## Introduction
 
-In this part, you will design and implement your own agentic research system in `research/` that uses LLM agents to propose hypotheses, write candidate serving policies, evaluate them on the simulator, and select a final policy. Your goal is not only to improve speedup, but also to understand:
+You will build a research system in which LLM agents propose serving-policy
+changes, implement them, evaluate them in the simulator, and decide what to try
+next, and then select a final policy. Two questions matter as much as the
+speedup:
 
-1. **How your research system behaves:** Which architectural choices, diagnostic feedback, and search objectives help agents produce valid, higher-performing policies, and where agents fail or waste tokens.
-2. **What policy your agents discovered and why it works:** What scheduling, routing, concurrency, and eviction mechanisms your agents invented, which mechanisms genuinely drive the speedup (verified by ablating them), and on which workloads the policy still struggles.
+1. **What do the agents add?** You know from Part 2 how to build a strong
+   policy by hand. Measure how much a campaign improves on that, how much a
+   campaign achieves without it, and which parts of your system (feedback,
+   search strategy, repair) make the difference.
+2. **What did the agents find?** Read the selected policy, explain each
+   mechanism, check by ablation which ones actually reduce latency, and find
+   where it still fails.
 
-We provide a minimal sequential script (`examples/research_system.py`) to demonstrate Bedrock calls, evaluation, and logging, which you can extend or use as a comparison baseline. You may choose any architecture for your system in `research/`: a single coding agent with diagnostic feedback and repair, a multi-agent pipeline (e.g., planner/coder/critic), a search tree, or an evolutionary loop (including adapting open-source frameworks such as OpenEvolve, ShinkaEvolve, or CORAL; record the framework revision and license if used).
+`examples/research_system.py` is a minimal sequential loop that shows Bedrock
+calls, evaluation, and logging. Extend it, compare against it, or adapt a
+framework such as OpenEvolve, ShinkaEvolve, or CORAL (record the revision and
+license).
 
-![One possible research system and the four evaluation splits.](figures/research_system.svg)
+![One possible research system and the evaluation splits.](figures/research_system.svg)
 
-## Baseline policy and two-replica setup
+## Starting points and the two-replica setup
 
-Part 3 evaluates policies on **two independent replicas** of Llama-3-8B (each on a simulated NVIDIA A100 80 GB GPU with its own queue and 16-token KV cache; see the [README](../README.md#evaluator-configuration)).
-
-Your completed Part 2 reference policy (`policies/reference.py`) serves as the starting policy for your agents: it uses `cap = 8` across both replicas, least-loaded routing, FCFS dispatch and admission, a 2,048-token batch budget, and LRU eviction in event delivery order. (Official speedups are always measured against fixed results from the staff reference implementation, so editing `policies/reference.py` does not change the scoring denominator; `policies/fifo.py` is also provided as a FIFO baseline.)
+Part 3 runs every policy on two Llama-3-8B replicas, each a simulated A100
+with its own queue and KV cache. The reference, `policies/reference.py`, uses
+a cap of 8, least-loaded routing, first-come-first-served dispatch and
+admission, a 2,048-token batch budget, and LRU eviction; every speedup is
+measured against a fixed staff copy of it. `policies/fifo.py` is a FIFO
+comparison, and your `policies/prefix_policy.py` is a strong starting point.
 
 ## The eight workload families
 
-![One job from each workload family: deep research, long-context chat, a coding agent, document QA, customer-service agents, and reasoning chat, plus the two shared-engine mixes.](figures/families.svg)
+![The eight workload families: their call structure and which parts of a prompt later calls can reuse.](figures/families.svg)
 
-Each of the eight workload families has equal weight in the overall speedup score `S`:
+Each family has equal weight in the overall speedup:
 
-| Family | Workload pattern | Core systems question |
+| Family | Workload | Systems question |
 |---|---|---|
-| **D** Deep research | Part 1 agent reports under four conditions: high reuse, tight memory, topic/corpus shift, and bursty arrivals with slow tools. | Can retaining shared documents avoid repeated prefill without starving parallel branches on a report's critical path? |
-| **W1** Long-context chat | Users ask questions about long uploaded documents (Mooncake Kimi trace); several users share a document. | When long prompts saturate GPU memory, how many calls should run at once, and which documents are worth keeping? |
-| **W2** Coding agent | Multi-step SWE-bench OpenHands sessions whose context grows every turn. | How should long private prefix chains compete with shared prefixes? |
-| **W3** Document QA | Short questions over long documents with skewed popularity (LooGLE). | Which documents should stay cached, and what concurrency cap works best when every call is a long prefill? |
-| **W4** Customer-service agents | Shared policy prompt with many short tool-calling turns (τ²-bench). | How should one shared system prompt and many growing conversations share memory and replicas? |
-| **W5** Reasoning chat | Outputs ranging from a few hundred to 16,000 tokens (Qwen Bailian trace); output length is unknown at arrival. | How should the engine manage memory as outputs grow, and which call should it preempt under pressure? |
-| **M1** Shared: Doc QA + Chat | `W3` document QA and `W1` long-context chat sharing one engine. | How should a policy balance workloads that prefer different concurrency caps? |
-| **M2** Shared: Doc QA + Reasoning | `W3` document QA and `W5` long-output reasoning sharing one engine. | How should the engine balance long prefills against decodes that hold KV blocks for extended periods? |
+| **D** Deep research | Part 1 reports under four conditions: high reuse, tight memory, topic shift, and bursty arrivals with slow tools | Can shared documents stay cached without starving parallel branches on a report's critical path? |
+| **W1** Long-context chat | Questions about long uploaded documents (Mooncake); several users share a document | How many long prompts should run at once, and which documents are worth keeping? |
+| **W2** Coding agent | Multi-turn SWE-bench sessions whose context grows every turn | How should long private histories compete with shared prefixes? |
+| **W3** Document QA | Short questions over long documents with skewed popularity (LooGLE) | Which documents should stay cached, and what cap suits long prefills? |
+| **W4** Customer service | One shared policy prompt and many short tool-calling turns (τ²-bench) | How should one shared prompt and many growing conversations share memory and replicas? |
+| **W5** Reasoning chat | Outputs from a few hundred to 16,000 tokens, unknown at arrival (Qwen Bailian) | How should memory be managed as outputs grow, and which call should be preempted? |
+| **M1** Document QA + chat | W3 and W1 on one engine | How should a policy balance workloads that prefer different caps? |
+| **M2** Document QA + reasoning | W3 and W5 on one engine | How should long prefills share an engine with long decodes? |
 
-## Scoring and evaluator design
-
-Use `agentkv.score` from Python or the command line to evaluate a candidate in the sandbox:
+## Scoring and your evaluator
 
 ```python
 from agentkv import score
 
 if __name__ == "__main__":
-    r = score("candidates/candidate_01.py", split="public_dev", backend="sim")
+    r = score("candidates/c01.py", split="public_dev")
     print(r.valid, r.speedup, r.points, r.by_family)
-    print(r.summary())       # pass details=True (or --details on CLI) for per-trace diagnostics
+    print(r.summary(details=True))      # per-trace cache, preemption, and CPU statistics
 ```
 
 ```bash
-python -m agentkv.score --policy candidates/candidate_01.py --split public_dev --backend sim --json out.json
-python -m agentkv.score --policy candidates/candidate_01.py --split data/traces/public_dev/dev-W3-0.json
+python -m agentkv.score --policy candidates/c01.py --split screen
+python -m agentkv.score --policy candidates/c01.py --split public_dev --details --json out.json
 ```
 
-### Implement your research evaluator (`research/evaluator.py`)
+`split="screen"` scores one development trace per family, about a quarter of
+the cost of `public_dev`; use it to discard weak or broken candidates early.
 
-Copy `examples/evaluator.py` to `research/evaluator.py` and customize `evaluate(policy_path, *, split="public_dev")`:
+Copy `examples/evaluator.py` to `research/evaluator.py` and decide:
 
-```python
-from agentkv import score
+1. **The objective** your system maximizes (`None` for an invalid candidate):
+   the overall speedup, a penalty that keeps families away from 0.90, a single
+   family for a focused experiment, or something else. Explain it in Q1.
+2. **The feedback** your agents see: per-family speedups, the per-trace
+   diagnostics in `feedback["diagnostics"]`, violation messages, earlier
+   hypotheses and their outcomes. Keep `speedup`, `by_family`, and `valid`
+   unchanged in the returned dict.
 
-def evaluate(policy_path, *, split="public_dev"):
-    result = score(policy_path, split=split)
-    feedback = result.to_json()
-    feedback["objective"] = result.speedup if result.valid else None
-    return feedback
-```
-
-Your evaluator controls two things:
-1. **`objective` (`None` if `not result.valid`):** How your research system ranks valid candidates (e.g., overall `result.speedup`, a family-specific score like `result.by_family["W3"]`, or a penalty-adjusted objective that guards against the 20% per-family regression limit).
-2. **Agent feedback:** Which per-family scores, cache/queueing diagnostics (`r.by_trace`), or violation messages your system feeds into the next LLM prompt. Keep the original `speedup`, `by_family`, and `valid` fields intact in the returned dict.
-
-Test the starter pipeline offline before running a Bedrock campaign:
+Check the plumbing offline before spending tokens:
 
 ```bash
 mkdir -p research
@@ -80,68 +92,96 @@ cp examples/evaluator.py research/evaluator.py
 python examples/research_system.py --evaluator research/evaluator.py --iters 3 --offline
 ```
 
-## Policy and campaign rules
+## Rules
 
-### Sandbox rules for policies (`policy.py`)
+### Inside a policy
 
-While your outer research system in `research/` may inspect public traces, family labels, and diagnostics, any policy running inside `score()` is strictly sandboxed:
+- **Causal information only.** Use past events, the current `View`, and known
+  prompt lengths. Do not use future arrivals, output lengths, tool durations,
+  trace files, or workload labels. Ids are opaque and rekeyed every run.
+- **Sandbox.** No network, file, subprocess, thread, LLM, or wall-clock access;
+  use `state.rng` for randomness. Each hook call has 50 ms of CPU time, and
+  `state` plus the policy's attributes must pickle to at most 4 MiB.
+- **Validity.** An invalid id, evicting an active block, a cap outside 1–16, a
+  malformed admission order, an exception, a timeout, or a stall fails the
+  evaluation. A policy valid on `public_dev` can still fail on another trace;
+  check finalists on `public_val`.
 
-- **Causal information only:** Use only past events (`on_event`), current `View` state, and known prompt lengths. Do not read future arrivals, output lengths, tool delays, trace files, or workload labels. Request, job, stage, and prefix IDs are rekeyed every run.
-- **Resource limits:** No network, file, subprocess, thread, LLM, or wall-clock access. Use `state.rng` for randomness. Each hook call has a **50 ms** CPU limit, and pickled state (`state` + policy attributes) must stay within **1 MiB**.
-- **Strict validity:** Returning an invalid ID, evicting an active block, returning a concurrency cap outside `1..16`, returning an invalid `admission_order`, raising an exception, timing out, or stalling all ready calls fails evaluation immediately.
+### Campaigns
 
-### Autonomy and provenance rules for campaigns
+- **Seeds and hints.** A campaign may start from any policies, including the
+  reference, your Part 2 policy, and policies you write, and its prompts may
+  contain your own ideas. Keep every seed in `candidates/` and declare the seeds,
+  model, prompts, and budget in the campaign's configuration before it starts.
+- **Selection.** Your submitted `policy.py` must be selected by an unattended
+  campaign from its candidates (a seed may win). You may debug your system and
+  change prompts or budgets between campaigns.
+- **Lineage** (`log.jsonl` in the campaign's run directory): for every candidate,
+  including failures, log `id`, `parent`, `hypothesis`, `file`, `sha256`,
+  `objective`, `dev_S`, `by_family`, `tokens`, and `valid`, plus `val_S` for
+  finalists.
+- **Interventions** (JSONL): log every human action that stops, restarts, or
+  changes a campaign, with time, person, action, reason, and affected
+  candidates, for example
+  `{"t": "2026-11-09T14:05", "who": "ana", "action": "stopped campaign c2", "reason": "every candidate hit the 50 ms limit", "candidates": ["c2-017"]}`.
 
-- **Unattended campaign:** A campaign is one run of your research system from a declared starting point, configuration, and budget to final candidate selection. Your submitted `policy.py` must be generated and selected during an unattended campaign. Hand-written policies may only be used as labeled baselines for comparison.
-- **Candidate lineage (`log.jsonl`):** Retain every generated candidate in `candidates/` (including failed attempts) and log its `id`, `parent`, `hypothesis`, `file`, `sha256`, `objective`, `dev_S`, `by_family`, `tokens`, and `valid` status (plus `val_S` for finalists evaluated on `public_val`).
-- **Intervention log:** You may debug your system and change prompts or budgets between campaigns. Log any human action that stops, restarts, or alters a campaign (`JSONL` with timestamp, person, action, reason, and affected candidates):
-  `{"t": "2026-11-09T14:05", "who": "ana", "action": "stopped campaign c2", "reason": "every candidate hit the 50 ms CPU limit", "candidates": ["c2-017", "c2-018"]}`.
+## Splits and the performance metric
 
-## Evaluation splits and grading formula
-
-| Split | Size | Access | Purpose |
-|---|---|---|---|
-| `public_dev` | 32 traces (4/family) | Full local scoring and diagnostics | Develop and search for policies |
-| `public_val` | 16 traces (2/family) | Full local scoring and diagnostics | Select finalists (account for selection bias) |
-| Leaderboard | 16 traces (2/family) | Gradescope leaderboard (overall and per-family speedups; projected points in private feedback) | Check generalization on held-out feedback traces |
-| Hidden test | 24 traces (3/family) | Scored once after the deadline on your submitted `policy.py` (combines conditions such as bursty arrivals, tight memory, and new workload mixes) | Final performance grade (50 points) |
+| Split | Traces | Access | Use |
+|---|---:|---|---|
+| `screen` | 8 | Local; a subset of `public_dev` | Quick checks |
+| `public_dev` | 32 (4 per family) | Local, full diagnostics | Development |
+| `public_val` | 16 (2 per family) | Local, full diagnostics | Selecting finalists |
+| Leaderboard | 16 (2 per family) | Gradescope: overall and per-family speedups | Feedback |
+| Hidden test | 24 (3 per family) | Scored once after the deadline | Final grade |
 
 ```text
-L(P, i) = mean job latency of policy P on trace i
-S       = exp( mean over families ( mean over traces ( log( L(baseline, i) / L(P, i) ) ) ) )
-g       = 1 - 1/S
-points  = clip( 25 + 25 × g_eff / 0.10, 0, 50 )
+L(P, i)  = mean job latency of policy P on trace i
+S_f      = geometric mean over traces in family f of L(reference, i) / L(P, i)
+S        = geometric mean of S_f over the eight families
+g        = 1 - 1/S
+g_eff    = g - sum over families of max(0, 0.90 - S_f)
+points   = clip(10 + 20 × g_eff / 0.09, 0, 30)
 ```
 
-| Speedup S | 0.95 | 1.00 (baseline) | 1.02 | 1.05 | 1.08 | 1.112 or more |
-|---|---|---|---|---|---|---|
-| Performance points | 11.8 | 25.0 | 29.9 | 36.9 | 43.5 | 50.0 |
+| Speedup S (no family below 0.90) | 0.98 | 1.00 | 1.02 | 1.04 | 1.06 | 1.08 | 1.099 or more |
+|---|---|---|---|---|---|---|---|
+| Performance points | 5.5 | 10.0 | 14.4 | 18.5 | 22.6 | 26.5 | 30.0 |
 
-Here, `g_eff = g`, except that if any family's mean job latency is more than 20% worse than the baseline's (`by_family[f] < 1 / 1.2 ≈ 0.8333`), `g_eff` is capped at `0` (at most 25 points). Invalid or incomplete runs receive 0 points. (The Strong benchmark row on the leaderboard is a comparison point, not the 50-point threshold; full credit requires `S >= 1 / 0.9 ≈ 1.1111×` with no >20% family regression.)
+A family below 0.90 subtracts its shortfall from `g`: one family at 0.85 costs
+0.05, about 11 points. Invalid or incomplete evaluations earn 0. With two to
+four traces per family, scores on different splits differ by a few percent for
+the same policy; compare finalists on both public splits and report the spread.
 
-## Research report (20 points)
+## Research report
 
-Answer Q1–Q6 in the notebook, then include each original question and your answer in `assignment4_report.pdf` after Part 1. Support your claims with run IDs, candidate SHA-256 hashes, tables, and plots (place long logs or extra plots in appendices):
+Answer Q1–Q6 in `assignment4_report.pdf` after Parts 1 and 2, each below its
+question. Cite run ids and candidate SHA-256 hashes so that every claim can be
+checked against your logs; put long logs and extra plots in appendices.
 
-**Q1. How does your agentic research system work?** Include a diagram showing its LLM calls, deterministic steps, tools, stored state, and points where a person can intervene. Explain your evaluator's objective, the feedback given to agents, how invalid candidates are handled, and how the system selects a final policy and decides when to stop. Explain why you chose this architecture.
+**Q1. How does your research system work?** Include a diagram of its LLM calls, deterministic steps, tools, stored state, and the points where a person can intervene. Explain the objective, the feedback agents receive, how invalid candidates are handled, how the final policy is selected, and when a campaign stops. Why this design?
 
-**Q2. What did your ablation study show?** Ablate one or two components or design choices in your research system while holding the model and token budget fixed. Describe what you removed, replaced, or disabled, show the results, and explain what the comparison reveals. For example, remove evaluation feedback, disable shared memory, or replace a candidate-selection strategy. The supplied sequential system can serve as one comparison.
+**Q2. What do the agents contribute?** With the same model and token budget, compare (a) your best seed scored alone, (b) a campaign started from `policies/reference.py`, and (c) a campaign started from your seed. Then ablate one component of your system (for example, the diagnostics in the feedback, the screening step, or the candidate selection) and compare against the full system. What do the comparisons show about where the improvements come from?
 
-**Q3. How autonomous was it in practice?** Describe the longest unattended campaign and summarize the intervention log. Show one case where an agent diagnosed a failure and chose a useful follow-up experiment, or explain why it could not.
+**Q3. How autonomous was it?** Describe your longest unattended campaign and summarize the intervention log. Show one case where an agent diagnosed a failure and chose a useful next experiment, and one where it could not.
 
-**Q4. Did more spending help?** Plot the best development speedup against tokens used and against candidates evaluated. Mark your finalists' validation scores, report the fraction of candidates that were valid, and explain where you would stop spending.
+**Q4. Did more spending help?** Plot the best development speedup against tokens and against candidates scored, mark finalists' validation scores, and report the fraction of valid candidates. Where would you stop spending, and why?
 
-**Q5. What policy did the agents find?** Explain the policy in your own words, with pseudocode and a short trace example. Why should its decisions reduce mean job latency? Disable one discovered mechanism, measure the effect, and use the results to assess the agents' explanation.
+**Q5. What policy did the agents find?** Explain the selected policy in your own words, with pseudocode and a short trace example. Disable one mechanism the agents introduced, measure the effect on `public_dev` and `public_val`, and use the result to judge the agents' own explanation of it.
 
-**Q6. Where does it fail, and what does that say about agents doing systems research?** Report results for each workload category and examine one case where the policy performs poorly. Predict how it will perform on the hidden test set. What do your experiments show about the strengths and limitations of using agents for this research?
+**Q6. Where does it fail?** Report results per family on both public splits and examine one case where the policy does poorly. Predict its hidden-test performance with an uncertainty range. What do your experiments say about the strengths and limits of agents doing systems research?
 
-## Submission and grading (70 points)
+## Submission and grading (55 points)
 
-Upload `policy.py`, optional `params.json`, and `submission.json` to the [Gradescope leaderboard](../README.md#gradescope-part-3-leaderboard), and include them in your team's Canvas archive alongside `research/`, `candidates/`, `runs/` (campaign logs, intervention logs, and Bedrock token receipts), and `assignment4_report.pdf`.
+Upload `policy.py`, an optional `params.json`, and `submission.json` to the
+[Gradescope leaderboard](../README.md#gradescope-part-3-leaderboard), and
+include them in your team's Canvas archive with `research/`, `candidates/`,
+`runs/` (campaign logs, intervention logs, and token receipts), and
+`assignment4_report.pdf`.
 
 | Item | Points |
-|---|---|
-| Policy performance on the hidden test set | 50 |
+|---|---:|
+| Policy performance on the hidden test set | 30 |
 | Report: Q1 and Q3 | 8 |
-| Report: Q2 and Q4 | 6 |
-| Report: Q5 and Q6 | 6 |
+| Report: Q2 and Q4 | 9 |
+| Report: Q5 and Q6 | 8 |

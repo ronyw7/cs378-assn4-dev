@@ -1,25 +1,22 @@
-# Part 2: Write an LRU policy
+# Part 2: KV-cache eviction and routing
 
-Allow about 1 hour for this part, which is worth 5 points. Work through
+Allow 7–8 hours for this part, which is worth 15 points. Work through
 [`notebooks/part2_lru_policy.ipynb`](../notebooks/part2_lru_policy.ipynb)
-and use this handout for the policy API and implementation requirements.
+and use this handout for the policy API and the specifications.
 
 ## Introduction
 
-In this part, you will implement an LRU eviction policy and examine how it
-affects the time needed to complete agent jobs. The engine retains released
-KV blocks so that later calls with matching prompt prefixes can reuse them,
-avoiding repeated prefill work. This is useful for agent workloads, which
-often repeat instructions, documents, and conversation history across calls.
+The engine keeps released KV blocks so that later calls with the same prompt
+prefix can skip their prefill. Agent workloads repeat instructions, documents,
+and conversation history, so this saves a lot of work, but cached blocks
+occupy memory that running calls also need. A serving policy decides which
+cached blocks to overwrite, how many calls to run at once, in what order, and,
+with two GPU replicas, where each call runs.
 
-Retaining prefixes also consumes memory that other calls may need. A serving
-policy therefore controls which cached blocks to evict, how many calls to
-run concurrently, and how to order their execution. Each policy in this
-assignment is a Python class implementing the API below. Writing LRU with
-a fixed concurrency cap will introduce that API before your research agents
-use it in Part 3. Your completed implementation is also the starting reference
-policy for Part 3. The notebook compares it with FIFO and explores changes to
-its settings.
+You will implement three policies through the API below: LRU eviction (the
+reference that every Part 3 speedup is measured against), eviction that keeps
+prefix trees reusable, and routing that trades cache affinity against load
+balance. The notebook measures each on the eight workload families.
 
 ## Background: prefix caching
 
@@ -87,7 +84,7 @@ API also uses the following terms:
 | `batch_token_budget` | Choose 512, 1024, 2048, or 4096 tokens for the next batch on `view.replica`. Default: 2048. |
 | `choose_preempted` | When a decoding call needs a new block and every block is active, which of `running` gives its blocks back and is recomputed later. Default: the last one, `running[-1]`. |
 | `view` | A read-only snapshot of the engine (below). All ids are opaque and rekeyed every run. |
-| `state` | A dict for data your policy retains between events, plus `state.rng`, the only allowed source of randomness. `state` and the policy's own attributes must pickle to at most 1 MiB. Both are reset for each trace. |
+| `state` | A dict for data your policy retains between events, plus `state.rng`, the only allowed source of randomness. `state` and the policy's own attributes must pickle to at most 4 MiB. Both are reset for each trace. |
 
 What `view` holds (the fields are in `agentkv.policy.View`):
 
@@ -102,7 +99,7 @@ The small `BlockHarness` examples teach the eviction contract. They do not
 simulate GPU timing. Trace experiments use Vidur; see the
 [configuration and limitations](../README.md#evaluator-configuration).
 
-## Task: LRU (5 points)
+## Task 1: LRU (4 points)
 
 Complete `policies/reference.py`: LRU eviction among cached blocks, with a fixed
 concurrency limit. `target_concurrency` already returns the `cap` parameter
@@ -124,8 +121,11 @@ tests, its default configuration should reproduce the reference score of
 Check it with:
 
 ```bash
-pytest tests/test_part2_lru.py tests/test_kv_invariants.py
+pytest tests/test_part2_lru.py tests/test_reference_results.py
 ```
+
+The second test scores your file on both public splits and checks that it
+reproduces the saved reference job latencies exactly; it takes a few minutes.
 
 The public oracle uses one-token blocks and a memory of three blocks.
 `agentkv.harness.BlockHarness` drives a policy through exactly these steps;
@@ -139,41 +139,84 @@ use it to try your own scenarios.
 | Allocate D under pressure | LRU evicts B. A and C stay cached, and B's old lookup entry is removed. |
 | Hold A active, then allocate E | A and D are active, so C is the only cached block, and it is evicted. |
 
-## What the engine guarantees
+## The teaching cache and the scored engine
 
-The supplied engine enforces the following invariants, which are checked by
-the public tests:
+`BlockHarness` drives a small block-level cache model (`agentkv.engine.kv`) with
+the same events and hooks as the scored engine, so the oracles above can name
+blocks with letters. Scoring always uses Vidur's cache manager through
+`agentkv.engine.vidur_adapter`. Both follow the same contract:
 
-- A block with a nonzero reference count is never a victim, and counts never go negative.
-- A cached block keeps its contents and identity until it is overwritten. An
-  exact-prefix match makes it active again.
-- Overwriting a block first removes its old lookup entry, so a stale mapping
-  cannot cause a false hit.
-- The same tokens under a different parent form a different prefix. Partial
-  blocks are never shared.
-- If every block is active, the engine waits, or preempts the call
-  `choose_preempted` names. A policy cannot create an evictable block.
+- a block with active references is never a victim;
+- a cached block keeps its contents until it is overwritten, and an
+  exact-prefix match makes it active again;
+- overwriting a block removes its old lookup entry first, so a stale entry
+  cannot cause a false hit;
+- the same tokens under a different parent form a different prefix, and
+  partial blocks are never shared;
+- if every block is active, the engine waits or preempts the call that
+  `choose_preempted` names.
 
-Reference counting, hashing, allocation, kernels, retries, and trace parsing
-are provided and must remain unchanged.
+In Vidur, `view.blocks` is keyed by physical residence ids, and `Block.prefix`
+and `Call.prefix` hold content ids; the same prefix can be resident on both
+replicas. `view.cached_prefix_len(call, replica)` counts how many leading
+blocks of a call's prompt are resident on a replica.
 
-## Experiments
+## Task 2: Prefix-aware eviction (3 points)
 
-Part 2 is graded on correctness. The remaining notebook sections examine
-performance to prepare you for Part 3. Their scores do not affect your Part 2
-grade. Evaluate the one-replica configuration with:
+![Evicting a root prevents reuse of its descendants; evicting a tail preserves the remaining prefix.](figures/evict_tail.svg)
+
+A call touches its prompt's blocks from root to tail, so LRU considers a
+prefix's root its least recently used block, and evicting it strands every
+block after it. In `policies/prefix_policy.py`, implement `__init__`,
+`on_event`, and `choose_victim`:
+
+- A cached block is a **leaf** if no resident block on the same replica extends
+  it, that is, has its prefix as `parent`.
+- `choose_victim` returns the least recently used candidate that is a leaf, or
+  the least recently used candidate if none is a leaf. With `tails=False` it
+  is plain LRU.
+- Maintain the prefix trees from events. `alloc` carries the block's `prefix`,
+  `parent` (`None` for the first block of a prompt), and `replica`; `evict`
+  carries only the block id, so remember what you need. Do not read
+  `view.blocks` in this hook: the tests call `choose_victim` with `view=None`.
+
+## Task 3: Cache-affinity routing (2 points)
+
+With two replicas, a prefix cached on one replica is useless to a call sent to
+the other. In the same file, implement `route_call`: among replicas whose
+`in_flight` is at most `slack` above the least loaded replica's, return the one
+with the longest cached prefix of the call's prompt
+(`view.cached_prefix_len`), breaking ties by lower `in_flight` and then lower
+replica id. With `slack = -1`, return the least loaded replica, as the
+reference does.
 
 ```bash
+pytest tests/test_part2_prefix.py
+```
+
+With `tails=False` and `slack=-1`, `PrefixPolicy` makes the same decisions as
+the reference; one test checks this on a real trace.
+
+## Experiments and questions (6 points)
+
+The notebook compares concurrency caps on document QA and deep research
+traces, sweeps the cap over all eight families on one and two replicas,
+compares FIFO, LRU, and prefix-aware eviction, sweeps the routing `slack`, and
+shows a customer-service trace at a small and a large slack. To score a policy
+yourself:
+
+```bash
+python -m agentkv.score --policy policies/prefix_policy.py --split public_dev --params '{"slack": 2}'
 python -m agentkv.score --policy policies/reference.py --split public_dev --replicas 1 --params '{"cap": 4}'
 ```
 
-The notebook then:
+Answer Q1–Q3 in `assignment4_report.pdf`, after Part 1, each below its question.
 
-1. compares concurrency caps on document QA and deep research traces;
-2. sweeps the cap over all eight families;
-3. compares FIFO with the completed reference and varies batch token budgets;
-4. compares FIFO with basic LRU and examines how prefix structure affects eviction;
-5. adds a dispatch-order hook and measures its effect on mean job latency.
+**Q1. Concurrency on one and two replicas.** Using the two cap grids, which families prefer a low cap on one replica, and why (refer to memory per call, prefix reuse, and the structure of their jobs)? Why does the best cap change with two replicas? Name one family where you would expect a single fixed cap to be wrong for part of the trace.
+
+**Q2. Eviction and prefix trees.** Report LRU and prefix-aware eviction on one and two replicas. Which families gain most, and what about their prompts explains it? Why is the gain smaller with two replicas? Name a workload for which evicting tails first would be the wrong choice.
+
+**Q3. Affinity versus load.** Plot or tabulate S and the per-family speedups across `slack`. Explain the best slack and the failure at large slack, using the two W4 timelines as evidence. What would you change in `route_call` to make large slack safe?
 
 ## Hints and common pitfalls
 
@@ -182,15 +225,19 @@ The notebook then:
   `candidates`. Return the least recent block that *is* a candidate.
 - A block can be released and hit again many times. Only `alloc` and `hit`
   change its recency.
-- Keep `policies/reference.py` exactly what the tests specify. Put experiments in
-  copies under `candidates/`, as the notebook does.
+- Keep `policies/reference.py` and `policies/prefix_policy.py` exactly what the
+  tests specify. Put experiments in copies under `candidates/`.
+- `PrefixPolicy` must stay within the sandbox limits on the largest traces:
+  50 ms of CPU per hook call and 4 MiB of pickled state. Keep per-block state small.
 
-## Grading (5 points)
+## Grading (15 points)
 
-All 5 points are based on LRU correctness. Use the public oracle and invariant
-tests in `tests/test_part2_lru.py` and `tests/test_kv_invariants.py` during
-development. Staff tests check the same contract on hidden access sequences,
-including repeated hits, releases, and allocations after eviction. Include
-`policies/reference.py` with the Part 1 implementation files in the team's Canvas
-archive, preserving the directory paths. Gradescope is used only for the
-Part 3 policy leaderboard.
+| Item | Points |
+|---|---|
+| LRU (`policies/reference.py`) on staff access sequences | 4 |
+| Prefix-aware eviction on staff sequences | 3 |
+| Cache-affinity routing on staff views | 2 |
+| Answers to Q1–Q3 | 6 |
+
+Include `policies/reference.py` and `policies/prefix_policy.py` in the team's
+Canvas archive.

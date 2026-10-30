@@ -1,6 +1,4 @@
 .venv/
-.venv-evolve/
-.venv-coral/
 .ipynb_checkpoints/
 __pycache__/
 *.pyc
@@ -9,15 +7,6 @@ __pycache__/
 *.egg-info/
 build/
 dist/
-third_party/
 .cache/
-var/
-# Staff figure tooling
-tools/figgen/node_modules/
-tools/figgen/previews/
-tools/figgen/scenes.json
-runs/
-grader.env
 *.env
 !*.env.example
-var/

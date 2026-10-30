@@ -5,6 +5,7 @@ so everything a policy can observe is causal by construction."""
 
 from __future__ import annotations
 
+import gc
 import pickle
 import random
 import time
@@ -54,12 +55,18 @@ class PolicyRuntime:
             fields = dict(zip(EVENT_FIELDS[kind], ev[2:]))
             self._mirror(kind, t, fields)
             e = Event(kind, t, fields)
+            collecting = gc.isenabled()
+            gc.disable()   # a collection triggered inside a hook would be charged to the policy
             c0 = _cpu()
             try:
                 on_event(e, self.state)
             except Exception as exc:
                 raise PolicyError("exception", f"on_event({kind}): {type(exc).__name__}: {exc}") from exc
-            self._charge(_cpu() - c0, "on_event")
+            finally:
+                dt = _cpu() - c0
+                if collecting:
+                    gc.enable()
+            self._charge(dt, "on_event")
         self.n_events += len(raw_events)
 
     def _mirror(self, kind: str, t: float, f: dict) -> None:
@@ -127,12 +134,18 @@ class PolicyRuntime:
 
     def _decide(self, hook: str, hdr: list, *args):
         v = self.view(hdr)
+        collecting = gc.isenabled()
+        gc.disable()
         c0 = _cpu()
         try:
             out = getattr(self.policy, hook)(v, *args, self.state)
         except Exception as exc:
             raise PolicyError("exception", f"{hook}: {type(exc).__name__}: {exc}") from exc
-        self._charge(_cpu() - c0, hook)
+        finally:
+            dt = _cpu() - c0
+            if collecting:
+                gc.enable()
+        self._charge(dt, hook)
         self._after_decision()
         return out
 
@@ -157,12 +170,6 @@ class PolicyRuntime:
 
     def admission_order(self, hdr: list, waiting: list):
         return _ids(self._decide("admission_order", hdr, tuple(waiting)), "admission_order")
-
-    def prefill_first(self, hdr: list):
-        out = self._decide("prefill_first", hdr)
-        if not isinstance(out, bool):
-            raise PolicyError("invalid", f"prefill_first returned {type(out).__name__}, not bool")
-        return out
 
     def choose_preempted(self, hdr: list, running: list):
         out = self._decide("choose_preempted", hdr, tuple(running))

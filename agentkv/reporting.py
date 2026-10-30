@@ -121,11 +121,13 @@ def score_summary(result, *, details=False):
     full_split = (per_family is not None and set(families) == set(metric.FAMILY_ORDER)
                   and all(count == per_family for count in families.values()))
     if result.valid and full_split and result.backend == "sim" and replicas == 2:
-        lines.append(f"Projected performance points on this split: {result.points:.1f}/50")
-        lines.append(f"The formula gives 25/50 at parity and 50/50 for a {100 * result.g_target:g}% reduction in job latency.")
+        top = metric.MAX_POINTS
+        lines.append(f"Projected performance points on this split: {result.points:.1f}/{top:g}")
+        lines.append(f"The formula gives {metric.PARITY_POINTS:g}/{top:g} at parity and {top:g}/{top:g} for a "
+                     f"{100 * result.g_target:g}% reduction in job latency (S = {1 / (1 - result.g_target):.4f}).")
         if result.capped:
-            lines.append("Points are capped at 25: at least one category's mean job latency is over 20% above the reference.")
-        lines.append("Final performance grading uses the sealed traces.")
+            lines.append(f"Points are reduced: categories below {metric.FAMILY_FLOOR:.2f}× subtract their shortfall from g.")
+        lines.append("Final performance grading uses the hidden traces.")
     elif not result.valid:
         lines.append("Invalid or incomplete evaluations receive no performance credit.")
     elif replicas == 1:

@@ -2,6 +2,7 @@
 
 import asyncio
 import math
+from types import SimpleNamespace
 
 import matplotlib
 matplotlib.use("Agg")
@@ -26,10 +27,10 @@ def test_cap_demo_shows_existing_calls_finishing_before_new_calls_start():
 def test_stage_plot_keeps_history_from_other_stages():
     # This small oracle assigns 256 reused tokens to each call after the first,
     # including the third call's reuse of content introduced by another stage.
-    calls = [{"stage": stage, "prompt_tokens": tokens} for stage, tokens in
+    calls = [SimpleNamespace(stage=stage, prompt_tokens=tokens) for stage, tokens in
              [("plan", 300), ("extract", 600), ("plan", 400)]]
     def share(prefix):
-        return 256 * (len(prefix) - 1) / sum(c["prompt_tokens"] for c in prefix)
+        return 256 * (len(prefix) - 1) / sum(c.prompt_tokens for c in prefix)
     fig, rows = plot_prefix_reuse(calls, share)
     assert math.isclose(rows["plan"]["shared"], 256)
     assert math.isclose(rows["extract"]["shared"], 256)

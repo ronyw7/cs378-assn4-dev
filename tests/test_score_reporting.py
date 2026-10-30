@@ -64,17 +64,17 @@ def test_reuse_is_weighted_by_tokens_and_details_keep_trace_diagnostics():
 @pytest.mark.parametrize("replicas", [1, 2])
 def test_points_require_the_full_two_replica_split(replicas):
     text = full_result(replicas=replicas).summary()
-    assert ("Projected performance points on this split: 25.0/50" in text) == (replicas == 2)
+    parity = f"Projected performance points on this split: {metric.PARITY_POINTS:.1f}/{metric.MAX_POINTS:g}"
+    assert (parity in text) == (replicas == 2)
     assert ("one-replica experiment" in text) == (replicas == 1)
     partial = result([(f, 10, 10, 0, 100) for f in metric.FAMILY_ORDER], split="public_val")
     assert "Projected performance points on this split:" not in partial.summary()
 
 
-def test_family_regression_cap_is_explained():
+def test_family_penalty_is_explained():
     r = full_result(capped=True)
     assert r.speedup > 1 and r.capped
-    assert "Points are capped at 25" in r.summary()
-    assert "over 20% above the reference" in r.summary()
+    assert "Points are reduced: categories below 0.90×" in r.summary()
 
 
 def test_invalid_policy_reports_failure_without_an_infinite_improvement():

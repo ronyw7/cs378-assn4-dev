@@ -1,5 +1,5 @@
-"""The optional scheduling hooks: dispatch_order, admission_order,
-prefill_first, and choose_preempted.
+"""The optional scheduling hooks: dispatch_order, admission_order, and
+choose_preempted.
 
 A policy that leaves them out gets nano-vLLM's rules without being called; one
 that spells those rules out gets exactly the same run. A policy that uses them
@@ -30,8 +30,6 @@ SPELLED_OUT_DEFAULTS = BASE + """
         return list(ready)
     def admission_order(self, view, waiting, state):
         return list(waiting)
-    def prefill_first(self, view, state):
-        return True
     def choose_preempted(self, view, running, state):
         return running[-1]
 """
@@ -46,11 +44,11 @@ def test_only_defined_hooks_are_reported():
         pass
 
     class Picky(Policy):
-        def prefill_first(self, view, state):
-            return False
+        def choose_preempted(self, view, running, state):
+            return running[0]
 
     assert overridden_hooks(Plain()) == ()
-    assert overridden_hooks(Picky()) == ("prefill_first",)
+    assert overridden_hooks(Picky()) == ("choose_preempted",)
 
 
 @pytest.mark.parametrize("isolate", [True, False], ids=["sandbox", "in-process"])
@@ -97,7 +95,6 @@ def test_hooks_change_the_run(pressure_trace, tmp_path):
     plain = run(pressure_trace, tmp_path, BASE)
     for body in ["def dispatch_order(self, view, ready, state):\n    return list(reversed(ready))",
                  "def admission_order(self, view, waiting, state):\n    return list(reversed(waiting))",
-                 "def prefill_first(self, view, state):\n    return False",
                  "def choose_preempted(self, view, running, state):\n    return running[0]"]:
         r = run(pressure_trace, tmp_path, BASE + textwrap.indent(body, "    "))
         assert r.valid, (body, r.violation)
@@ -111,11 +108,10 @@ def test_hooks_change_the_run(pressure_trace, tmp_path):
     "def dispatch_order(self, view, ready, state):\n    return []",
     "def admission_order(self, view, waiting, state):\n    return list(waiting)[1:]",
     "def admission_order(self, view, waiting, state):\n    return list(waiting) + ['x']",
-    "def prefill_first(self, view, state):\n    return 1",
     "def choose_preempted(self, view, running, state):\n    return 'not-running'",
     "def choose_preempted(self, view, running, state):\n    return None",
 ], ids=["dispatch-unknown", "dispatch-duplicate", "dispatch-not-a-list", "dispatch-stalls",
-        "admission-drops", "admission-adds", "prefill-not-bool", "preempt-unknown", "preempt-none"])
+        "admission-drops", "admission-adds", "preempt-unknown", "preempt-none"])
 def test_bad_answers_fail_the_run(pressure_trace, tmp_path, body):
     r = run(pressure_trace, tmp_path, BASE + textwrap.indent(body, "    "))
     assert not r.valid

@@ -29,7 +29,8 @@ DENY_EVENTS = (
     "os.chdir", "os.chmod", "os.chown", "os.chflags", "os.link", "os.symlink", "os.truncate",
     "os.utime", "os.putenv", "os.unsetenv", "os.startfile", "os.setxattr", "os.removexattr",
     "shutil.", "ctypes.", "mmap.", "sqlite3.", "urllib.", "http.", "ftplib.", "smtplib.",
-    "webbrowser.", "pty.", "fcntl.", "resource.", "_thread.start_new_thread", "signal.",
+    "webbrowser.", "pty.", "fcntl.", "resource.", "signal.",
+    "_thread.start_new_thread", "_thread.start_joinable_thread",   # the latter is Python 3.13's name
     "sys.addaudithook", "sys.setprofile", "sys.settrace", "sys.remote_exec", "time.sleep",
     "glob.", "tempfile.", "os.listxattr", "os.getxattr",
 )

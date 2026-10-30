@@ -2,7 +2,8 @@
 
 Copy this file to research/evaluator.py and choose an objective for your search.
 The simulator supplies the measurements; your evaluator decides how to rank
-candidates and what feedback to give the agents.
+candidates and what feedback to give the agents. Use split="screen" (one
+public_dev trace per family) to discard weak candidates quickly.
 """
 
 from agentkv import score
@@ -17,6 +18,7 @@ def evaluate(policy_path, *, split="public_dev", params=None, workers=None):
     """
     result = score(policy_path, split=split, params=params, workers=workers)
     feedback = result.to_json()
+    feedback["diagnostics"] = result.summary(details=True)   # per-trace cache, preemption, and CPU statistics
     feedback["objective"] = None
     if result.valid:
         # Choose the value your system should maximize. This example uses the

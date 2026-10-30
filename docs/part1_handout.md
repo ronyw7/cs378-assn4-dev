@@ -1,24 +1,21 @@
-# Part 1: Build a deep research agent
+# Part 1: Build and analyze a deep research agent
 
-Allow about 4–5 hours for this part, which is worth 15 points. Work through
+Allow 10–12 hours for this part, which is worth 20 points. Work through
 [`notebooks/part1_deep_research.ipynb`](../notebooks/part1_deep_research.ipynb)
-and use this handout for implementation requirements and submission details.
+and use this handout for the specifications.
 
 ## Introduction
 
-In this part, you will build a deep research agent, run it, and examine its
-workload from an inference engine's perspective. In Assignment 3, request
-arrivals were fixed by the replay trace. Here, later LLM calls may need to
-wait for earlier calls or tools to finish. These calls also often repeat long
-prefixes containing the same instructions, documents, and conversation history.
+You will build a deep research agent, run it, and measure its workload from an
+inference engine's point of view. Later LLM calls wait for earlier calls and
+tools, and many calls repeat long prompt prefixes: the same instructions, the
+same documents, and the conversation so far. You will find which operations
+determine when a report finishes, how much prompt content repeats and how long
+it would have to stay cached, and what running more calls at once costs in GPU
+memory, first from your own runs and then by replaying them on a simulated GPU.
 
-You will use recorded traces to identify parallel branches, shared prefixes,
-and operations on a report's critical path. This analysis provides the basis
-for Parts 2 and 3, where you will study scheduling and caching across several
-workloads, including mixtures that share one engine.
-
-The later parts use traces from a fixed staff implementation of the agent.
-Your Part 1 implementation therefore affects only your Part 1 grade.
+Parts 2 and 3 use traces from a fixed staff implementation of the agent, so
+your Part 1 code affects only your Part 1 grade.
 
 ## What you will build
 
@@ -30,7 +27,7 @@ Your Part 1 implementation therefore affects only your Part 1 grade.
 | Research each subtopic, in parallel | One search, up to three fetches, and one LLM call that extracts evidence quotes from the fetched documents. |
 | Check coverage | Deterministic code finds the first subtopic with no evidence. If there is one, a single follow-up branch researches it again with a broader query. |
 | Synthesize | One LLM call writes the report. Every claim cites evidence ids. |
-| Validate | The supplied citation checker. If the report fails, one repair call fixes it, and the checker runs again. |
+| Validate | The supplied citation checker. If the report fails, one repair call fixes it, and the checker runs again. The checker verifies that each cited quote exists at its offsets in the cited snapshot; it does not check that the claim follows from the quote. |
 
 Use this graph structure so that your traces can be compared with the
 evaluation traces. Per report, the tracing client enforces at most **8 LLM
@@ -71,20 +68,21 @@ The implementation uses five LangGraph concepts
 | You edit | |
 |---|---|
 | `research_app/concurrency.py` | `AdjustableCap`: `acquire`, `release`, and `set_limit`. |
-| `research_app/agent.py` | The nodes (`plan`, `research_facet` and its helper `research_branch`, `coverage`, `followup`, `synthesize`, `validate`, `repair`), the routing functions (`fan_out`, `route_coverage`, `route_validation`), and `build_graph`. The comments at each TODO explain the required behavior and relevant helpers. |
+| `research_app/agent.py` | The nodes (`plan`, `research_facet` and its helper `research_branch`, `coverage`, `followup`, `synthesize`, `validate`, `repair`), the routing functions (`fan_out`, `route_coverage`, `route_validation`), and `build_graph`. The comment at each TODO states the required behavior. |
+| `research_app/analysis.py` | `critical_path`, `shared_prefix_share`, `reuse_gaps`, and `kv_footprint` over a recorded run. |
 
 | Supporting files | |
 |---|---|
 | `research_app/tracing.py` | The tracing client. Every LLM and tool call goes through it. It records the trace and enforces the budgets. |
-| `research_app/prompts.py` | The prompts, laid out so that calls share prefixes: instructions first, then documents, then the part that varies. |
+| `research_app/prompts.py` | The prompts, laid out so that calls share prefixes: instructions first, then documents, then the part that varies. The system prompt is about 730 tokens, like the long system prompts of production agents, and every call starts with it. |
 | `research_app/corpus.py` | 48 Wikipedia articles on six systems topics, each pinned at two revisions, behind `search()` and `fetch()`, plus a seeded tool-latency model. The required experiments use these fixed sources. |
 | `research_app/llm.py` | `BedrockLLM` (the Converse API) and `FakeLLM` (deterministic and offline). |
 | `research_app/artifacts.py`, `research_app/citations.py` | `Evidence`, `Claim`, `Report`, `BranchResult`, and the citation checker. |
 | `research_app/data/questions.json` | The questions. The 16 marked `public` are the ones you run. |
 
-## Task 1: The concurrency cap (about 30 minutes)
+## Task 1: The concurrency cap (about 1 hour)
 
-Implement `acquire`, `release`, and `set_limit` in `research_app/concurrency.py`:
+Implement `acquire`, `release`, and `set_limit` in `research_app/concurrency.py`. The cap ranges from 1 to 8 here; the simulated engine of Parts 2 and 3 allows 1 to 16:
 
 - `acquire()` waits until `in_flight < limit`, then reserves a slot and updates
   the counters that track current calls, total grants, and peak concurrency.
@@ -101,7 +99,7 @@ An `asyncio.Condition` can coordinate waiting calls. Check your implementation
 with `pytest tests/test_part1_concurrency.py`, then run the notebook example
 to observe how six simulated calls respond when the cap drops from 3 to 1.
 
-## Task 2: The agent (2 to 3 hours)
+## Task 2: The agent (3 to 4 hours)
 
 Start with `build_graph`, leaving the node functions as stubs. As you implement
 each node, use the notebook's single-report run to check your progress; it
@@ -171,48 +169,86 @@ Use the following id and ordering conventions. `R03` is the report id (`ctx.rid`
 The follow-up branch researches the first uncovered subtopic again with a broader
 query, for example the subtopic's title and query plus the question.
 
-## Task 3: Two runs (15 minutes)
+## Task 3: Three runs (30 minutes)
 
-Run all 16 public questions, one report starting every 2 seconds, at C = 2 and
-at C = 8. Offline, with `FakeLLM` and its simulated latency, the C = 2 run takes
-about a minute and a half and the C = 8 run under a minute:
+Run all 16 public questions three times, one report starting every 2 seconds:
 
 ```bash
 python -m research_app.run --cap 2 --replay --out runs/c2
 python -m research_app.run --cap 8 --replay --out runs/c8
+python -m research_app.run --cap 8 --failure-rate 0.2 --replay --out runs/c8-faults
 ```
 
-On Amazon Bedrock, with the smaller course model, expect a few minutes per run:
+These use the offline `FakeLLM`. With Bedrock, set the model and add `--backend bedrock`:
 
 ```bash
 export AWS_REGION=us-west-2
 export AGENTKV_BEDROCK_MODEL="MODEL_ID_FROM_COURSE_PAGE"
 python -m research_app.run --backend bedrock --cap 2 --replay --out runs/c2
-python -m research_app.run --backend bedrock --cap 8 --replay --out runs/c8
 ```
 
-Each run writes `trace.jsonl` (every LLM and tool call), `reports.json`, and
-`summary.json`. `--replay` also writes `replay.json`, the same run as a trace
-that the simulator of Parts 2 and 3 can replay.
+`--failure-rate 0.2` makes each tool attempt fail transiently with probability
+0.2, so the third run exercises retries, follow-up branches, and repairs. Each
+run writes `trace.jsonl` (every LLM and tool call), `reports.json`,
+`summary.json`, and `replay.json`, the same run as a trace that the Parts 2 and
+3 simulator can replay.
 
-Bedrock does not expose its KV cache, so a live run cannot directly report
-cache hits. Instead, `trace.jsonl` records `prefix_ids` computed locally with
-the course tokenizer over 256-token blocks so you can analyze potential prefix
-reuse across calls. (When replaying traces in Parts 2 and 3, the Vidur
-simulator subdivides prompts into 16-token KV-cache blocks.)
+Bedrock does not expose its KV cache, so `trace.jsonl` records `prefix_ids`
+computed locally with the course tokenizer over 256-token blocks. They show
+potential prefix reuse; the simulator in Parts 2 and 3 uses 16-token blocks.
 
-## Task 4: Workload analysis (about 1 hour)
+## Task 4: Workload analysis (about 3 hours)
 
-Answer Q1–Q3 in the notebook, then include the questions and your answers in
-`assignment4_report.pdf`. Keep each question above its answer and follow the
-question order. Include the requested plots and table, and support your
-conclusions with measurements from both runs. There is no fixed page limit.
+Implement the four functions in `research_app/analysis.py`. Each takes the
+operations of a run loaded with `load_run("runs/c2")`; `Op` records an
+operation's id, report, kind, stage, dependencies, start and end times, slot
+request and grant times (LLM calls), token counts, and `prefix_ids`.
 
-**Q1.** Which operations are on the critical path of the report you examined? Include its dependency graph and explain which operations determine when it finishes. How much time does the report spend waiting for an LLM slot at C = 2?
+- **`critical_path(run, report)`** returns the operations that determined when
+  the report finished. Start from its operation with the latest end (break ties
+  by `op_id`), step to the dependency that finished last, and repeat until an
+  operation has no dependencies. Each `Step` splits an operation's share of the
+  latency into `gap` (from its blocking dependency's end, or the report's
+  arrival, to its start), `wait` (for an LLM slot), and `service` (the rest of
+  its duration, including retries and backoff). The steps add up to the
+  report's latency.
+- **`shared_prefix_share(calls)`** returns the fraction of prompt tokens in full
+  256-token blocks whose prefix id appeared in an earlier call. The final
+  partial block of a prompt never counts as shared.
+- **`reuse_gaps(calls)`** records, for each reuse of a block, how long it sat
+  unused: the reusing call's start minus the latest end of the earlier calls
+  that held it, or 0 if one of them is still running. This is how long a cache
+  would have had to keep the block for the reuse to hit.
+- **`kv_footprint(calls)`** returns the KV-cache bytes held by the LLM calls
+  that hold a slot, at every time that changes, both when each call stores its
+  own prompt and output and when identical full prefix blocks are stored once.
+  It assumes Llama-3-8B in bf16: 128 KiB per token (32 layers × 8 KV heads ×
+  128 dimensions × 2 for K and V × 2 bytes).
 
-**Q2.** What fraction of prompt tokens belong to prefix blocks that appeared in earlier calls? Use `prefix_ids` and `prompt_tokens`; only full 256-token blocks have prefix ids, so the final partial block of a prompt does not count as shared. Report the fraction by stage and explain what each stage reuses. Which prefixes would be useful to retain between calls, and for how long? Use measurements from both runs to support your answer.
+```bash
+pytest tests/test_part1_analysis.py
+```
 
-**Q3.** How does increasing the concurrency cap from C = 2 to C = 8 affect mean report latency, makespan, waiting time, and peak concurrent calls? Include the timelines and a table comparing the two runs. Estimate the GPU memory needed at each cap, accounting for shared prefixes. For this estimate, assume Llama-3-8B in bf16 on one 80 GB A100, with approximately 16 GB of weights and 128 KiB of KV cache per token (32 layers × 8 KV heads × 128 dimensions × 2 for K and V × 2 bytes). Explain the tradeoff between memory use and completion time.
+The notebook then plots one report's DAG with its critical path, every report's
+critical-path breakdown, prefix reuse by stage, reuse gaps, and the KV
+footprint of each run. Finally, it replays your C = 8 run on a simulated A100
+with `viz.record(..., kv_tokens=...)` across concurrency caps of 1 to 16 and
+KV-cache capacities of 12,288 to 393,216 tokens, so that you can measure the
+trade-off between concurrency and memory that the hosted API hides.
+
+## Task 5: Questions (2 to 3 hours)
+
+Answer Q1–Q4 in `assignment4_report.pdf`, each below its question, with the
+requested plots and tables. Support every answer with measurements from your
+runs.
+
+**Q1. Critical path.** For one report at C = 2, show its DAG and critical path. Which operations determine when it finishes, and how much of its latency is slot waiting, LLM service, and tool service? How does the breakdown change at C = 8, across all reports? Which single change to the agent or the cap would shorten the typical C = 8 critical path most, and by roughly how much?
+
+**Q2. Prefix reuse and retention.** What fraction of prompt tokens are in previously seen blocks, overall and by stage, and what content does each stage reuse? Using the reuse gaps, how long must a cache keep each kind of prefix for its reuse to hit, and which prefixes would you never keep? Use both runs.
+
+**Q3. Concurrency and memory.** Compare C = 2 and C = 8 in a table: mean report latency, makespan, mean slot wait, peak concurrent calls, and peak KV footprint with and without prefix sharing. Then use your replay sweep: at which KV capacity does a higher cap stop helping, and why? Assuming Llama-3-8B in bf16 on one 80 GB A100 (about 16 GB of weights), which cap would you choose for this workload, and how much memory headroom would remain?
+
+**Q4. Failures.** In the failure run, where do retries, follow-ups, and repairs appear, and which of them land on critical paths? How do they change the median and worst report latency? An LLM call keeps its slot while it backs off between attempts; at C = 2, would releasing the slot during backoff help or hurt mean report latency, and why?
 
 ## Hints and common pitfalls
 
@@ -234,24 +270,18 @@ conclusions with measurements from both runs. There is no fixed page limit.
 
 ## Submission
 
-Your team submits, in its Canvas archive (see the README):
+Include in your team's Canvas archive (see the README):
 
-- `research_app/agent.py` and `research_app/concurrency.py`, passing the public tests;
-- the two runs `runs/c2/` and `runs/c8/` (on Bedrock if you have access, otherwise with `FakeLLM`);
-- answers to Q1–Q3, with the requested plots and table, in `assignment4_report.pdf`.
+- `research_app/agent.py`, `research_app/concurrency.py`, and `research_app/analysis.py`;
+- the runs `runs/c2/`, `runs/c8/`, and `runs/c8-faults/`, and the backend you used;
+- answers to Q1–Q4, with the requested plots and tables, in `assignment4_report.pdf`.
 
-Include these files with Part 2's `policies/reference.py` in the Canvas archive.
-Staff correctness tests check the same contracts as the public tests with
-different inputs and failure conditions. Gradescope is used only for the
-Part 3 policy leaderboard. Both team members must be able to explain the
-implementation during the individual check.
-
-## Grading (15 points)
+## Grading (20 points)
 
 | Item | Points |
 |---|---|
-| Implementation correctness: concurrency cap (2 points) and research graph (7 points), checked on hidden cases. Use the public tests during development. | 9 |
-| Answers to Q1–Q3, with both controlled runs and the requested plots and table. | 6 |
+| Implementation correctness on staff tests with new inputs and failure conditions: concurrency cap (2), research graph (6), analysis functions (4) | 12 |
+| Answers to Q1–Q4, with the requested plots and tables | 8 |
 
 The skeleton is adapted from LangChain's *Deep Research from Scratch* (MIT),
 and the report-with-sources interface follows Stanford CS329a HW3.

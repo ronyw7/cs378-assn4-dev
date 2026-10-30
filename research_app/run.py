@@ -2,6 +2,7 @@
 
     python -m research_app.run --cap 2 --replay --out runs/c2     # 16 public questions, FakeLLM
     python -m research_app.run --cap 8 --replay --out runs/c8
+    python -m research_app.run --cap 8 --failure-rate 0.2 --replay --out runs/c8-faults
     AGENTKV_BEDROCK_MODEL=... python -m research_app.run --backend bedrock --cap 2 --replay --out runs/c2
 
 Reports start `--stagger` seconds apart. Writes to --out:
@@ -48,6 +49,7 @@ def main(argv: list[str] | None = None) -> dict:
     ap.add_argument("--snapshot", default="v2", choices=["v1", "v2"])
     ap.add_argument("--seed", type=int, default=0, help="tool latency seed")
     ap.add_argument("--latency-scale", type=float, default=1.0, help="scale simulated tool and FakeLLM latency")
+    ap.add_argument("--failure-rate", type=float, default=0.0, help="probability that a tool attempt fails transiently")
     ap.add_argument("--record", action="store_true", help="do not sleep; only record durations")
     ap.add_argument("--replay", action="store_true", help="also write replay.json (agentkv trace)")
     ap.add_argument("--num-blocks", type=int, default=192, help="KV blocks for replay.json")
@@ -59,16 +61,18 @@ def main(argv: list[str] | None = None) -> dict:
     kw = {"latency": FakeLatency(scale=args.latency_scale)} if args.backend == "fake" and not args.record else {}
     llm = make_llm(args.backend, **kw)
 
+    latency = ToolLatency(seed=args.seed, scale=args.latency_scale, failure_rate=args.failure_rate)
+
     async def go():
         return await run_reports(questions, llm=llm, cap=AdjustableCap(args.cap), arrivals=arrivals,
-                                 snapshot=args.snapshot, live=not args.record,
-                                 latency=ToolLatency(seed=args.seed, scale=args.latency_scale),
+                                 snapshot=args.snapshot, live=not args.record, latency=latency,
                                  settings=AgentSettings(), backend=args.backend)
 
     recorder, recs = asyncio.run(go())
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    recorder.meta.update({"questions": args.questions, "stagger": args.stagger, "snapshot": args.snapshot})
+    recorder.meta.update({"questions": args.questions, "stagger": args.stagger, "snapshot": args.snapshot,
+                          "failure_rate": args.failure_rate})
     recorder.export_jsonl(out / "trace.jsonl")
     (out / "reports.json").write_text(json.dumps(
         [{"report_id": r.report_id, "question_id": r.question_id, "valid": r.valid, "errors": r.errors,

@@ -26,7 +26,6 @@ class ReferencePolicy(Policy):
         # used across calls to on_event and choose_victim. An OrderedDict is
         # one option; allocation and access should be efficient to record.
         # The fixed concurrency cap above is already provided.
-        # Use: OrderedDict, or another data structure stored on self.
         raise NotImplementedError("Part 2: fill __init__")
         # END OF YOUR CODE
 
@@ -40,7 +39,6 @@ class ReferencePolicy(Policy):
         # not count as an access, so it must not change recency. Ignore the
         # other event kinds. Your tracking state may include active blocks;
         # choose_victim will receive the subset eligible for eviction.
-        # Use: event.kind, event.block, and the state initialized in __init__.
         raise NotImplementedError("Part 2: fill on_event")
         # END OF YOUR CODE
 
@@ -55,6 +53,5 @@ class ReferencePolicy(Policy):
         # is based on release time, so returning candidates[0] does not
         # implement LRU. Leave recency unchanged here; the engine sends an
         # evict event after it overwrites the chosen block.
-        # Use: candidates and the recency state maintained by on_event.
         raise NotImplementedError("Part 2: fill choose_victim")
         # END OF YOUR CODE

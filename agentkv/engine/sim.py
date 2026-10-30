@@ -72,12 +72,11 @@ class SimEngine:
             k_max = min(k_max, to_block, to_finish)
         batch, context = len(seqs), sum(s.num_tokens for s in seqs)
         waiting = self.sched.waiting
-        prefill_next = waiting and not self.sched.decode_by_choice and (
+        prefill_next = waiting and (
             waiting[0].block_table or self.kv.can_allocate(waiting[0]) is not None)
         if not self.macro or prefill_next:
             # A preemption while scheduling this step freed blocks, so prefill
-            # takes over at the next step: no run. (When the policy chose to
-            # decode, it is asked again at the next observable moment.)
+            # takes over at the next step: no run.
             k_max = 1
         k = k_max
         if horizon - now < self.timing.decode_run(batch, context, k_max):

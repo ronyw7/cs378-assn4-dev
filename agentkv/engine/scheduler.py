@@ -28,7 +28,7 @@ OnCall = Callable[[str, Seq], None]
 
 
 class SchedulingHooks:
-    """Control admission order, the choice between prefill and decode, and preemption.
+    """Control admission order and preemption.
 
     Each hook is called only when the scheduler has a choice to make.
     The default implementations follow nano-vLLM's rules.
@@ -36,9 +36,6 @@ class SchedulingHooks:
 
     def admission_order(self, waiting: list[Seq]) -> list[Seq]:
         return waiting
-
-    def prefill_first(self) -> bool:
-        return True
 
     def choose_preempted(self, running: list[Seq]) -> Seq:
         return running[-1]
@@ -50,7 +47,6 @@ class Scheduler:
                  on_call: OnCall | None = None, hooks: SchedulingHooks | None = None):
         self.kv = kv
         self.hooks = hooks or SchedulingHooks()
-        self.decode_by_choice = False    # the last step decoded although a prefill could have run
         self.block_size = kv.block_size
         self.max_num_seqs = max_num_seqs
         self.max_num_batched_tokens = max_num_batched_tokens
@@ -89,22 +85,15 @@ class Scheduler:
             fresh = order
         self.waiting = deque(started + fresh)
 
-    def _prefill_possible(self) -> bool:
-        head = self.waiting[0]
-        return bool(head.block_table) or self.kv.can_allocate(head) is not None
-
     def _schedule(self) -> tuple[list[Seq], bool]:
         bs = self.block_size
         scheduled: list[Seq] = []
         num_batched = 0
-        self.decode_by_choice = False
         if self.waiting:
             self._order_waiting()
-        if self.waiting and self.running and self._prefill_possible() and not self.hooks.prefill_first():
-            self.decode_by_choice = True
 
         # prefill
-        while self.waiting and len(scheduled) < self.max_num_seqs and not self.decode_by_choice:
+        while self.waiting and len(scheduled) < self.max_num_seqs:
             seq = self.waiting[0]
             remaining = self.max_num_batched_tokens - num_batched
             if remaining == 0:

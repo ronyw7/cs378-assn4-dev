@@ -72,8 +72,6 @@ class VidurReplay(Replay):
         self.replica_busy = [0.0] * replicas
 
     def _loop(self):
-        if "prefill_first" in self.client.hooks:
-            raise PolicyError("invalid", "prefill_first belongs to the previous engine. Vidur mixes prefill and decode; use batch_token_budget instead.")
         while len(self.flows) < len(self.trace.jobs):
             if not self.heap:
                 raise PolicyError("stalled", "No progress is possible; dispatch_order may have omitted all ready calls")
@@ -100,10 +98,19 @@ class VidurReplay(Replay):
                     self._schedule(scheduler)
 
     def _schedule(self, scheduler):
-        output = scheduler.on_schedule(self.t)
+        # A step that preempts its own candidate returns no batch but frees memory; retry until nothing changes.
+        for _ in range(2 * MAX_CONCURRENCY + 1):
+            preempted = self.preemptions
+            output = scheduler.on_schedule(self.t)
+            if output.batch is not None or self.preemptions == preempted:
+                break
         batch = output.batch
         if batch is None:
-            raise PolicyError("stalled", "Vidur could not schedule a call within this replica's memory quota")
+            hooks = sorted(h for h in ("admission_order", "choose_preempted", "batch_token_budget")
+                           if h in self.client.hooks)
+            raise PolicyError("stalled", f"replica {scheduler.index} could not schedule any call at t={self.t:.3f}s "
+                              f"({len(scheduler._running)} running, {len(scheduler._waiting_queue)} waiting) within "
+                              f"its memory quota; engine hooks defined by the policy: {', '.join(hooks) or 'none'}")
         duration = self.predictor.get_batch_execution_time(batch, 0).total_time
         if not math.isfinite(duration) or duration <= 0:
             raise RuntimeError("Invalid Vidur batch-time prediction")

@@ -142,9 +142,6 @@ class _PolicyHooks(SchedulingHooks):
             raise PolicyError("invalid", "admission_order must return every waiting call id exactly once")
         return [by_pid[pid] for pid in order]
 
-    def prefill_first(self) -> bool:
-        return self.r.client.prefill_first(self.r._hdr()) if self._defines("prefill_first") else True
-
     def choose_preempted(self, running: list[Seq]) -> Seq:
         if not self._defines("choose_preempted"):
             return running[-1]

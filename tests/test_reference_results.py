@@ -1,4 +1,4 @@
-"""Verify that the supplied reference reproduces the saved Vidur job latencys."""
+"""The completed Part 2 reference reproduces the saved staff reference job latencies."""
 
 import pytest
 from conftest import REPO

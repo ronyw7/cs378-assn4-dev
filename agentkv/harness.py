@@ -1,8 +1,9 @@
 """A small KV-cache harness for testing a policy's eviction decisions.
 
-The harness drives the real KVCacheManager with one-token blocks named by
-strings, and feeds the policy the same events the engine would. It is what the
-Part 2 public oracle uses:
+The harness drives a block-level cache with one-token blocks named by strings
+and feeds the policy the same events the engine would; a block's name is both
+its residence id and its prefix id, and everything is on replica 0. It is what
+the Part 2 public oracles use:
 
     h = BlockHarness(LRUPolicy(), capacity=3)
     h.allocate("A"); h.allocate("B"); h.release("A"); h.release("B")
@@ -109,7 +110,7 @@ class BlockHarness:
             self._events.append(("hit", self.t, name, CALL))
         elif kind == "alloc":
             parent = self.parents.get(name)
-            self._events.append(("alloc", self.t, name, parent, self._depth(name), CALL))
+            self._events.append(("alloc", self.t, name, parent, self._depth(name), CALL, name, 0))
         elif kind == "release":
             self._events.append(("release", self.t, name, CALL, kw["refs"]))
         elif kind == "evict":

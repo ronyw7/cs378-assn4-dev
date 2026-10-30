@@ -108,15 +108,14 @@ def test_cache_hit_on_the_critical_path(tmp_path):
 
 
 def test_points_conversion():
-    assert metric.points(0.0, g_target=0.10) == 25.0
-    assert metric.points(0.05, g_target=0.10) == pytest.approx(37.5)
-    assert metric.points(0.10, g_target=0.10) == 50.0
-    assert metric.points(0.30, g_target=0.10) == 50.0
-    assert metric.points(-0.05, g_target=0.10) == pytest.approx(12.5)
+    top, parity = metric.MAX_POINTS, metric.PARITY_POINTS
+    assert metric.points(0.0, g_target=0.10) == parity
+    assert metric.points(0.05, g_target=0.10) == pytest.approx((parity + top) / 2)
+    assert metric.points(0.10, g_target=0.10) == top
+    assert metric.points(0.30, g_target=0.10) == top
     assert metric.points(-0.5, g_target=0.10) == 0.0
-    assert metric.points(metric.G_TARGET) == 50.0
-    s = 1 / 0.9
-    assert 1 - 1 / s == pytest.approx(0.10)
+    assert metric.points(metric.G_TARGET) == top
+    assert 1 - 1 / metric.FULL_CREDIT_SPEEDUP == pytest.approx(metric.G_TARGET)
 
 
 def rows(ratios):
@@ -130,15 +129,9 @@ def test_family_balanced_speedup():
     assert m["by_family"] == {"D1": pytest.approx(1.2), "W1": pytest.approx(1.0)}
 
 
-def test_family_regression_gate_caps_at_parity():
-    m = metric.summarize(rows([("D1", 2.0), ("D2", 2.0), ("W1", 1 / 1.25)]))
-    assert m["g"] > 0 and m["capped"] and m["g_eff"] == 0.0 and m["points"] == 25.0
-    m = metric.summarize(rows([("D1", 2.0), ("W1", 1 / 1.15)]))
-    assert not m["capped"] and m["points"] > 25
-
-
-def test_gpu_deadband():
-    m = metric.summarize(rows([("D1", 1.015)]), backend="gpu")
-    assert m["g_eff"] == 0.0 and m["points"] == 25.0
-    m = metric.summarize(rows([("D1", 1.015)]), backend="sim")
-    assert m["g_eff"] > 0
+def test_family_below_the_floor_costs_its_shortfall():
+    m = metric.summarize(rows([("D1", 1.2), ("W1", 0.85)]))
+    assert m["capped"] and m["regressed_families"] == ["W1"]
+    assert m["g_eff"] == pytest.approx(m["g"] - (metric.FAMILY_FLOOR - 0.85))
+    m = metric.summarize(rows([("D1", 1.2), ("W1", 0.95)]))
+    assert not m["capped"] and m["g_eff"] == m["g"]

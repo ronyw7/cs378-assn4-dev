@@ -161,8 +161,6 @@ async def plan(state: ReportState, config: RunnableConfig) -> dict:
     # order (0,). Pass the reply text to parse_facets, or None if the call
     # failed so the supplied fallback can produce a plan. Return the state
     # keys "facets" and "plan_op"; the latter is the operation's id.
-    # Use: prompts.plan_messages, ctx.client.llm_call,
-    # ctx.settings.plan_tokens, parse_facets, ctx.settings.
     raise NotImplementedError("Part 1: fill plan")
     # END OF YOUR CODE
 
@@ -174,7 +172,6 @@ def fan_out(state: ReportState) -> list[Send]:
     # "facet" (the Facet object), "index" (its zero-based position), and
     # "deps" (a list containing the plan operation's id). Return the list
     # of Send objects; LangGraph starts those branches in parallel.
-    # Use: Send, state["question"], state["facets"], state["plan_op"].
     raise NotImplementedError("Part 1: fill fan_out")
     # END OF YOUR CODE
 
@@ -204,9 +201,6 @@ async def research_branch(ctx: ReportContext, question: str, facet: Facet, index
     # BranchResult, and orders (1, index, ...). A follow-up uses "followup",
     # 100 + index, and orders (2, 0, ...). Within either branch, search is
     # step (0,), fetch k is step (1, k), and extraction is step (2,).
-    # Use: ctx.client.search/fetch/llm_call, ctx.settings, asyncio.gather,
-    # BranchResult, BranchStatus, prompts.extract_messages, parse_evidence.
-    # See the handout's operation-id table for the full id conventions.
     raise NotImplementedError("Part 1: fill research_branch")
     # END OF YOUR CODE
 
@@ -219,8 +213,6 @@ async def research_facet(state: dict, config: RunnableConfig) -> dict:
     # Return {"branches": [result]} so the branches reducer can concatenate
     # this result with the other branches. Do not replace the shared list
     # with a single BranchResult or mutate another branch's state.
-    # Use: research_branch, ctx, state["question"], state["facet"],
-    # state["index"], state["deps"].
     raise NotImplementedError("Part 1: fill research_facet")
     # END OF YOUR CODE
 
@@ -232,8 +224,6 @@ def coverage(state: ReportState) -> dict:
     # least one usable evidence item. Examine subtopics in plan order and
     # return {"uncovered": index} for the first missing one, or None as the
     # value if all are covered. The value is an index, not a Facet object.
-    # Use: state["facets"], state["branches"], BranchResult.index,
-    # BranchResult.followup, BranchResult.evidence.
     raise NotImplementedError("Part 1: fill coverage")
     # END OF YOUR CODE
 
@@ -244,7 +234,6 @@ def route_coverage(state: ReportState) -> str:
     # Return "followup" if "uncovered" contains an index; otherwise return
     # "synthesize". Index 0 identifies the first subtopic and must trigger
     # a follow-up too, so a truth-value check on the index is insufficient.
-    # Use: state["uncovered"].
     raise NotImplementedError("Part 1: fill route_coverage")
     # END OF YOUR CODE
 
@@ -268,8 +257,6 @@ async def followup(state: ReportState, config: RunnableConfig) -> dict:
     # with followup=True and dependencies from _branch_tails so it waits
     # for all original branches. Return the result as a one-element list
     # under "branches", just as research_facet does.
-    # Use: state["facets"], state["question"], state["branches"],
-    # research_branch, _branch_tails, ctx.
     raise NotImplementedError("Part 1: fill followup")
     # END OF YOUR CODE
 
@@ -286,8 +273,6 @@ async def synthesize(state: ReportState, config: RunnableConfig) -> dict:
     # Keep the messages and raw reply for a possible repair; "report" is
     # parse_report's result. If the call failed, use an empty draft and
     # pass None to parse_report so validation can report the missing claims.
-    # Use: assign_evidence_ids, prompts.synthesize_messages,
-    # ctx.client.llm_call, ctx.settings.synthesize_tokens, parse_report.
     raise NotImplementedError("Part 1: fill synthesize")
     # END OF YOUR CODE
 
@@ -302,8 +287,6 @@ async def validate(state: ReportState, config: RunnableConfig) -> dict:
     # Leave snapshot unset so evidence can cite either saved corpus version.
     # Return "errors" as a list of strings, "validate_op" as the operation
     # id, and "valid" as True only when no errors were found.
-    # Use: ctx.client.validate, state["report"], state.get("repaired", False),
-    # state["synth_op"].
     raise NotImplementedError("Part 1: fill validate")
     # END OF YOUR CODE
 
@@ -315,7 +298,6 @@ def route_validation(state: ReportState) -> str:
     # or there is no draft to repair. Otherwise return "repair". A report
     # that still fails after repair must finish with valid=False; do not
     # route it through another repair attempt.
-    # Use: END, state["valid"], state.get("repaired"), state.get("draft").
     raise NotImplementedError("Part 1: fill route_validation")
     # END OF YOUR CODE
 
@@ -331,8 +313,6 @@ async def repair(state: ReportState, config: RunnableConfig) -> dict:
     # keep the current report. Return "report", "repaired": True, and
     # "synth_op" set to the repair operation id so revalidation waits for it.
     # Mark the attempt as repaired even if the call failed.
-    # Use: prompts.repair_messages, ctx.client.llm_call, parse_report,
-    # state["validate_op"], state["evidence"], ctx.settings.synthesize_tokens.
     raise NotImplementedError("Part 1: fill repair")
     # END OF YOUR CODE
 
@@ -346,8 +326,6 @@ def build_graph():
     # route_coverage to choose followup or synthesize. Followup also leads
     # to synthesize. Synthesis leads to validate, where route_validation
     # chooses repair or END. Repair returns to validate for the final check.
-    # Use: StateGraph, ReportState, START, END, add_node, add_edge,
-    # add_conditional_edges, compile, and the three routing functions.
     raise NotImplementedError("Part 1: fill build_graph")
     # END OF YOUR CODE
 

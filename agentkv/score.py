@@ -6,9 +6,10 @@
 
     python -m agentkv.score --policy candidates/p17.py --split public_dev --backend sim
 
-The sim backend runs Vidur locally with two independent replicas by default.
-Use replicas=1 for Part 2. The previous GPU adapter is disabled because it
-does not implement the same model and scheduler.
+The sim backend runs Vidur locally with two independent replicas by default;
+use replicas=1 for Part 2. Traces are scored in parallel worker processes
+(AGENTKV_WORKERS overrides the count), so call score() from a saved script
+under `if __name__ == "__main__":`, from a notebook, or with workers=1.
 """
 
 from __future__ import annotations
@@ -98,7 +99,9 @@ class ScoreResult:
 
 
 def split_paths(split) -> list[Path]:
-    """Resolve a split name, trace directory, trace file, or file list into paths to evaluate."""
+    """Resolve a split name, trace directory, trace file, or file list into paths to evaluate.
+
+    "screen" is one public_dev trace per family, for quick checks before a full evaluation."""
     if isinstance(split, (list, tuple)):
         return [Path(p) for p in split]
     p = Path(split)
@@ -107,12 +110,14 @@ def split_paths(split) -> list[Path]:
     if p.is_dir():
         return sorted(p.glob("*.json"))
     base = Path(os.environ.get("AGENTKV_TRACES", REPO / "data" / "traces"))
+    if split == "screen":
+        return sorted((base / "public_dev").glob("dev-*-0.json"))
     if split in PUBLIC_SPLITS:
         d = base / split
     elif split in STAFF_SPLITS:
         d = Path(os.environ.get("AGENTKV_STAFF_TRACES", REPO / "grader" / "traces")) / split
     else:
-        raise ScoreError(f"unknown split {split!r}; use {', '.join(PUBLIC_SPLITS)} or a path")
+        raise ScoreError(f"unknown split {split!r}; use screen, {', '.join(PUBLIC_SPLITS)}, or a path")
     paths = sorted(d.glob("*.json"))
     if not paths:
         raise ScoreError(f"no traces found in {d}")
@@ -134,7 +139,7 @@ def _run(task: dict) -> RunResult:
         return run_vidur(trace, task["policy"], params=task["params"], seed=task["seed"],
                          isolate=task["isolate"], replicas=task.get("replicas", 2))
     engine = None
-    if task["backend"] == "gpu":
+    if task["backend"] == "gpu":   # staff-only GPU replay; the module is not shipped to students
         from .engine.gpu import make_engine
         engine = make_engine(trace)
     timing = TimingModel(**task["timing"]) if task.get("timing") else None
@@ -142,8 +147,26 @@ def _run(task: dict) -> RunResult:
                       isolate=task["isolate"], timing=timing, engine=engine)
 
 
+def default_workers(n_tasks: int) -> int:
+    """Worker processes for scoring: AGENTKV_WORKERS, or all but one CPU (at most 12)."""
+    env = os.environ.get("AGENTKV_WORKERS")
+    if env:
+        return max(1, min(int(env), n_tasks))
+    return max(1, min(n_tasks, (os.cpu_count() or 2) - 1, 12))
+
+
+def _spawn_safe() -> bool:
+    """Spawned workers re-import the caller's main module; that fails for `python - <<EOF`."""
+    path = getattr(sys.modules.get("__main__"), "__file__", None)
+    return path is None or os.path.exists(path)
+
+
 def _run_all(tasks: list[dict], workers: int | None) -> list[RunResult]:
-    workers = workers or min(len(tasks), os.cpu_count() or 1, 4)
+    workers = workers or default_workers(len(tasks))
+    if workers > 1 and len(tasks) > 1 and not _spawn_safe():
+        print("agentkv.score: the main script is not a file (e.g. stdin), so traces run in one process; "
+              "save the script to a .py file to score in parallel", file=sys.stderr)
+        workers = 1
     if workers <= 1 or len(tasks) == 1:
         return [_run(t) for t in tasks]
     import multiprocessing as mp
@@ -263,7 +286,7 @@ def evaluate(policy_path: str, trace_paths: list, backend: str = "sim", *, b0: s
 
     valid = not violations
     if valid:
-        m = metric.summarize(rows, backend=backend, g_target=g_target)
+        m = metric.summarize(rows, g_target=g_target)
     else:
         m = {"speedup": 0.0, "g": -math.inf, "g_eff": -math.inf, "points": 0.0, "by_family": {}, "capped": False}
     by_trace = dict(sorted(by_trace.items(), key=lambda kv: (metric.family_key(kv[1].family), kv[0])))
@@ -282,14 +305,8 @@ def score(policy, split="public_dev", backend: str = "sim", *, params: dict | No
     if isinstance(policy, type):
         import inspect
         policy = inspect.getsourcefile(policy)
-    if backend == "gpu":
-        raise ScoreError("GPU confirmation is unavailable during the Vidur migration; use backend='sim'.")
-    if backend == "gpu" and not _local_gpu():
-        if not isinstance(split, str) or split not in PUBLIC_SPLITS:
-            raise ScoreError("the GPU queue only accepts public_dev or public_val")
-        from . import gpu_queue
-        exp = gpu_queue.submit(str(policy), split, params)
-        return _from_json(gpu_queue.wait(exp))
+    if backend != "sim":
+        raise ScoreError(f"unknown backend {backend!r}; the assignment evaluator is backend='sim' (Vidur)")
     name = split if isinstance(split, str) else "custom"
     return evaluate(str(policy), split_paths(split), backend, b0=b0, params=params, seed=seed,
                     isolate=isolate, workers=workers, g_target=g_target, split=name, replicas=replicas)
@@ -319,8 +336,7 @@ def parse_params(text: str | None) -> dict | None:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog="python -m agentkv.score", description=__doc__.split("\n\n")[0])
     ap.add_argument("--policy", required=True)
-    ap.add_argument("--split", default="public_dev", help="public_dev, public_val, a directory, or a trace file")
-    ap.add_argument("--backend", default="sim", choices=["sim", "legacy_sim", "gpu"])
+    ap.add_argument("--split", default="public_dev", help="screen, public_dev, public_val, a directory, or a trace file")
     ap.add_argument("--replicas", type=int, choices=[1, 2], default=2)
     ap.add_argument("--params", help="JSON object or path to a JSON file passed to the policy constructor")
     ap.add_argument("--seed", type=int, default=0)
@@ -328,12 +344,12 @@ def main(argv=None) -> int:
     ap.add_argument("--json", help="write the full result as JSON to this path")
     ap.add_argument("--details", action="store_true", help="also print cache and scheduling statistics for each trace")
     ap.add_argument("--no-isolate", action="store_true", help="run the policy in-process (debugging only)")
-    ap.add_argument("--b0", default="reference", choices=["reference", "live"],
-                    help="reference: stored baseline job latencies; live: rerun the baseline (staff only)")
+    ap.add_argument("--baseline", default="reference", choices=["reference", "live"],
+                    help="reference: saved reference job latencies; live: rerun the reference")
     args = ap.parse_args(argv)
     params = parse_params(args.params)
-    r = score(args.policy, args.split, args.backend, params=params, seed=args.seed, workers=args.workers,
-              isolate=not args.no_isolate, b0=args.b0, replicas=args.replicas)
+    r = score(args.policy, args.split, params=params, seed=args.seed, workers=args.workers,
+              isolate=not args.no_isolate, b0=args.baseline, replicas=args.replicas)
     print(r.summary(details=args.details))
     if args.json:
         Path(args.json).write_text(json.dumps(r.to_json(), indent=1) + "\n")

@@ -50,8 +50,6 @@ class AdjustableCap:
         # must leave the counters unchanged. For each grant, increment grants
         # and update peak; over_limit counts grants made at or above the limit
         # and should remain zero in a correct implementation.
-        # Use: self._cond, self._in_flight, self._limit, self.grants,
-        # self.peak, self.over_limit.
         raise NotImplementedError("Part 1: fill acquire")
         # END OF YOUR CODE
 
@@ -62,7 +60,6 @@ class AdjustableCap:
         # calls so they can check whether a slot is available. Releasing when
         # no slot is held is a programming error: raise RuntimeError rather
         # than allowing the count to become negative.
-        # Use: self._cond, self._in_flight.
         raise NotImplementedError("Part 1: fill release")
         # END OF YOUR CODE
 
@@ -76,7 +73,6 @@ class AdjustableCap:
         # and no running call has released a slot. If the limit shrinks below
         # _in_flight, let those calls finish; do not cancel them or change the
         # count to make it match the new limit.
-        # Use: limit, self._cond, self._limit, self._in_flight.
         raise NotImplementedError("Part 1: fill set_limit")
         # END OF YOUR CODE
 

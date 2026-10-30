@@ -23,11 +23,20 @@ import argparse, hashlib, json, math, os, pathlib, random, re, runpy, time
 from agentkv import score
 
 
+def bedrock_client():
+    import boto3
+    from botocore.config import Config
+    # Long replies can take minutes; adaptive retries absorb throttling.
+    return boto3.client("bedrock-runtime", config=Config(read_timeout=900, retries={"max_attempts": 8, "mode": "adaptive"}))
+
+
 def ask(bedrock, model, prompt):
-    # maxTokens covers the model's thinking as well as the reply. The reply may
-    # start with a reasoning block, so keep only the text blocks.
-    r = bedrock.converse(modelId=model, messages=[{"role": "user", "content": [{"text": prompt}]}],
-                         inferenceConfig={"maxTokens": 32000})
+    """Return (reply text, usage). A failed request returns an empty reply and records the error."""
+    try:
+        r = bedrock.converse(modelId=model, messages=[{"role": "user", "content": [{"text": prompt}]}],
+                             inferenceConfig={"maxTokens": 32000})
+    except Exception as e:
+        return "", {"input_tokens": 0, "output_tokens": 0, "model": model, "error": f"{type(e).__name__}: {e}"}
     usage = r["usage"]
     text = "".join(b.get("text", "") for b in r["output"]["message"]["content"])
     return text, {"input_tokens": usage["inputTokens"], "output_tokens": usage["outputTokens"],
@@ -45,8 +54,17 @@ def ask_offline(best_code, rng):
 
 def brief(r):
     fams = ", ".join(f"{f} {s:.3f}" for f, s in r["by_family"].items())
-    return (f"valid={r['valid']} objective={r.get('objective')} S={r['speedup']:.4f} "
-            f"by_family=[{fams}] violations={r['violations'][:2]}")
+    objective = f"objective={r['objective']} " if "objective" in r else ""
+    return f"valid={r['valid']} {objective}S={r['speedup']:.4f} by_family=[{fams}] violations={r['violations'][:2]}"
+
+
+def hypothesis_of(reply):
+    """The first non-empty line of the reply, without Markdown emphasis or a 'Hypothesis:' label."""
+    for line in reply.splitlines():
+        line = re.sub(r"^hypothesis\b\s*:?\s*", "", line.strip().strip("*#> ").strip(), flags=re.I).strip("* ")
+        if line:
+            return line[:200]
+    return "(empty reply)"
 
 
 def load_evaluator(path):
@@ -89,9 +107,8 @@ def main():  # score() runs traces in a process pool, so everything lives under 
 
     rng, bedrock, model = random.Random(0), None, None
     if not args.offline:
-        import boto3
         model = os.environ["AGENTKV_RESEARCH_MODEL"]
-        bedrock = boto3.client("bedrock-runtime")
+        bedrock = bedrock_client()
     out = pathlib.Path(args.out)
     out.mkdir(parents=True, exist_ok=False)  # do not mix two campaigns' records
     (out / "evaluator.py").write_text(evaluator_source)
@@ -134,7 +151,7 @@ def main():  # score() runs traces in a process pool, so everything lives under 
         r = evaluate_candidate(evaluate, path)
         scores_path = out / f"p{i:02d}.scores.json"
         scores_path.write_text(json.dumps(r, indent=2) + "\n")
-        hypothesis = reply.strip().splitlines()[0][:200]
+        hypothesis = hypothesis_of(reply) if reply else f"(model call failed: {usage.get('error', '')[:150]})"
         history.append(f"p{i:02d}: {hypothesis} -> {brief(r)}")
         row = {"id": f"p{i:02d}", "parent": best_id, "hypothesis": hypothesis, "file": str(path),
                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(), "dev_S": r["speedup"],

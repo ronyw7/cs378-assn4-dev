@@ -1,6 +1,5 @@
 """A starter agentic research system that generates policies, evaluates them, and
-retains the best candidate. See the Part 3 handout for using it as a control
-in your experiments.
+retains the best candidate. See the Part 3 handout.
 
     export AGENTKV_RESEARCH_MODEL=<the course's approved Bedrock model id>
     python examples/research_system.py --iters 10

@@ -1,4 +1,4 @@
-"""Prefix-aware eviction and cache-affinity routing (Part 2, Tasks 2 and 3).
+"""Prefix-aware eviction and cache-affinity routing (Part 2, tasks 2.2 and 2.3).
 
 choose_victim: evict the least recently used cached block that is a leaf of
 its replica's prefix tree (no resident block on that replica extends it), and

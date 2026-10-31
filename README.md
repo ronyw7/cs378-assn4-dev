@@ -10,51 +10,27 @@ CS 378: Systems for Generative AI, Fall 2026. Complete this assignment with your
 - [Part 1: Build and analyze a deep research agent](#part-1-build-and-analyze-a-deep-research-agent)
 - [Part 2: KV-cache eviction and routing](#part-2-kv-cache-eviction-and-routing)
 - [Part 3: Agent-driven policy research](#part-3-agent-driven-policy-research)
-- [Testing](#testing)
-- [What not to modify](#what-not-to-modify)
 - [Submission](#submission)
 - [Grading](#grading)
-- [Data and licenses](#data-and-licenses)
 - [Acknowledgments](#acknowledgments)
 
 ## Overview
 
-In Assignment 3, we studied how an LLM serving engine schedules individual requests: chunked prefill, request prioritization, and multi-replica routing. Agentic applications change the problem. One user task issues many dependent LLM and tool calls, some in parallel, and the goal becomes finishing the whole task quickly. These calls also repeat long prompt prefixes, so the engine can reuse cached KV blocks instead of recomputing them, but cached blocks take memory that running calls need.
+In Assignment 3, we studied how an LLM serving engine schedules individual requests. Agentic applications change the problem. One user task issues many dependent LLM and tool calls, some in parallel, and the goal is to finish the whole task quickly. These calls also repeat long prompt prefixes, so the engine can reuse cached KV blocks instead of recomputing them, but cached blocks take memory that running calls need.
 
-The assignment has three parts:
+In this assignment, you will:
 
-- **Part 1** builds a LangGraph research agent and measures its workload: the critical path of each report, how much prompt content repeats and for how long, and what concurrency costs in memory.
-- **Part 2** implements KV-cache eviction (LRU, then eviction that keeps prefix trees reusable) and cache-affinity routing across two GPU replicas, and measures where each helps.
-- **Part 3** builds an LLM-driven research system that proposes, implements, and evaluates serving policies, and asks how much the agents add beyond what you can design yourself.
+1. Build a deep research agent and measure the workload it creates.
+2. Write KV-cache eviction and routing policies for a simulated inference engine.
+3. Build an LLM-driven system that searches for better policies, and measure what its agents add beyond your own designs.
 
-The figure below shows how calls flow from the application to the engine; blue labels are the decisions a policy controls.
+Parts 2 and 3 run on a CPU simulator built on [Vidur](https://github.com/microsoft/vidur/tree/25e0082dbbfb206fb0477c3ebbededa7ead78949) that models Llama-3-8B on one or two A100 GPUs, each with its own queue and KV cache. A policy decides how many calls run at once, which ready call runs next and on which GPU, and which cached blocks to keep.
 
 ![Policy decisions in the application and inference engine.](docs/figures/system.svg)
 
-- **Jobs and ready calls.** A job is one user task (for example, one research report) made of dependent LLM and tool calls. A call is ready when its dependencies finish.
-- **Dispatch and routing.** `target_concurrency` caps the calls in flight across the application, `dispatch_order` chooses which ready call goes next, and `route_call` chooses its replica.
-- **Engine.** Each replica has its own waiting queue, mixed prefill/decode batches, and KV cache. `admission_order`, `batch_token_budget`, `choose_preempted`, and `choose_victim` decide what is admitted, how large a batch is, which call gives its memory back, and which cached block is overwritten.
-- **Events.** The simulator reports what happened (`alloc`, `hit`, `evict`, `complete`, ...) through `on_event`.
-
-### Evaluator configuration
-
-Parts 2 and 3 replay fixed workload traces in a CPU simulator built on [Vidur](https://github.com/microsoft/vidur/tree/25e0082dbbfb206fb0477c3ebbededa7ead78949). A trace fixes every prompt, output length, dependency, and tool delay; a policy decides when and where the work runs.
-
-| Setting | Part 2 | Part 3 |
-|---|---|---|
-| Model and GPU | Llama-3-8B on one NVIDIA A100 80 GB | Llama-3-8B on each of two A100 80 GB GPUs |
-| KV cache | One cache of 16-token blocks | A separate cache on each replica |
-| Scheduler | Vidur's vLLM V1 scheduler, mixed prefill and decode | The same scheduler on each replica, after `route_call` |
-| Timing | Vidur predictions fitted to [A100 profiling data](https://github.com/microsoft/vidur/tree/25e0082dbbfb206fb0477c3ebbededa7ead78949/data/profiling/compute/a100/meta-llama/Meta-Llama-3-8B) | The same |
-
-- **Job latency** is the time from a job's arrival until its last call or tool finishes, including queueing and tool time. **Speedup** on a trace is the reference policy's mean job latency divided by yours.
-- `target_concurrency` returns 1 to 16 calls in flight across all replicas; each replica admits at most 16. `batch_token_budget` returns 512, 1024, 2048 (default), or 4096 tokens.
-- Token counts come from the Qwen3 tokenizer and timing from the Llama-3-8B profile. Some traces have prompts up to 32K tokens, beyond Llama-3-8B's native 8K context; the simulator replays them for timing only.
-- The simulated engine is separate from the Bedrock models you call in Parts 1 and 3.
-
 ## Setup
 
-Use Python 3.11 or newer on Linux or macOS (on Windows, use WSL2). From the repository root, run once:
+Use Python 3.11 or newer on Linux or macOS (on Windows, use WSL2). From the repository root:
 
 ```bash
 python3 -m venv .venv
@@ -63,179 +39,87 @@ python -m pip install -e '.[agent,notebook,dev]'
 python -m ipykernel install --user --name cs378-assignment4 --display-name "CS 378 Assignment 4"
 ```
 
-Check the simulator with the supplied FIFO policy; the output should end with `Status: VALID`:
+Check the simulator; it should print `Status: VALID`:
 
 ```bash
 python -m agentkv.score --policy policies/fifo.py --split data/traces/public_dev/dev-W3-0.json
 ```
 
-Activate `.venv` in every new terminal, then open a notebook and select the **CS 378 Assignment 4** kernel:
-
-```bash
-source .venv/bin/activate
-jupyter lab notebooks/part1_deep_research.ipynb
-```
-
-Scoring runs traces in parallel worker processes (all but one CPU, at most 12; set `AGENTKV_WORKERS` to change it). Call `score()` from a notebook, or from a saved script under `if __name__ == "__main__":`.
+Open the notebooks with `jupyter lab` and select the **CS 378 Assignment 4** kernel. `pytest` runs the public tests, which all pass once every Part 1 and Part 2 TODO is complete.
 
 ### Model access
 
-| Variable | Used by | Value |
-|---|---|---|
-| `AWS_REGION` and AWS credentials (or `AWS_PROFILE`) | Bedrock calls in Parts 1 and 3 | Course AWS account |
-| `AGENTKV_BEDROCK_MODEL` | The Part 1 agent (`--backend bedrock`) | Smaller course model id |
-| `AGENTKV_RESEARCH_MODEL` | `examples/research_system.py` | Frontier model id for Part 3 |
-| `EXA_API_KEY` (optional) | Optional web search in Part 1 | Exa key, or another provider's |
+| Variable | Used by |
+|---|---|
+| `AWS_REGION` and AWS credentials (or `AWS_PROFILE`) | Bedrock calls in Parts 1 and 3 |
+| `AGENTKV_BEDROCK_MODEL` | The Part 1 agent with `--backend bedrock` |
+| `AGENTKV_RESEARCH_MODEL` | `examples/research_system.py` in Part 3 |
 
-The values are on the course page, with your team's token budget. Part 1 can run entirely on the offline `FakeLLM`; Part 3 needs Bedrock (`--offline` in `examples/research_system.py` only checks plumbing). Contact staff if Bedrock access is not working by the end of the first week.
-
-### Files you edit
-
-| Path | Part | Purpose |
-|---|---|---|
-| `research_app/concurrency.py` | 1 | Concurrency cap shared by all reports |
-| `research_app/agent.py` | 1 | Research graph nodes and routing |
-| `research_app/analysis.py` | 1 | Critical path, prefix reuse, and KV footprint of a run |
-| `policies/reference.py` | 2 | LRU eviction; the reference for every Part 3 speedup |
-| `policies/prefix_policy.py` | 2 | Prefix-aware eviction and cache-affinity routing |
-| `research/` | 3 | Your research system, evaluator, prompts, and configuration (create it) |
-| `candidates/` | 2, 3 | Policy experiments and every campaign candidate (create it) |
-| `runs/` | 1, 3 | Agent runs and campaign logs |
-
-### Time and weight
-
-| Part | Deliverable | Estimated time | Weight |
-|---|---|---|---|
-| 1 | Agent, analysis functions, three runs, answers to Q1–Q4 | 10–12 h | 20% |
-| 2 | Two policy files, sweeps, answers to Q1–Q3 | 7–8 h | 20% |
-| 3 | Research system, campaigns, selected policy, answers to Q1–Q6 | 15–18 h | 60% |
+The values and your team's token budget are on the course page. Part 1 can run entirely on the offline `FakeLLM`; Part 3 needs Bedrock. Contact staff if Bedrock access does not work by the end of the first week.
 
 ## Part 1: Build and analyze a deep research agent
 
-**Notebook:** [part1_deep_research.ipynb](notebooks/part1_deep_research.ipynb) · **Specification:** [Part 1 handout](docs/part1_handout.md)
+[Notebook](notebooks/part1_deep_research.ipynb) · [Handout](docs/part1_handout.md) · About 10–12 hours
 
-The agent splits a question into two to four subtopics, researches them in parallel (search, fetch, extract evidence), runs one follow-up branch if a subtopic has no evidence, writes a cited report, and repairs it once if the citation check fails.
+In this part, you will build a LangGraph agent that splits a question into subtopics, researches them in parallel over a local Wikipedia corpus, and writes a cited report. You will then measure the workload it sends to the model: what determines when a report finishes, how much prompt content repeats, and how much KV memory concurrency costs.
 
 ![Research agent workflow with parallel branches, follow-up, and repair.](docs/figures/research_workflow.svg)
 
-1. Implement the concurrency cap (`research_app/concurrency.py`) and the graph (`research_app/agent.py`).
-2. Run the 16 public questions three times: C = 2, C = 8, and C = 8 with 20% of tool attempts failing.
-3. Implement `critical_path`, `shared_prefix_share`, `reuse_gaps`, and `kv_footprint` in `research_app/analysis.py`, and replay your own trace on a simulated GPU at several caps and KV-cache sizes.
-4. Answer Q1–Q4 on the critical path, prefix reuse and retention, concurrency versus memory, and failures.
+- **1.1** Implement the concurrency cap in `research_app/concurrency.py`.
+- **1.2** Implement the research graph in `research_app/agent.py`.
+- **1.3** Implement the workload analysis functions in `research_app/analysis.py`.
+- **1.4** Run the agent on the 16 public questions at C = 2, at C = 8, and at C = 8 with tool failures, replay your C = 8 run in the simulator, and answer Q1–Q4.
 
-An optional section runs the same agent against live web search (Exa, Tavily, Perplexity, or OpenAI). Your Part 1 code affects only your Part 1 grade; Parts 2 and 3 use fixed staff traces.
+Parts 2 and 3 use staff traces, so your Part 1 code affects only Part 1.
 
 ## Part 2: KV-cache eviction and routing
 
-**Notebook:** [part2_lru_policy.ipynb](notebooks/part2_lru_policy.ipynb) · **Specification:** [Part 2 handout](docs/part2_handout.md)
+[Notebook](notebooks/part2_lru_policy.ipynb) · [Handout](docs/part2_handout.md) · About 7–8 hours
 
-1. **LRU** (`policies/reference.py`): evict the least recently used cached block, where allocations and hits count as uses and releases do not. Your completed file is the starting policy for Part 3; official speedups are measured against a fixed staff copy of it.
-2. **Prefix-aware eviction** (`policies/prefix_policy.py`): evict the least recently used block that is a leaf of its replica's prefix tree, tracking the tree from events.
-3. **Cache-affinity routing** (same file): route a call to the replica holding the longest prefix of its prompt, unless that replica is more than `slack` calls busier than the least loaded one.
+In this part, you will write cache policies for the simulated engine and measure them on eight workload families.
 
-The notebook sweeps concurrency caps on one and two replicas, compares eviction rules, and sweeps the routing slack; Q1–Q3 ask you to explain the results.
+- **2.1** Implement LRU eviction in `policies/reference.py`. Part 3 speedups are measured against the staff version of this policy.
+- **2.2** Implement eviction that keeps prefix trees reusable, in `policies/prefix_policy.py`.
+- **2.3** Implement cache-affinity routing across two GPUs, in the same file.
+- **2.4** Run the notebook's experiments and answer Q1–Q3.
 
 ## Part 3: Agent-driven policy research
 
-**Notebook:** [part3_policy_research.ipynb](notebooks/part3_policy_research.ipynb) · **Specification:** [Part 3 handout](docs/part3_handout.md)
+[Notebook](notebooks/part3_policy_research.ipynb) · [Handout](docs/part3_handout.md) · About 15–18 hours
 
-Build a research system in `research/` in which LLM agents propose policy changes, implement them, evaluate them in the simulator, and decide what to try next. `examples/research_system.py` is a minimal sequential loop to start from or compare against; you may also adapt a framework such as OpenEvolve, ShinkaEvolve, or CORAL.
+In this part, you will build a system in which LLM agents propose, implement, and evaluate serving policies, and you will submit the policy it selects.
 
 ![One possible research system and the evaluation splits.](docs/figures/research_system.svg)
 
-- **Seeds and hints are allowed.** A campaign may start from the reference, your Part 2 policy, or any policy you write, and your prompts may contain your own ideas. Declare the seeds and prompts in the campaign configuration, and keep every seed in `candidates/`.
-- **The submitted policy must be selected by an unattended campaign** from its candidates, which include its seeds. Log every human action that stops, restarts, or changes a campaign.
-- **Measure the agents' contribution.** Q2 compares your best seed alone, a campaign started from the reference, and a campaign started from your seed, with the same model and token budget.
+1. Build your research system in `research/`. `examples/research_system.py` is a minimal loop to start from; you can also adapt a framework such as OpenEvolve, ShinkaEvolve, or CORAL.
+2. Run campaigns. A campaign can start from any policies, including your Part 2 policy, and its prompts can include your own ideas.
+3. Select a final policy with an unattended campaign and submit it to the Gradescope leaderboard.
+4. Answer Q1–Q6. Q2 needs three campaigns with the same model and token budget (from the reference, from your best policy, and one ablation), so plan your budget for them.
 
-Policies run in a sandbox: they may use past events, the current `View`, and known prompt lengths, but not future arrivals, output lengths, tool durations, trace files, or workload labels. They have no network, file, subprocess, thread, LLM, or wall-clock access, each hook call has 50 ms of CPU time, and policy state must pickle to at most 4 MiB. Invalid ids, evicting an active block, a cap outside 1–16, a malformed admission order, an exception, a timeout, or a stall fails the evaluation.
-
-```bash
-python -m agentkv.score --policy candidates/c01.py --split screen        # one dev trace per family
-python -m agentkv.score --policy candidates/c01.py --split public_dev --json out.json
-```
-
-### Performance metric
-
-```text
-L(P, i)  = mean job latency of policy P on trace i
-S_f      = geometric mean over traces in family f of L(reference, i) / L(P, i)
-S        = geometric mean of S_f over the eight families
-g        = 1 - 1/S
-g_eff    = g - sum over families of max(0, 0.90 - S_f)
-points   = clip(10 + 20 × g_eff / 0.09, 0, 30)
-```
-
-Performance (item 3.1) is worth 30% of the grade. A valid policy that matches the reference earns 10%; the full 30% needs `S ≥ 1.099` (a 9% latency reduction) with every family at or above 0.90. A family below 0.90 costs credit in proportion to its shortfall. Invalid or incomplete evaluations earn 0.
-
-| Split | Traces | Use |
-|---|---|---|
-| `screen` | 8 (from `public_dev`) | Quick checks |
-| `public_dev` | 32 | Development, full diagnostics |
-| `public_val` | 16 | Selecting finalists |
-| Leaderboard | 16 (hidden) | Gradescope feedback |
-| Hidden test | 24 (hidden) | Final performance grade |
-
-### Research report
-
-Answer Q1–Q6 in the [Part 3 handout](docs/part3_handout.md#research-report): system design, the agents' contribution and an ablation, autonomy, cost, the selected policy's behavior, and its limitations. Cite run ids and candidate hashes so that claims can be checked against your logs.
-
-## Testing
-
-```bash
-source .venv/bin/activate
-pytest                                   # the public suite
-pytest tests/test_part1_concurrency.py   # one module
-pytest -x                                # stop at the first failure
-```
-
-Unfinished `[Part 1] TODO` and `[Part 2] TODO` functions raise `NotImplementedError`; with all of them complete, the whole suite passes.
-
-## What not to modify
-
-Keep your changes to the files listed in [Files you edit](#files-you-edit). Do not change the rest of `research_app/`, `agentkv/`, `tests/`, or `data/`. Policies influence execution only through the hooks in `agentkv/policy.py`.
+Your selected policy is scored once on 24 hidden traces. Matching the reference earns 10% of the grade, and a speedup of 1.099 or more with no workload family below 0.90 earns the full 30%. A policy that fails on any hidden trace earns 0.
 
 ## Submission
 
 ### Gradescope: Part 3 leaderboard
 
-Upload these files at the top level (directly or in a flat ZIP):
-
-```text
-policy.py         the policy your campaign selected
-params.json       optional parameters for policy.py
-submission.json   metadata (below)
-```
-
-```json
-{
-  "policy": "policy.py",
-  "params": null,
-  "candidate_hash": "<SHA-256 of policy.py>",
-  "python": "3.12",
-  "imports": []
-}
-```
-
-Use `r.policy_sha256` or `shasum -a 256 policy.py` for the hash, set `params` to `"params.json"` if you use one, and list any imports outside the standard library. Use your registered team name as your leaderboard name. Gradescope scores the policy on the 16 leaderboard traces and shows overall and per-family speedups; your private feedback also shows projected performance points. The reference, FIFO, LRU at cap 4 ("Weak"), and a staff cache-aware policy ("Strong") appear as benchmark rows. The leaderboard is feedback only; the hidden test set determines the grade.
+Upload `policy.py` (the candidate your campaign selected, unmodified) and, if your policy takes parameters, `params.json`, at the top level rather than inside a folder. Use your team name as the leaderboard name. The leaderboard shows your overall and per-family speedups on 16 hidden traces next to staff benchmark policies, and your feedback shows projected performance credit. It does not determine your grade.
 
 ### Canvas: code, runs, and report
 
-Submit one archive per team named `assignment4_<team name>.zip`:
+One team member submits `assignment4_<team name>.zip` containing:
 
 ```text
 research_app/agent.py, research_app/concurrency.py, research_app/analysis.py
 policies/reference.py, policies/prefix_policy.py
-policy.py, submission.json, params.json (if used)
-runs/c2/, runs/c8/, runs/c8-faults/     Part 1 runs
-research/                               your research system, evaluator, prompts, and configuration
-candidates/                             every seed and campaign candidate, including failures
-runs/<campaign>/                        campaign logs, token receipts, and the intervention log
+runs/c2/, runs/c8/, runs/c8-faults/
+research/                              your research system
+candidates/                            your seed policies
+runs/<campaign>/                       each campaign's candidates (including failures), logs, and intervention log
+policy.py, params.json (if used)       the files you submitted to Gradescope
 assignment4_report.pdf
 ```
 
-`assignment4_report.pdf` contains your team name, both members' names and EIDs, the `pytest` summary, and the answers to Part 1 Q1–Q4, Part 2 Q1–Q3, and Part 3 Q1–Q6 in order, each below its question, with the requested plots and tables. Include Bedrock token receipts (per-call input and output tokens, team total) and the model versions used. There is no page limit.
-
-Both team members must be able to explain all submitted code and analysis if asked by staff. Late submissions lose 10% of the assignment's points per day, including weekends, unless arranged in advance with the instructor.
+The `policy.py` in this archive is the one scored on the hidden test set. The report contains your team name, both members' names and EIDs, the `pytest` summary, your answers to Part 1 Q1–Q4, Part 2 Q1–Q3, and Part 3 Q1–Q6 in order, each below its question, the Bedrock model ids and total tokens you used, and the AI Use Disclosure required by the [course policies](https://utcs378.github.io/fall26/logistics).
 
 ## Grading
 
@@ -253,7 +137,7 @@ Total: 100% (+10% extra credit)
 - 2.1 LRU eviction (correctness): 5%
 - 2.2 Prefix-aware eviction (correctness): 4%
 - 2.3 Cache-affinity routing (correctness): 3%
-- 2.4 Sweeps and answers to Q1–Q3: 8%
+- 2.4 Experiments and answers to Q1–Q3: 8%
 
 **Part 3 — Agent-driven policy research: 60%**
 
@@ -267,24 +151,8 @@ Total: 100% (+10% extra credit)
 - Hidden-test speedup in the top 3% of teams: +5%
 - An exceptional research system or report, at staff discretion: +5%
 
-Correctness items are graded by staff tests that check the same contracts as the public tests on different inputs.
-
-## Data and licenses
-
-| Data | Source | License |
-|---|---|---|
-| Part 1 corpus | English Wikipedia, 48 articles, 2 pinned revisions each | CC BY-SA 4.0 |
-| W1 long-context chat | kvcache-ai/Mooncake conversation trace (FAST 2025): token counts and prefix hashes, with placeholder text | Apache-2.0 |
-| W2 coding agent | sammshen/lmcache-agentic-traces (SWE-bench sessions) | CC BY 4.0 |
-| W3 document QA | bigai-nlco/LooGLE short-dependency QA (ACL 2024) | CC BY-SA 4.0 |
-| W4 customer-service agents | sierra-research/tau2-bench published conversations | MIT |
-| W5 reasoning chat | alibaba-edu/qwen-bailian-usagetraces-anon thinking trace: token counts and prefix hashes, with placeholder text | Apache-2.0 |
-| Bursty arrivals | kvcache-ai/Mooncake tool-agent trace (timestamps only) | Apache-2.0 |
-| Tokenizer | Qwen/Qwen3-0.6B tokenizer (shared by all Qwen3 sizes) | Apache-2.0 |
-| Simulator | microsoft/vidur @ 25e0082dbbfb | MIT |
-
-Each trace's `generation` field records the generator, seed, and settings that produced it, and the exact source datasets and revisions.
+Correctness items are graded by staff tests of the same contracts as the public tests, on new inputs.
 
 ## Acknowledgments
 
-The evaluator uses Vidur's vLLM V1 scheduler and cache manager, with adapters for the assignment's policy hooks and job dependencies. The Part 1 agent is adapted from LangChain's *Deep Research from Scratch* (MIT). The workloads come from the public traces and datasets above; we thank their authors for releasing them.
+The simulator adapts Vidur's vLLM V1 scheduler and cache manager. The Part 1 agent is adapted from LangChain's *Deep Research from Scratch* (MIT). The workload traces are built from public datasets; [data/README.md](data/README.md) lists their sources and licenses.

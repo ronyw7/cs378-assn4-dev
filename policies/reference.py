@@ -5,9 +5,9 @@ becomes recent when it is allocated or accessed (a hit); a release alone does
 not make it recent. The concurrency limit defaults to eight unfinished LLM calls across all replicas.
 Use this completed policy as the starting point for Part 3.
 
-Run the public LRU and cache-invariant tests with:
+Run the public tests with:
 
-    pytest tests/test_part2_lru.py tests/test_kv_invariants.py
+    pytest tests/test_part2_lru.py tests/test_reference_results.py
 """
 
 from collections import OrderedDict

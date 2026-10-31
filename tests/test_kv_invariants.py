@@ -1,5 +1,4 @@
-"""Property tests of the KV lifecycle the engine enforces (docs/part2_handout.md,
-"What the engine enforces")."""
+"""Property tests of the KV lifecycle that the engine enforces."""
 
 from array import array
 

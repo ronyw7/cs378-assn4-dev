@@ -1,4 +1,4 @@
-"""Workload analysis of a recorded Part 1 run (Task 5).
+"""Workload analysis of a recorded Part 1 run (task 1.3).
 
     from research_app.analysis import load_run
     run = load_run("runs/c2")

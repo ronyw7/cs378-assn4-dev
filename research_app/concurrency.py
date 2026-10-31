@@ -1,6 +1,6 @@
 """Limit the number of LLM calls running at once across all reports (Part 1).
 
-One AdjustableCap is shared by every report in a run, so C bounds LLM calls
+One ConcurrencyLimiter is shared by every report in a run, so C bounds LLM calls
 across the whole run. The cap must satisfy the following rules:
 
 - `async with cap.slot(): ...` holds one slot for the whole operation,
@@ -22,7 +22,7 @@ from contextlib import asynccontextmanager
 MIN_CAP, MAX_CAP = 1, 8
 
 
-class AdjustableCap:
+class ConcurrencyLimiter:
     def __init__(self, limit: int):
         if not MIN_CAP <= limit <= MAX_CAP:
             raise ValueError(f"cap must be in {MIN_CAP}..{MAX_CAP}")

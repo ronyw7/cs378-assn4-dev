@@ -5,9 +5,9 @@ and feeds the policy the same events the engine would; a block's name is both
 its residence id and its prefix id, and everything is on replica 0. It is what
 the Part 2 public oracles use:
 
-    h = BlockHarness(LRUPolicy(), capacity=3)
+    h = CacheHarness(LRUPolicy(), capacity=3)
     h.allocate("A"); h.allocate("B"); h.release("A"); h.release("B")
-    assert h.reusable() == ["A", "B"] and h.empty_slots() == 1
+    assert h.cached() == ["A", "B"] and h.empty_slots() == 1
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ def _h(name: str) -> int:
     return int.from_bytes(hashlib.blake2b(name.encode(), digest_size=16).digest(), "little")
 
 
-class BlockHarness:
+class CacheHarness:
 
     def __init__(self, policy: Policy, capacity: int = 3):
         self.rt = PolicyRuntime(policy, block_size=1, total_blocks=capacity, seed=0)
@@ -76,7 +76,7 @@ class BlockHarness:
 
     # ------------------------------------------------------------ queries
 
-    def reusable(self) -> list[str]:
+    def cached(self) -> list[str]:
         """Return resident blocks with no active references, ordered by release time."""
         return [self.names[self.kv.blocks[b].hash] for b in self.kv.cached]
 

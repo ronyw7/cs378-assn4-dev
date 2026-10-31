@@ -19,7 +19,7 @@ from __future__ import annotations
 import asyncio
 
 from .agent import AgentSettings, run_reports
-from .concurrency import AdjustableCap
+from .concurrency import ConcurrencyLimiter
 from .corpus import FaultFn, ToolLatency
 from .llm import FakeLLM
 from .tracing import Recording
@@ -38,7 +38,7 @@ def record_reports(questions: list[dict], *, snapshot: str = "v2", seed: int = 0
     llm = FakeLLM(bad_citation_rate=bad_citation_rate)
 
     async def go() -> list[Recording]:
-        _, recs = await run_reports(questions, llm=llm, cap=AdjustableCap(cap), snapshot=snapshot, live=False,
+        _, recs = await run_reports(questions, llm=llm, cap=ConcurrencyLimiter(cap), snapshot=snapshot, live=False,
                                     latency=latency, faults=faults, settings=settings, backend="fake-record")
         return recs
 

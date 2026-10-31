@@ -18,7 +18,7 @@ from html import escape
 
 from agentkv.trace import HEADER, chat_segment, output_text
 
-from .artifacts import Evidence, Facet
+from .artifacts import Evidence, Subtopic
 from .corpus import Doc
 
 
@@ -45,7 +45,7 @@ Sources
 Evidence
 - Evidence is a verbatim quote copied character for character from one document. Do not paraphrase, merge
   sentences, fix typos, change capitalization, or add ellipses inside a quote.
-- Prefer one or two complete sentences that directly support the facet. Avoid headings, lists of links,
+- Prefer one or two complete sentences that directly support the subtopic. Avoid headings, lists of links,
   and sentences that only make sense with surrounding context.
 - The controller locates each quote in its document to compute exact character offsets. Quotes it cannot
   find are discarded, so precision matters more than coverage.
@@ -54,7 +54,7 @@ Reports
 - A report is a list of claims. Each claim is one or two sentences in your own words and must cite at least
   one evidence id such as E3. Cite only evidence ids that appear in the evidence list you were given.
 - Every claim must be supported by the evidence it cites. Do not cite evidence for a claim it does not support.
-- Cover every facet of the plan that has evidence. When a facet has no evidence, add no claim for it.
+- Cover every subtopic of the plan that has evidence. When a subtopic has no evidence, add no claim for it.
 - Prefer concrete mechanisms, numbers, and trade-offs over general statements. Keep the whole report under
   about 300 words.
 - Write for a reader who knows basic systems concepts: define a term only when the documents use it in a
@@ -68,7 +68,7 @@ Output format
 Conflicting or partial sources
 - When documents disagree, report both positions and cite each one; do not pick a winner unless a document
   gives the reason.
-- When a document only partly answers a facet, say what it covers and what it leaves open.
+- When a document only partly answers a subtopic, say what it covers and what it leaves open.
 - Numbers, dates, and names must match the cited quote exactly, including units.
 
 Scope
@@ -85,20 +85,20 @@ Quality bar
 
 PLAN_INSTRUCTIONS = """\
 Step: plan.
-Split the research question into two to four facets. A facet is one sub-question that a single search could answer. Facets should not overlap, and together they should cover the question. For each facet
+Split the research question into two to four subtopics. A subtopic is one sub-question that a single search could answer. Subtopics should not overlap, and together they should cover the question. For each subtopic
 give a short title and a keyword search query of three to eight words.
-Return: {"facets": [{"title": "...", "query": "..."}]}"""
+Return: {"subtopics": [{"title": "...", "query": "..."}]}"""
 
 EXTRACT_INSTRUCTIONS = """\
 Step: extract evidence.
-Read the documents below and select up to three verbatim quotes that best support the facet named at the end.
+Read the documents below and select up to three verbatim quotes that best support the subtopic named at the end.
 Each quote must be copied exactly from one document and must name that document's id. Skip documents that
 are not relevant. Order quotes by relevance.
 Return: {"evidence": [{"doc_id": "...", "quote": "..."}]}"""
 
 SYNTHESIZE_INSTRUCTIONS = """\
 Step: synthesize.
-Write the report for the question below using only the numbered evidence. Group claims by facet, in plan
+Write the report for the question below using only the numbered evidence. Group claims by subtopic, in plan
 order. Each claim cites one or more evidence ids from the list.
 Return: {"title": "...", "claims": [{"text": "...", "evidence_ids": ["E1"]}]}"""
 
@@ -117,27 +117,27 @@ def plan_messages(question: str) -> list[Msg]:
     return [Msg("system", SYSTEM_PROMPT), Msg("user", PLAN_INSTRUCTIONS), Msg("user", f"Question: {question}")]
 
 
-def extract_messages(question: str, facet: Facet, docs: list[Doc]) -> list[Msg]:
+def extract_messages(question: str, subtopic: Subtopic, docs: list[Doc]) -> list[Msg]:
     msgs = [Msg("system", SYSTEM_PROMPT), Msg("user", EXTRACT_INSTRUCTIONS)]
     msgs += [document_message(d) for d in sorted(docs, key=lambda d: d.doc_id)]
-    msgs.append(Msg("user", f"Facet: {facet.title}\nSearch query: {facet.query}\nQuestion: {question}"))
+    msgs.append(Msg("user", f"Subtopic: {subtopic.title}\nSearch query: {subtopic.query}\nQuestion: {question}"))
     return msgs
 
 
-def evidence_listing(facets: list[Facet], evidence: list[Evidence]) -> str:
-    titles = {f.facet_id: f.title for f in facets}
+def evidence_listing(subtopics: list[Subtopic], evidence: list[Evidence]) -> str:
+    titles = {f.subtopic_id: f.title for f in subtopics}
     lines = ["Evidence:"]
     for e in evidence:
-        lines.append(f'[{e.evidence_id}] ({e.doc_id}; facet {e.facet_id}: {titles.get(e.facet_id, "follow-up")}) "{e.quote}"')
+        lines.append(f'[{e.evidence_id}] ({e.doc_id}; subtopic {e.subtopic_id}: {titles.get(e.subtopic_id, "follow-up")}) "{e.quote}"')
     if not evidence:
         lines.append("(none)")
     return "\n".join(lines)
 
 
-def synthesize_messages(question: str, facets: list[Facet], evidence: list[Evidence]) -> list[Msg]:
-    plan = "\n".join(f"{f.facet_id}. {f.title}" for f in facets)
+def synthesize_messages(question: str, subtopics: list[Subtopic], evidence: list[Evidence]) -> list[Msg]:
+    plan = "\n".join(f"{f.subtopic_id}. {f.title}" for f in subtopics)
     return [Msg("system", SYSTEM_PROMPT), Msg("user", SYNTHESIZE_INSTRUCTIONS),
-            Msg("user", f"Question: {question}\nPlan:\n{plan}"), Msg("user", evidence_listing(facets, evidence))]
+            Msg("user", f"Question: {question}\nPlan:\n{plan}"), Msg("user", evidence_listing(subtopics, evidence))]
 
 
 def repair_messages(synth: list[Msg], draft: str, problems: list[str]) -> list[Msg]:

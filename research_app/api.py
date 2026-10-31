@@ -13,7 +13,7 @@ from agentkv.trace import TraceBuilder
 
 from .agent import AgentSettings, ReportContext, run_report
 from .artifacts import Report
-from .concurrency import AdjustableCap
+from .concurrency import ConcurrencyLimiter
 from .llm import LLM
 from .search import LocalSearch, SearchBackend, SourceArchive
 from .tracing import Recorder, Recording, to_trace_job
@@ -88,7 +88,7 @@ class ResearchAgent:
                  cap: int = 2, settings: AgentSettings | None = None):
         self.llm = llm
         self.search = search if search is not None else LocalSearch()
-        self.cap = AdjustableCap(cap)
+        self.cap = ConcurrencyLimiter(cap)
         self.settings = settings or AgentSettings()
 
     async def research(self, topic: str, *, out: str | Path | None = None) -> ResearchResult:

@@ -14,10 +14,10 @@ from enum import Enum
 
 
 @dataclass(frozen=True)
-class Facet:
+class Subtopic:
     """A planned research subtopic, with a title and search query."""
 
-    facet_id: str          # "f1", "f2", ...
+    subtopic_id: str          # "f1", "f2", ...
     title: str
     query: str
 
@@ -32,7 +32,7 @@ class Evidence:
     start: int             # text[start:end] == quote
     end: int
     quote: str
-    facet_id: str
+    subtopic_id: str
     uri: str
     extraction_call_id: str
 
@@ -77,7 +77,7 @@ class BranchStatus(str, Enum):
 class BranchResult:
     """The work completed for a subtopic, including any failures or timeout."""
 
-    facet: Facet
+    subtopic: Subtopic
     index: int                       # subtopic position in the plan; follow-ups use 100 + index
     status: BranchStatus = BranchStatus.SUCCESS
     evidence: list[Evidence] = field(default_factory=list)   # evidence_id still ""

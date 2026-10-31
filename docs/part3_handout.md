@@ -1,8 +1,8 @@
 # Part 3: Agent-driven policy research
 
-You will build a system in which LLM agents propose, implement, and evaluate
-serving policies, let it select your final policy, and measure what the agents
-added beyond the policies you wrote yourself. Work through
+In this part, you will build a system in which LLM agents propose, implement,
+and evaluate serving policies. The system selects your final policy, and you
+measure what its agents added beyond the policies you wrote yourself. Work through
 [`notebooks/part3_policy_research.ipynb`](../notebooks/part3_policy_research.ipynb);
 this handout is the specification.
 
@@ -40,22 +40,24 @@ A campaign is one unattended run of your system, with its own directory
 `campaign.json`, `log.jsonl` (one line per candidate), `calls.jsonl` (token
 usage per LLM call), and `selection.json` there.
 
-- **Seeds.** A campaign can start from any policies, including the reference,
-  your Part 2 policy, and policies you write, and its prompts can include your
-  own ideas. Keep every seed in `candidates/`.
-- **Configuration.** Before a campaign starts, record its seeds, model,
-  prompts, and token budget in `campaign.json`.
-- **Selection.** Your submitted `policy.py` must be the candidate that a
-  campaign chose in its `selection.json` with no intervention between the
-  campaign's start and that selection. A seed may win. Between campaigns, you
-  can change anything.
-- **Lineage.** Log every candidate, including failures, in `log.jsonl` with
-  `id`, `parent`, `hypothesis`, `file` (the candidate's path), `objective`,
-  `dev_S`, `by_family`, `tokens`, and `valid`. Record finalists' `val_S` in
-  `log.jsonl` or `selection.json`.
-- **Interventions.** Log every human action that stops, restarts, or changes a
-  campaign as one line of `interventions.jsonl`, for example
-  `{"t": "2026-11-09T14:05", "who": "ana", "action": "stopped camp2", "reason": "every candidate hit the 50 ms limit"}`.
+A campaign can start from any policies (the reference, your Part 2 policy, or
+policies you write), and its prompts can include your own ideas. Keep every seed
+in `candidates/`, and before a campaign starts, record its seeds, model,
+prompts, and token budget in `campaign.json`.
+
+Your submitted `policy.py` must be the candidate a campaign chose in its
+`selection.json`, with no intervention between the campaign's start and that
+selection. A seed may win, and between campaigns you can change anything.
+
+Log every candidate, including failures, in `log.jsonl` with `id`, `parent`,
+`hypothesis`, `file` (the candidate's path), `objective`, `dev_S`, `by_family`,
+`tokens`, and `valid`, and record finalists' `val_S` in `log.jsonl` or
+`selection.json`. Log every human action that stops, restarts, or changes a
+campaign as one line of `interventions.jsonl`, for example:
+
+```json
+{"t": "2026-11-09T14:05", "who": "ana", "action": "stopped camp2", "reason": "every candidate hit the 50 ms limit"}
+```
 
 ## Policy rules
 

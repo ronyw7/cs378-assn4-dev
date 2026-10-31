@@ -23,7 +23,7 @@ from pathlib import Path
 from agentkv.trace import TraceBuilder
 
 from .agent import AgentSettings, run_reports
-from .concurrency import AdjustableCap
+from .concurrency import ConcurrencyLimiter
 from .corpus import ToolLatency
 from .llm import FakeLatency, make_llm
 from .questions import load_questions
@@ -64,7 +64,7 @@ def main(argv: list[str] | None = None) -> dict:
     latency = ToolLatency(seed=args.seed, scale=args.latency_scale, failure_rate=args.failure_rate)
 
     async def go():
-        return await run_reports(questions, llm=llm, cap=AdjustableCap(args.cap), arrivals=arrivals,
+        return await run_reports(questions, llm=llm, cap=ConcurrencyLimiter(args.cap), arrivals=arrivals,
                                  snapshot=args.snapshot, live=not args.record, latency=latency,
                                  settings=AgentSettings(), backend=args.backend)
 

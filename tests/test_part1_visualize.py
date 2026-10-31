@@ -8,12 +8,12 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from research_app.concurrency import AdjustableCap
+from research_app.concurrency import ConcurrencyLimiter
 from research_app.visualize import plot_cap_demo, plot_prefix_reuse, run_cap_demo
 
 
 def test_cap_demo_shows_existing_calls_finishing_before_new_calls_start():
-    demo = asyncio.run(run_cap_demo(AdjustableCap(3)))
+    demo = asyncio.run(run_cap_demo(ConcurrencyLimiter(3)))
     first, waiting = demo.calls[:3], demo.calls[3:]
     assert all(c["start"] < demo.change_time < c["end"] for c in first)
     assert min(c["start"] for c in waiting) >= max(c["end"] for c in first)

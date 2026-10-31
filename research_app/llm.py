@@ -74,9 +74,9 @@ class FakeLatency:
 
 
 @lru_cache(maxsize=1)
-def _known_facets() -> dict[str, list[dict]]:
+def _known_subtopics() -> dict[str, list[dict]]:
     qs = json.loads(QUESTIONS_PATH.read_text())["questions"]
-    return {_norm(q["question"]): q["facets"] for q in qs}
+    return {_norm(q["question"]): q["subtopics"] for q in qs}
 
 
 def _norm(s: str) -> str:
@@ -134,17 +134,17 @@ class FakeLLM:
 
     def _plan(self, messages: list[Msg]) -> str:
         question = messages[-1].text.removeprefix("Question:").strip()
-        facets = _known_facets().get(_norm(question))
-        if facets is None:
-            facets = _heuristic_facets(question)
-        return json.dumps({"facets": [{"title": f["title"], "query": f["query"]} for f in facets]})
+        subtopics = _known_subtopics().get(_norm(question))
+        if subtopics is None:
+            subtopics = _heuristic_subtopics(question)
+        return json.dumps({"subtopics": [{"title": f["title"], "query": f["query"]} for f in subtopics]})
 
     def _extract(self, messages: list[Msg]) -> str:
         docs = [(m.group(1), m.group(4)) for msg in messages for m in [DOC_RE.search(msg.text)] if m]
         task = messages[-1].text
-        facet = re.search(r"Facet: (.*)", task)
+        subtopic = re.search(r"Subtopic: (.*)", task)
         query = re.search(r"Search query: (.*)", task)
-        want = set(terms(f"{facet.group(1) if facet else ''} {query.group(1) if query else ''}"))
+        want = set(terms(f"{subtopic.group(1) if subtopic else ''} {query.group(1) if query else ''}"))
         need = 1 if len(want) <= 3 else 2     # minimum number of subtopic terms that a sentence must contain
         scored = []
         for d_index, (doc_id, text) in enumerate(docs):
@@ -172,7 +172,7 @@ class FakeLLM:
         head = messages[-2].text
         question = re.search(r"Question: (.*)", head).group(1)
         plan = re.findall(r"^(f\d+)\. (.*)$", head, re.M)
-        ev = re.findall(r'^\[(E\d+)\] \(([^;]+); facet (f\d+): [^)]*\) "(.*)"$', messages[-1].text, re.M)
+        ev = re.findall(r'^\[(E\d+)\] \(([^;]+); subtopic (f\d+): [^)]*\) "(.*)"$', messages[-1].text, re.M)
         claims = []
         for fid, title in plan:
             mine = [(eid, quote) for eid, _, f, quote in ev if f == fid]
@@ -202,7 +202,7 @@ def _condense(quote: str, words: int = 28) -> str:
     return s if s.endswith((".", "!", "?")) else s.rstrip(",;:") + "."
 
 
-def _heuristic_facets(question: str) -> list[dict]:
+def _heuristic_subtopics(question: str) -> list[dict]:
     q = question.rstrip("?")
     parts = [p.strip() for p in re.split(r",| and | versus | vs\.? ", q) if len(terms(p)) >= 2][:3]
     if len(parts) < 2:

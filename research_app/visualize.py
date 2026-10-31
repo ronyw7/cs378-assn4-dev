@@ -33,7 +33,7 @@ class CapDemo:
 async def run_cap_demo(cap) -> CapDemo:
     """Run six timed tasks; lower a cap of three while the first three are running."""
     if cap.limit != 3:
-        raise ValueError("start this demonstration with AdjustableCap(3)")
+        raise ValueError("start this demonstration with ConcurrencyLimiter(3)")
     clock = time.perf_counter
     start = clock()
     calls = []
@@ -119,7 +119,7 @@ def read_run(path):
 
 
 def plot_prefix_reuse(calls, share_function):
-    """Plot stage totals using the student's shared_prefix_share implementation.
+    """Plot stage totals using the student's prefix_hit_rate implementation.
 
     Differences between cumulative totals assign reused tokens to each call.
     This preserves earlier calls from every stage when computing a stage's share.
@@ -326,17 +326,17 @@ def plot_critical_paths(run_dirs):
     return fig, totals
 
 
-def plot_reuse_gaps(run_dirs):
+def plot_reuse_intervals(run_dirs):
     """Cumulative distribution of how long reused prefix blocks sat unused, by the reusing stage."""
-    from .analysis import load_run, reuse_gaps
+    from .analysis import load_run, reuse_intervals
 
     fig, axes = plt.subplots(1, len(run_dirs), figsize=(6 * len(run_dirs), 3.8), sharex=True, sharey=True,
                              squeeze=False, layout="constrained")
     for ax, directory in zip(axes[0], run_dirs):
         run = load_run(directory)
         by_stage = defaultdict(list)
-        for r in reuse_gaps(run.llm_calls()):
-            by_stage[r.stage].append(r.gap)
+        for r in reuse_intervals(run.llm_calls()):
+            by_stage[r.stage].append(r.interval)
         for stage, gaps in sorted(by_stage.items()):
             gaps.sort()
             ax.step(gaps, [(i + 1) / len(gaps) for i in range(len(gaps))], where="post",

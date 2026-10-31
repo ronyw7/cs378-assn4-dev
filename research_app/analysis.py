@@ -3,8 +3,8 @@
     from research_app.analysis import load_run
     run = load_run("runs/c2")
     critical_path(run, "R03")              # the chain of operations that set R03's finish time
-    shared_prefix_share(run.llm_calls())   # fraction of prompt tokens in previously seen blocks
-    reuse_gaps(run.llm_calls())            # how long each reused block had to stay cached
+    prefix_hit_rate(run.llm_calls())   # fraction of prompt tokens in previously seen blocks
+    reuse_intervals(run.llm_calls())            # how long each reused block had to stay cached
     kv_footprint(run.llm_calls())          # KV bytes held by running calls over time
 
 Times are seconds since the run started, as recorded in trace.jsonl.
@@ -16,7 +16,7 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
-BLOCK_TOKENS = 256                 # prefix_ids cover full 256-token blocks
+BLOCK_TOKENS = 256                 # block_hashes cover full 256-token blocks
 KV_BYTES_PER_TOKEN = 128 * 1024    # Llama-3-8B, bf16: 32 layers x 8 KV heads x 128 dims x 2 (K, V) x 2 bytes
 
 
@@ -35,7 +35,7 @@ class Op:
     slot_acquired: float | None = None    # LLM calls: got the slot; service starts here
     prompt_tokens: int = 0
     output_tokens: int = 0
-    prefix_ids: list[str] = field(default_factory=list)
+    block_hashes: list[str] = field(default_factory=list)
 
     @property
     def slot_wait(self) -> float:
@@ -80,7 +80,7 @@ def load_run(path) -> Run:
             ops[ev["op_id"]] = Op(
                 ev["op_id"], s["report_id"], s["kind"], s["stage"], list(s["deps"]), s["t"], ev["t"], ev["status"],
                 ev.get("attempts", 1), ev.get("slot_requested"), ev.get("slot_acquired"),
-                ev.get("prompt_tokens", 0), ev.get("output_tokens", 0), list(ev.get("prefix_ids") or []))
+                ev.get("prompt_tokens", 0), ev.get("output_tokens", 0), list(ev.get("block_hashes") or []))
     return Run(cap, backend, arrivals, ops)
 
 
@@ -111,14 +111,14 @@ def critical_path(run: Run, report: str) -> list[Step]:
     # END OF YOUR CODE
 
 
-def shared_prefix_share(calls: list[Op], block_size: int = BLOCK_TOKENS) -> float:
+def prefix_hit_rate(calls: list[Op], block_size: int = BLOCK_TOKENS) -> float:
     """Return the fraction of prompt tokens that are in prefix blocks seen by earlier calls."""
     # [Part 1] TODO: calls are in start order. A full block counts as shared
-    # only if its prefix id appeared in an earlier call; add this call's ids to
+    # only if its block hash appeared in an earlier call; add this call's hashes to
     # the history after counting. Each shared block contributes block_size
     # tokens. Divide by the total prompt_tokens (which include partial final
     # blocks). Return 0.0 when there are no prompt tokens.
-    raise NotImplementedError("Part 1: fill shared_prefix_share")
+    raise NotImplementedError("Part 1: fill prefix_hit_rate")
     # END OF YOUR CODE
 
 
@@ -127,18 +127,18 @@ class Reuse:
     block: str
     stage: str          # stage of the call that reused the block
     source: str         # stage of the earlier call that held it most recently
-    gap: float          # seconds the block sat unused before this reuse (0 if a call still held it)
+    interval: float     # seconds the block sat unused before this reuse (0 if a call still held it)
 
 
-def reuse_gaps(calls: list[Op]) -> list[Reuse]:
+def reuse_intervals(calls: list[Op]) -> list[Reuse]:
     """For every reuse of a prefix block, how long it had to stay cached."""
     # [Part 1] TODO: Process calls in start order. A block is held from a
-    # call's start to its end. When a call's prefix id appeared in an earlier
-    # call, record one Reuse: gap is this call's start minus the latest end of
+    # call's start to its end. When a call's block hash appeared in an earlier
+    # call, record one Reuse: interval is this call's start minus the latest end of
     # the earlier calls that held the block (0 if one of them is still running),
     # and source is the stage of that latest-ending call. Count a block once
     # per call.
-    raise NotImplementedError("Part 1: fill reuse_gaps")
+    raise NotImplementedError("Part 1: fill reuse_intervals")
     # END OF YOUR CODE
 
 

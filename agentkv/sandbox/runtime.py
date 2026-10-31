@@ -72,27 +72,27 @@ class PolicyRuntime:
     def _mirror(self, kind: str, t: float, f: dict) -> None:
         if kind == "hit":
             b = self.blocks[f["block"]]
-            if b.refs == 0:
+            if b.ref_cnt == 0:
                 del self.cand[b.id]
-            b.refs += 1
+            b.ref_cnt += 1
             b.hits += 1
             b.last_access = t
         elif kind == "release":
             b = self.blocks[f["block"]]
-            b.refs = f["refs"]
-            if b.refs == 0:
+            b.ref_cnt = f["ref_cnt"]
+            if b.ref_cnt == 0:
                 self.cand[b.id] = None
         elif kind == "alloc":
             c = self.calls.get(f["call"])
-            self.blocks[f["block"]] = Block(f["block"], f["parent"], f["depth"], 1, 0, t, t,
+            self.blocks[f["block"]] = Block(f["block"], f["parent_hash"], f["depth"], 1, 0, t, t,
                                             c.stage if c else "", c.job if c else "",
-                                            f.get("prefix", f["block"]), f.get("replica", 0))
+                                            f.get("block_hash", f["block"]), f.get("replica", 0))
         elif kind == "evict":
             del self.blocks[f["block"]]
             del self.cand[f["block"]]
         elif kind == "ready":
             self.ready[f["call"]] = Call(f["call"], f["job"], f["stage"], f["input_tokens"],
-                                         tuple(f["prefix"]), t)
+                                         tuple(f["block_hashes"]), t)
             self.jobs[f["job"]].calls_ready += 1
         elif kind == "dispatch":
             c = self.ready.pop(f["call"])

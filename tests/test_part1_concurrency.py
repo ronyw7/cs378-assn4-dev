@@ -7,12 +7,12 @@ import random
 
 import pytest
 
-from research_app.concurrency import AdjustableCap
+from research_app.concurrency import ConcurrencyLimiter
 
 
 def test_cap_never_exceeded_under_random_load_and_limit_changes():
     async def go():
-        cap = AdjustableCap(3)
+        cap = ConcurrencyLimiter(3)
         rng = random.Random(7)
         held = 0
         grants_over = []
@@ -44,7 +44,7 @@ def test_cap_never_exceeded_under_random_load_and_limit_changes():
 
 def test_lowering_cap_drains_without_cancelling():
     async def go():
-        cap = AdjustableCap(4)
+        cap = ConcurrencyLimiter(4)
         log = []
 
         async def call(name, dur):
@@ -75,6 +75,6 @@ def test_lowering_cap_drains_without_cancelling():
 
 def test_cap_rejects_out_of_range():
     with pytest.raises(ValueError):
-        AdjustableCap(0)
+        ConcurrencyLimiter(0)
     with pytest.raises(ValueError):
-        AdjustableCap(9)
+        ConcurrencyLimiter(9)

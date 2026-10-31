@@ -107,7 +107,7 @@ EVENT_FIELDS: dict[str, tuple[str, ...]] = {
     # a job arrived
     "arrival": ("job",),
     # an LLM call's dependencies finished; its prompt is known
-    "ready": ("call", "job", "stage", "input_tokens", "prefix"),
+    "ready": ("call", "job", "stage", "input_tokens", "block_hashes"),
     # the dispatcher sent a ready call to the engine
     "dispatch": ("call", "replica"),
     # the engine started prefilling the call; `cached_tokens` came from the cache
@@ -115,9 +115,9 @@ EVENT_FIELDS: dict[str, tuple[str, ...]] = {
     # a resident prefix block was matched by `call` (shared or reactivated)
     "hit": ("block", "call"),
     # a new prefix block became resident, computed by `call`
-    "alloc": ("block", "parent", "depth", "call", "prefix", "replica"),
-    # `call` dropped its reference; `refs` references remain
-    "release": ("block", "call", "refs"),
+    "alloc": ("block", "parent_hash", "depth", "call", "block_hash", "replica"),
+    # `call` dropped its reference; `ref_cnt` references remain
+    "release": ("block", "call", "ref_cnt"),
     # a zero-reference block was overwritten (always the policy's choice)
     "evict": ("block",),
     # the engine preempted the call; it will be recomputed
@@ -162,20 +162,20 @@ class Event:
 class Block:
     """Describe a resident block and its position in a prompt prefix.
 
-    The id identifies one physical residence on one replica. The prefix field
-    identifies its contents and all preceding tokens. Duplicate copies share
-    a prefix identity but have different residence ids.
+    The id identifies one physical residence on one replica. `block_hash`
+    identifies its contents and all preceding tokens (as in vLLM's prefix
+    caching), so duplicate copies share a hash but have different ids.
     """
     id: str
-    parent: str | None      # preceding content identity (may not be resident)
+    parent_hash: str | None  # block_hash of the preceding block (may not be resident)
     depth: int              # 0 for the first block of a prompt
-    refs: int               # active references; 0 means it is a victim candidate
+    ref_cnt: int            # active references; 0 means it is a victim candidate
     hits: int = 0           # times matched since it became resident
     created: float = 0.0
     last_access: float = 0.0   # last alloc or hit (releases do not count)
     stage: str = ""         # stage of the call that computed it
     job: str = ""           # job of the call that computed it
-    prefix: str = ""        # content identity; duplicates can occupy different slots
+    block_hash: str = ""    # content identity; duplicates can occupy different slots
     replica: int = 0
 
 
@@ -186,7 +186,7 @@ class Call:
     job: str
     stage: str
     input_tokens: int
-    prefix: tuple[str, ...]  # ids of the prompt's full blocks, root first
+    block_hashes: tuple[str, ...]  # block_hash of each full block of the prompt, root first
     ready_at: float
     dispatched_at: float | None = None
     admitted_at: float | None = None
@@ -245,11 +245,11 @@ class View:
     def in_flight(self) -> int:
         return len(self.calls)
 
-    def cached_prefix_len(self, call: str, replica: int) -> int:
+    def num_cached_blocks(self, call: str, replica: int) -> int:
         """Return how many leading full blocks of a ready or in-flight call's prompt are resident on a replica.
 
-        Matches `Call.prefix` against `Block.prefix` (content ids); the keys of
-        `blocks` are residence ids and never match a prefix.
+        Matches `Call.block_hashes` against `Block.block_hash`; the keys of
+        `blocks` are residence ids and never match a hash.
         """
         c = self.ready.get(call) or self.calls.get(call)
         if c is None:
@@ -258,11 +258,11 @@ class View:
         if resident is None:
             resident = {}
             for b in self.blocks.values():
-                resident.setdefault(b.replica, set()).add(b.prefix)
+                resident.setdefault(b.replica, set()).add(b.block_hash)
             self.__dict__["_resident"] = resident
         have = resident.get(replica, ())
         n = 0
-        for p in c.prefix:
+        for p in c.block_hashes:
             if p not in have:
                 break
             n += 1

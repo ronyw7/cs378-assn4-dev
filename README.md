@@ -16,21 +16,24 @@ CS 378: Systems for Generative AI, Fall 2026. Complete this assignment with your
 
 ## Overview
 
-In Assignment 3, we studied how an LLM serving engine schedules individual requests. Agentic applications change the problem. One user task issues many dependent LLM and tool calls, some in parallel, and the goal is to finish the whole task quickly. These calls also repeat long prompt prefixes, so the engine can reuse cached KV blocks instead of recomputing them, but cached blocks take memory that running calls need.
+Previously in [Assignment 3](../assignment3/README.md), we studied how an LLM serving engine schedules requests efficiently. We implemented techniques such as chunked prefill, request prioritization, and multi-replica routing, and measured their effects on latency and throughput. Those techniques focused on scheduling **individual** LLM requests.
 
-In this assignment, you will:
+**Agentic applications introduce new challenges.** A single user task typically involves multiple LLM calls and tool invocations, with some running in parallel and others waiting on earlier results. For example, a deep research agent may first plan a task, investigate several subtopics concurrently, and then synthesize its findings. In this setting, optimizing individual calls in isolation is no longer enough—the goal is to minimize end-to-end completion time for the entire user task.
 
-1. Build a deep research agent and measure the workload it creates.
-2. Write KV-cache eviction and routing policies for a simulated inference engine.
-3. Build an LLM-driven system that searches for better policies, and measure what its agents add beyond your own designs.
+At the same time, agentic workflows create new opportunities for optimization. Related LLM calls often share long prompt prefixes, allowing the inference engine to reuse previously computed KV-cache blocks instead of recomputing prefill from scratch. Retaining cached blocks, however, consumes GPU memory that active requests also need. Serving agentic workloads efficiently therefore requires jointly managing call dependencies, concurrency, request scheduling, replica routing, and KV-cache eviction.
 
-Parts 2 and 3 run on a CPU simulator built on [Vidur](https://github.com/microsoft/vidur/tree/25e0082dbbfb206fb0477c3ebbededa7ead78949) that models Llama-3-8B on one or two A100 GPUs, each with its own queue and KV cache. A policy decides how many calls run at once, which ready call runs next and on which GPU, and which cached blocks to keep.
+In this assignment, you will study these system tradeoffs first-hand and then explore an automated approach to designing serving policies. After building the research agent and implementing KV-cache eviction and routing policies, you will build an LLM-driven agentic research system that iteratively proposes, implements, and evaluates serving policies. Along the way, you will evaluate both the policies discovered by your agents and the reliability, cost, and generalizability of the automated research process itself.
+
+Parts 2 and 3 run on a CPU simulator built on [Vidur](https://github.com/microsoft/vidur/tree/25e0082dbbfb206fb0477c3ebbededa7ead78949) that models Llama-3-8B on one or two A100 GPUs, each with its own request queue and KV cache. The figure below shows how calls move from the application into the inference engine, with blue labels marking the hooks your policy can implement:
 
 ![Policy decisions in the application and inference engine.](docs/figures/system.svg)
 
+- **Concurrency and dispatch:** A **job** (such as generating a research report) consists of dependent LLM and tool calls. Once a call's dependencies finish, it enters **ready calls**. Your policy controls how many calls can be in flight (`target_concurrency`), which ready call is dispatched next (`dispatch_order`), and which GPU replica receives it (`route_call`).
+- **Replica scheduling and KV-cache management:** Each replica maintains its own waiting queue, mixed prefill/decode batch, and KV cache. Your policy controls admission order (`admission_order`), batch token budget (`batch_token_budget`), preemption under memory pressure (`choose_preempted`), and cached block eviction (`choose_victim`), while observing system events through `on_event`.
+
 ## Setup
 
-Use Python 3.11 or newer on Linux or macOS (on Windows, use WSL2). From the repository root:
+Use Python 3.11 or newer on Linux or macOS. From the repository root:
 
 ```bash
 python3 -m venv .venv
@@ -39,29 +42,25 @@ python -m pip install -e '.[agent,notebook,dev]'
 python -m ipykernel install --user --name cs378-assignment4 --display-name "CS 378 Assignment 4"
 ```
 
-Check the simulator; it should print `Status: VALID`:
+Verify the simulator installation:
 
 ```bash
 python -m agentkv.score --policy policies/fifo.py --split data/traces/public_dev/dev-W3-0.json
+
+# Should print `Status: VALID`
 ```
 
-Open the notebooks with `jupyter lab` and select the **CS 378 Assignment 4** kernel. `pytest` runs the public tests, which all pass once every Part 1 and Part 2 TODO is complete.
+Launch Jupyter (`jupyter lab`), open the notebooks, and select the **CS 378 Assignment 4** kernel. Run `pytest` to execute the public test suite. All public tests should pass once you complete the Part 1 and Part 2 `TODO`s.
 
 ### Model access
 
-| Variable | Used by |
-|---|---|
-| `AWS_REGION` and AWS credentials (or `AWS_PROFILE`) | Bedrock calls in Parts 1 and 3 |
-| `AGENTKV_BEDROCK_MODEL` | The Part 1 agent with `--backend bedrock` |
-| `AGENTKV_RESEARCH_MODEL` | `examples/research_system.py` in Part 3 |
-
-The values and your team's token budget are on the course page. Part 1 can run entirely on the offline `FakeLLM`; Part 3 needs Bedrock. Contact staff if Bedrock access does not work by the end of the first week.
+Parts 1 and 3 call models on Amazon Bedrock. Set `AWS_REGION` and your AWS credentials (or `AWS_PROFILE`), then set `AGENTKV_BEDROCK_MODEL` for the Part 1 agent and `AGENTKV_RESEARCH_MODEL` for your Part 3 research system. The model ids and your team's token budget are on the course page. Part 1 can also run entirely on the offline `FakeLLM`, but Part 3 needs Bedrock. Contact staff if Bedrock access does not work by the end of the first week.
 
 ## Part 1: Build and analyze a deep research agent
 
 [Notebook](notebooks/part1_deep_research.ipynb) · [Handout](docs/part1_handout.md) · About 10–12 hours
 
-In this part, you will build a LangGraph agent that splits a question into subtopics, researches them in parallel over a local Wikipedia corpus, and writes a cited report. You will then measure the workload it sends to the model: what determines when a report finishes, how much prompt content repeats, and how much KV memory concurrency costs.
+In this part, you will build a LangGraph agent that splits a question into subtopics, researches them in parallel over a local Wikipedia corpus, and writes a report. You will then measure the workload it sends to the model: what determines when a report finishes, how much prompt content repeats, and how much KV memory concurrency costs.
 
 ![Research agent workflow with parallel branches, follow-up, and repair.](docs/figures/research_workflow.svg)
 
@@ -80,7 +79,7 @@ In this part, you will write cache policies for the simulated engine and measure
 
 - **2.1** Implement LRU eviction in `policies/reference.py`. Part 3 speedups are measured against the staff version of this policy.
 - **2.2** Implement eviction that keeps prefix trees reusable, in `policies/prefix_policy.py`.
-- **2.3** Implement cache-affinity routing across two GPUs, in the same file.
+- **2.3** Implement cache-aware routing across two GPUs, in the same file.
 - **2.4** Run the notebook's experiments and answer Q1–Q3.
 
 ## Part 3: Agent-driven policy research
@@ -136,7 +135,7 @@ Total: 100% (+10% extra credit)
 
 - 2.1 LRU eviction (correctness): 5%
 - 2.2 Prefix-aware eviction (correctness): 4%
-- 2.3 Cache-affinity routing (correctness): 3%
+- 2.3 Cache-aware routing (correctness): 3%
 - 2.4 Experiments and answers to Q1–Q3: 8%
 
 **Part 3 — Agent-driven policy research: 60%**

@@ -55,7 +55,7 @@ def test_bad_cap(chat_trace, tmp_path, ret):
 
 @pytest.mark.parametrize("body", [
     "return 'not-a-block'",
-    "return next(iter(view.blocks.values() if False else [b for b in view.blocks if view.blocks[b].refs > 0] or ['x']))",
+    "return next(iter(view.blocks.values() if False else [b for b in view.blocks if view.blocks[b].ref_cnt > 0] or ['x']))",
     "return 7",
 ])
 def test_bad_victim(pressure_trace, tmp_path, body):

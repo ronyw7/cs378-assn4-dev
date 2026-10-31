@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from research_app.analysis import (Op, critical_path, kv_footprint, load_run, reuse_gaps, shared_prefix_share)
+from research_app.analysis import (Op, critical_path, kv_footprint, load_run, reuse_intervals, prefix_hit_rate)
 
 # R00 arrives at 0. Subtopic f1 is slower than f2, and both extractions wait for a slot.
 OPS = [
@@ -32,7 +32,7 @@ def run(tmp_path):
         end_ev = {"event": "op_end", "t": end, "report_id": "R00", "op_id": op_id, "status": "ok", "attempts": 1}
         if slot:
             end_ev.update(slot_requested=slot[0], slot_acquired=slot[1], prompt_tokens=600, output_tokens=50,
-                          prefix_ids=["a", "b"])
+                          block_hashes=["a", "b"])
         lines.append(end_ev)
     path = tmp_path / "trace.jsonl"
     path.write_text("\n".join(json.dumps(x) for x in lines) + "\n")
@@ -60,18 +60,18 @@ def call(stage, start, end, prefix, prompt=1000, output=10, acquired=None):
               start if acquired is None else acquired, prompt, output, list(prefix))
 
 
-def test_shared_prefix_share_counts_blocks_seen_earlier():
+def test_prefix_hit_rate_counts_blocks_seen_earlier():
     calls = [call("plan", 0, 1, ["s"], prompt=300), call("extract", 1, 2, ["s", "d"], prompt=600),
              call("extract", 1.5, 3, ["s", "d", "e"], prompt=800)]
-    assert shared_prefix_share(calls) == pytest.approx((256 + 2 * 256) / 1700)
-    assert shared_prefix_share([]) == 0.0
+    assert prefix_hit_rate(calls) == pytest.approx((256 + 2 * 256) / 1700)
+    assert prefix_hit_rate([]) == 0.0
 
 
-def test_reuse_gaps_measure_time_since_the_last_holder_finished():
+def test_reuse_intervals_measure_time_since_the_last_holder_finished():
     calls = [call("plan", 0.0, 1.0, ["s"]), call("extract", 2.0, 3.0, ["s", "d"]),
              call("extract", 2.5, 4.0, ["s", "d"]), call("synthesize", 6.0, 7.0, ["s", "d", "d"])]
-    gaps = [(r.block, r.stage, r.source, r.gap) for r in reuse_gaps(calls)]
-    assert gaps == [("s", "extract", "plan", 1.0),
+    intervals = [(r.block, r.stage, r.source, r.interval) for r in reuse_intervals(calls)]
+    assert intervals == [("s", "extract", "plan", 1.0),
                     ("s", "extract", "extract", 0.0), ("d", "extract", "extract", 0.0),
                     ("s", "synthesize", "extract", 2.0), ("d", "synthesize", "extract", 2.0)]
 

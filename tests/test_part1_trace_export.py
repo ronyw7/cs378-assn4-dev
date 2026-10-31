@@ -29,7 +29,7 @@ def test_exported_jobs_load_and_match_the_recording(tmp_path):
                 assert node.type == "llm" and node.stage == op.stage
                 assert node.n_prompt == op.prompt_tokens
                 full = node.n_prompt // BLOCK_SIZE
-                assert [f"{h:032x}" for h in node.hashes[:full]] == op.prefix_ids
+                assert [f"{h:032x}" for h in node.hashes[:full]] == op.block_hashes
             else:
                 node = nodes[ops_to_nodes[op.op_id]]
                 assert node.type == "tool" and abs(node.delay - round(op.delay, 6)) < 1e-6
@@ -71,11 +71,11 @@ def test_jsonl_trace_has_every_op(tmp_path):
     import asyncio
 
     from research_app.agent import run_reports
-    from research_app.concurrency import AdjustableCap
+    from research_app.concurrency import ConcurrencyLimiter
     from research_app.llm import FakeLLM
 
     async def go():
-        return await run_reports(load_questions(public=True)[:3], llm=FakeLLM(), cap=AdjustableCap(2), live=False,
+        return await run_reports(load_questions(public=True)[:3], llm=FakeLLM(), cap=ConcurrencyLimiter(2), live=False,
                                  backend="fake")
 
     recorder, recs = asyncio.run(go())
@@ -89,6 +89,6 @@ def test_jsonl_trace_has_every_op(tmp_path):
     assert starts == set(ends) == {o.op_id for r in recs for o in r.ops}
     for e in ends.values():
         if e.get("prompt"):
-            assert set(e["prompt"]) <= segs and e["output"] in segs and e["prefix_ids"]
+            assert set(e["prompt"]) <= segs and e["output"] in segs and e["block_hashes"]
     assert sum(x["event"] == "report_end" for x in lines) == 3
     assert all(x["valid"] is not None for x in lines if x["event"] == "report_end")

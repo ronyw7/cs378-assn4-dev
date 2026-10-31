@@ -1,9 +1,9 @@
 """Implement the Part 1 research workflow as a LangGraph graph.
 
-    plan ─▶ research_facet × 2–4 (parallel) ─▶ coverage ─▶ [followup] ─▶ synthesize ─▶ validate ─▶ [repair]
+    plan ─▶ research_subtopic × 2–4 (parallel) ─▶ coverage ─▶ [followup] ─▶ synthesize ─▶ validate ─▶ [repair]
 
 - plan: one LLM call splits the question into 2–4 subtopics.
-- research_facet: per subtopic, one search, up to three fetches, one extract call.
+- research_subtopic: per subtopic, one search, up to three fetches, one extract call.
 - coverage: a deterministic check; the first subtopic with no evidence gets one
   follow-up branch.
 - synthesize: one LLM call writes claims that cite evidence ids.
@@ -36,18 +36,18 @@ from langgraph.graph import END, START, StateGraph
 from langgraph.types import Send
 
 from . import prompts
-from .artifacts import (BranchResult, BranchStatus, Claim, Evidence, Facet, Report, assign_evidence_ids, locate,
+from .artifacts import (BranchResult, BranchStatus, Claim, Evidence, Subtopic, Report, assign_evidence_ids, locate,
                         order_branches)
-from .concurrency import AdjustableCap
+from .concurrency import ConcurrencyLimiter
 from .corpus import Corpus, Doc, ToolLatency, Tools, terms
-from .llm import LLM, _heuristic_facets
+from .llm import LLM, _heuristic_subtopics
 from .tracing import Recorder, Recording, TracingClient
 
 
 @dataclass(frozen=True)
 class AgentSettings:
-    min_facets: int = 2
-    max_facets: int = 4
+    min_subtopics: int = 2
+    max_subtopics: int = 4
     search_k: int = 5
     max_fetch: int = 3
     plan_tokens: int = 400
@@ -74,7 +74,7 @@ class ReportContext:
 class ReportState(TypedDict, total=False):
     question: str
     question_id: str
-    facets: list[Facet]
+    subtopics: list[Subtopic]
     plan_op: str
     branches: Annotated[list[BranchResult], operator.add]
     uncovered: int | None                   # index of the first subtopic without evidence
@@ -103,21 +103,21 @@ def _list_field(obj: dict, key: str) -> list:
     return value if isinstance(value, list) else []
 
 
-def parse_facets(text: str | None, question: str, settings: AgentSettings) -> list[Facet]:
+def parse_subtopics(text: str | None, question: str, settings: AgentSettings) -> list[Subtopic]:
     """Parse the planned subtopics, or split the question if the reply is unusable.
 
     The fallback produces a repeatable plan without another LLM call.
     """
     obj = prompts.parse_json(text or "") or {}
-    raw = [f for f in _list_field(obj, "facets") if isinstance(f, dict) and f.get("title")]
-    if len(raw) < settings.min_facets:
-        raw = _heuristic_facets(question)
-    raw = raw[:settings.max_facets]
-    return [Facet(f"f{i + 1}", str(f["title"]).strip(), str(f.get("query") or f["title"]).strip())
+    raw = [f for f in _list_field(obj, "subtopics") if isinstance(f, dict) and f.get("title")]
+    if len(raw) < settings.min_subtopics:
+        raw = _heuristic_subtopics(question)
+    raw = raw[:settings.max_subtopics]
+    return [Subtopic(f"f{i + 1}", str(f["title"]).strip(), str(f.get("query") or f["title"]).strip())
             for i, f in enumerate(raw)]
 
 
-def parse_evidence(text: str | None, docs: list[Doc], facet: Facet, call_id: str) -> list[Evidence]:
+def parse_evidence(text: str | None, docs: list[Doc], subtopic: Subtopic, call_id: str) -> list[Evidence]:
     """Parse quoted passages and locate them in the fetched documents.
 
     Discard quotes that cannot be matched to a source passage. Store offsets
@@ -135,7 +135,7 @@ def parse_evidence(text: str | None, docs: list[Doc], facet: Facet, call_id: str
         if span is None:
             continue
         start, end = span
-        out.append(Evidence("", doc.doc_id, doc.sha256, start, end, doc.text[start:end], facet.facet_id, doc.uri,
+        out.append(Evidence("", doc.doc_id, doc.sha256, start, end, doc.text[start:end], subtopic.subtopic_id, doc.uri,
                             call_id))
     return out
 
@@ -158,9 +158,9 @@ async def plan(state: ReportState, config: RunnableConfig) -> dict:
     # [Part 1] TODO: Make the planning call and return the parsed subtopics.
     # Build the prompt from state["question"] and call the tracing client
     # with stage "plan", op_id f"{ctx.rid}/plan", no dependencies, and
-    # order (0,). Pass the reply text to parse_facets, or None if the call
+    # order (0,). Pass the reply text to parse_subtopics, or None if the call
     # failed so the supplied fallback can produce a plan. Return the state
-    # keys "facets" and "plan_op"; the latter is the operation's id.
+    # keys "subtopics" and "plan_op"; the latter is the operation's id.
     raise NotImplementedError("Part 1: fill plan")
     # END OF YOUR CODE
 
@@ -168,19 +168,19 @@ async def plan(state: ReportState, config: RunnableConfig) -> dict:
 def fan_out(state: ReportState) -> list[Send]:
     """Create the parallel research tasks for the planned subtopics."""
     # [Part 1] TODO: Create one Send for each subtopic in plan order.
-    # Each Send targets "research_facet" and carries a dict with "question",
-    # "facet" (the Facet object), "index" (its zero-based position), and
+    # Each Send targets "research_subtopic" and carries a dict with "question",
+    # "subtopic" (the Subtopic object), "index" (its zero-based position), and
     # "deps" (a list containing the plan operation's id). Return the list
     # of Send objects; LangGraph starts those branches in parallel.
     raise NotImplementedError("Part 1: fill fan_out")
     # END OF YOUR CODE
 
 
-async def research_branch(ctx: ReportContext, question: str, facet: Facet, index: int, deps: list[str], *,
+async def research_branch(ctx: ReportContext, question: str, subtopic: Subtopic, index: int, deps: list[str], *,
                           query: str | None = None, followup: bool = False) -> BranchResult:
     """Research one subtopic and retain the completed work if an operation fails."""
     # [Part 1] TODO: Search for sources, fetch them, and extract evidence.
-    # Use query when provided, otherwise facet.query. Search once with
+    # Use query when provided, otherwise subtopic.query. Search once with
     # ctx.settings.search_k, then fetch up to ctx.settings.max_fetch hits
     # in parallel. Each fetch depends on the search. If any documents were
     # fetched, make one "extract" call using those documents. Record every
@@ -197,7 +197,7 @@ async def research_branch(ctx: ReportContext, question: str, facet: Facet, index
     #
     # Use asyncio.timeout when branch_timeout is set. Catch TimeoutError,
     # mark the branch TIMEOUT, and return the completed work. Regular
-    # branches use facet.facet_id in their operation ids, index in their
+    # branches use subtopic.subtopic_id in their operation ids, index in their
     # BranchResult, and orders (1, index, ...). A follow-up uses "followup",
     # 100 + index, and orders (2, 0, ...). Within either branch, search is
     # step (0,), fetch k is step (1, k), and extraction is step (2,).
@@ -205,15 +205,15 @@ async def research_branch(ctx: ReportContext, question: str, facet: Facet, index
     # END OF YOUR CODE
 
 
-async def research_facet(state: dict, config: RunnableConfig) -> dict:
+async def research_subtopic(state: dict, config: RunnableConfig) -> dict:
     """Run one parallel branch and return its result to the graph."""
     ctx = ctx_of(config)
     # [Part 1] TODO: Run the research task described by this Send payload.
-    # Pass its question, Facet, index, and dependencies to research_branch.
+    # Pass its question, Subtopic, index, and dependencies to research_branch.
     # Return {"branches": [result]} so the branches reducer can concatenate
     # this result with the other branches. Do not replace the shared list
     # with a single BranchResult or mutate another branch's state.
-    raise NotImplementedError("Part 1: fill research_facet")
+    raise NotImplementedError("Part 1: fill research_subtopic")
     # END OF YOUR CODE
 
 
@@ -223,7 +223,7 @@ def coverage(state: ReportState) -> dict:
     # A subtopic is covered if its original research branch returned at
     # least one usable evidence item. Examine subtopics in plan order and
     # return {"uncovered": index} for the first missing one, or None as the
-    # value if all are covered. The value is an index, not a Facet object.
+    # value if all are covered. The value is an index, not a Subtopic object.
     raise NotImplementedError("Part 1: fill coverage")
     # END OF YOUR CODE
 
@@ -256,7 +256,7 @@ async def followup(state: ReportState, config: RunnableConfig) -> dict:
     # title, original query, and the report question. Run research_branch
     # with followup=True and dependencies from _branch_tails so it waits
     # for all original branches. Return the result as a one-element list
-    # under "branches", just as research_facet does.
+    # under "branches", just as research_subtopic does.
     raise NotImplementedError("Part 1: fill followup")
     # END OF YOUR CODE
 
@@ -322,7 +322,7 @@ def build_graph():
     # [Part 1] TODO: Connect the graph nodes and return the compiled graph.
     # Create a StateGraph using ReportState and register the seven nodes
     # above. START leads to plan; fan_out sends the planned subtopics to
-    # research_facet. Join those branches at coverage, then use
+    # research_subtopic. Join those branches at coverage, then use
     # route_coverage to choose followup or synthesize. Followup also leads
     # to synthesize. Synthesis leads to validate, where route_validation
     # chooses repair or END. Repair returns to validate for the final check.
@@ -346,13 +346,13 @@ async def run_report(ctx: ReportContext) -> ReportState:
     rec.valid = state.get("valid", False)
     rec.errors = state.get("errors", [])
     rec.report = state["report"].to_dict() if state.get("report") else None
-    rec.branches = [{"facet_id": b.facet.facet_id, "index": b.index, "followup": b.followup, "status": b.status.value,
+    rec.branches = [{"subtopic_id": b.subtopic.subtopic_id, "index": b.index, "followup": b.followup, "status": b.status.value,
                      "docs": b.docs, "evidence": len(b.evidence), "errors": b.errors}
                     for b in order_branches(state.get("branches", []))]
     return state
 
 
-async def run_reports(questions: list[dict], *, llm: LLM, cap: AdjustableCap, arrivals: list[float] | None = None,
+async def run_reports(questions: list[dict], *, llm: LLM, cap: ConcurrencyLimiter, arrivals: list[float] | None = None,
                       snapshot: str = "v2", live: bool = True, latency: ToolLatency | None = None, faults=None,
                       settings: AgentSettings = AgentSettings(), backend: str = "",
                       recorder: Recorder | None = None) -> tuple[Recorder, list[Recording]]:

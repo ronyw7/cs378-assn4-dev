@@ -25,7 +25,7 @@ from agentkv import tokenizer
 from agentkv.trace import JobBuilder, chain_hashes, output_text, segment_id
 
 from .citations import check_report
-from .concurrency import AdjustableCap
+from .concurrency import ConcurrencyLimiter
 from .corpus import PermanentToolError, TransientToolError
 from .llm import LLM, LLMResponse, PermanentLLMError, TransientLLMError
 from .prompts import Msg, render
@@ -74,7 +74,7 @@ class Op:
     input_tokens: int = 0                                # as billed by the backend
     output_tokens: int = 0
     prompt_tokens: int = 0                               # under the frozen local tokenizer
-    prefix_ids: list[str] = field(default_factory=list)  # chained hashes of full 256-token blocks
+    block_hashes: list[str] = field(default_factory=list)  # chained hashes of full 256-token blocks
     model: str | None = None
     slot_requested: float | None = None
     slot_acquired: float | None = None
@@ -119,7 +119,7 @@ class Recording:
 class Recorder:
     """Collect events and prompt segments for all reports in a run, using one clock."""
 
-    def __init__(self, *, cap: AdjustableCap, live: bool = True, backend: str = "", meta: dict | None = None):
+    def __init__(self, *, cap: ConcurrencyLimiter, live: bool = True, backend: str = "", meta: dict | None = None):
         self.cap = cap
         self.live = live
         self.backend = backend
@@ -228,7 +228,7 @@ class TracingClient:
         if op.kind == "llm":
             extra = {"prompt": op.prompt, "output": op.output, "input_tokens": op.input_tokens,
                      "output_tokens": op.output_tokens, "prompt_tokens": op.prompt_tokens,
-                     "prefix_ids": op.prefix_ids, "model": op.model,
+                     "block_hashes": op.block_hashes, "model": op.model,
                      "slot_requested": op.slot_requested, "slot_acquired": op.slot_acquired}
         elif op.kind == "validate":
             extra = {"validation": op.validation}
@@ -251,7 +251,7 @@ class TracingClient:
         op.prompt = [self.r.segment(s) for s in render(messages)]
         tokens = self.r.tokens(op.prompt)
         op.prompt_tokens = len(tokens)
-        op.prefix_ids = [f"{h:032x}" for h in chain_hashes(tokens, BLOCK_SIZE)]
+        op.block_hashes = [f"{h:032x}" for h in chain_hashes(tokens, BLOCK_SIZE)]
         resp = None
         status = "failed"
         op.slot_requested = self.r.now()

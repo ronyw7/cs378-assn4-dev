@@ -20,7 +20,7 @@ class StubBedrock:
         self.calls.append(kw)
         if self.error:
             raise self.error
-        return {"output": {"message": {"content": [{"text": '{"facets": []}'}]}},
+        return {"output": {"message": {"content": [{"text": '{"subtopics": []}'}]}},
                 "usage": {"inputTokens": 11, "outputTokens": 3}}
 
 
@@ -33,7 +33,7 @@ def client_error(code):
 def test_bedrock_merges_roles_and_reports_usage():
     stub = StubBedrock()
     llm = BedrockLLM("test-model", client=stub)
-    msgs = prompts.extract_messages("Q?", prompts.Facet("f1", "t", "q"), [Corpus().doc("raft")])
+    msgs = prompts.extract_messages("Q?", prompts.Subtopic("f1", "t", "q"), [Corpus().doc("raft")])
     resp = asyncio.run(llm.complete(msgs, max_tokens=50, stage="extract"))
     (call,) = stub.calls
     assert call["modelId"] == "test-model" and call["system"] == [{"text": prompts.SYSTEM_PROMPT}]
@@ -69,7 +69,7 @@ def test_fake_llm_is_deterministic_and_quotes_verbatim():
     corpus = Corpus()
     docs = [corpus.doc("raft"), corpus.doc("paxos")]
     msgs = prompts.extract_messages("How does Raft elect a leader?",
-                                    prompts.Facet("f1", "Raft leader election", "raft leader election heartbeat"), docs)
+                                    prompts.Subtopic("f1", "Raft leader election", "raft leader election heartbeat"), docs)
     a = asyncio.run(FakeLLM().complete(msgs, max_tokens=700, stage="extract"))
     b = asyncio.run(FakeLLM().complete(msgs, max_tokens=700, stage="extract"))
     assert a == b
@@ -80,12 +80,12 @@ def test_fake_llm_is_deterministic_and_quotes_verbatim():
     assert a.input_tokens > 1000 and a.output_tokens > 10
 
 
-def test_fake_plan_uses_known_facets():
+def test_fake_plan_uses_known_subtopics():
     from research_app.questions import load_questions
 
     q = load_questions(public=True)[0]
     resp = asyncio.run(FakeLLM().complete(prompts.plan_messages(q["question"]), max_tokens=400, stage="plan"))
-    assert json.loads(resp.text)["facets"] == [{"title": f["title"], "query": f["query"]} for f in q["facets"]]
+    assert json.loads(resp.text)["subtopics"] == [{"title": f["title"], "query": f["query"]} for f in q["subtopics"]]
 
 
 def test_parse_json_tolerates_fences_and_braces_in_strings():

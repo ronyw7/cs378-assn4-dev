@@ -7,7 +7,7 @@ import pytest
 from research_app.agent import AgentSettings, run_reports
 from research_app.artifacts import BranchStatus
 from research_app.citations import is_valid
-from research_app.concurrency import AdjustableCap
+from research_app.concurrency import ConcurrencyLimiter
 from research_app.corpus import Corpus, ToolLatency
 from research_app.llm import FakeLLM
 from research_app.questions import groups, load_questions
@@ -15,7 +15,7 @@ from research_app.questions import groups, load_questions
 
 def run(questions, **kw):
     kw.setdefault("live", False)
-    cap = kw.pop("cap", AdjustableCap(8))
+    cap = kw.pop("cap", ConcurrencyLimiter(8))
 
     async def go():
         return await run_reports(questions, llm=kw.pop("llm", FakeLLM()), cap=cap, **kw)
@@ -30,7 +30,7 @@ def test_question_set_shape():
     assert len(public) == 16
     assert all(q["group"].endswith("-a") for q in public)
     assert len({q["topic"] for q in public}) == 6
-    assert all(2 <= len(q["facets"]) <= 4 for q in qs)
+    assert all(2 <= len(q["subtopics"]) <= 4 for q in qs)
 
 
 def test_public_questions_produce_valid_reports():
@@ -73,9 +73,9 @@ def test_partial_branch_failure_is_kept_and_ordered():
             return "permanent"
         return None
 
-    q = [q for q in load_questions(public=True) if len(q["facets"]) == 3][:1]
+    q = [q for q in load_questions(public=True) if len(q["subtopics"]) == 3][:1]
     _, (rec,) = run(q, faults=faults)
-    statuses = [(b["facet_id"], b["followup"], b["status"]) for b in rec.branches]
+    statuses = [(b["subtopic_id"], b["followup"], b["status"]) for b in rec.branches]
     assert statuses[:3] == [("f1", False, BranchStatus.PARTIAL.value), ("f2", False, BranchStatus.FAILED.value),
                             ("f3", False, BranchStatus.SUCCESS.value)]
     assert statuses[3] == ("f2", True, BranchStatus.SUCCESS.value)    # the follow-up covers f2
@@ -122,7 +122,7 @@ def test_agent_respects_cap_and_retries_keep_their_slot(c):
     """Every LLM call fails twice before succeeding; each retry stays in the
     slot it already holds, so the cap grants one slot per operation."""
     llm = FakeLLM(transient=lambda stage, attempt: attempt < 3)
-    cap = AdjustableCap(c)
+    cap = ConcurrencyLimiter(c)
     qs = load_questions(public=True)[:4]
 
     async def go():
@@ -146,7 +146,7 @@ def test_permanent_llm_failure_is_bounded_and_survivable():
     q = load_questions(public=True)[:1]
 
     async def go():
-        return await run_reports(q, llm=llm, cap=AdjustableCap(2), live=False)
+        return await run_reports(q, llm=llm, cap=ConcurrencyLimiter(2), live=False)
 
     _, (rec,) = asyncio.run(go())
     plan = rec.op("R00/plan")

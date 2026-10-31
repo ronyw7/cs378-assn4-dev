@@ -29,7 +29,7 @@ class ObservedPolicy(Policy):
         elif event.kind == "alloc":
             assert event.block not in self.known
             self.known[event.block] = event.replica
-            self.prefixes[event.prefix] = event.replica
+            self.prefixes[event.block_hash] = event.replica
         elif event.kind == "hit":
             assert event.block in self.known
         elif event.kind == "evict":
@@ -41,7 +41,7 @@ class ObservedPolicy(Policy):
         return 8
 
     def choose_victim(self, view, candidates, state):
-        assert all(view.blocks[b].replica == view.replica and view.blocks[b].refs == 0 for b in candidates)
+        assert all(view.blocks[b].replica == view.replica and view.blocks[b].ref_cnt == 0 for b in candidates)
         return candidates[0]
 
 

@@ -2,7 +2,7 @@
 
 from conftest import LRU
 
-from agentkv.harness import BlockHarness
+from agentkv.harness import CacheHarness
 from agentkv.replay import Replay
 from agentkv.sandbox.client import InProcessClient, WorkerClient
 from agentkv.sandbox.loader import instantiate, load_policy_class
@@ -13,14 +13,14 @@ def lru(params=None):
 
 
 def test_oracle_one_token_blocks_capacity_three():
-    h = BlockHarness(lru(), capacity=3)
+    h = CacheHarness(lru(), capacity=3)
 
     # Allocate A and B, then release both: A and B are reusable, A older than B.
     h.allocate("A")
     h.allocate("B")
     h.release("A")
     h.release("B")
-    assert h.reusable() == ["A", "B"]
+    assert h.cached() == ["A", "B"]
     assert h.empty_slots() == 1
 
     # Allocate C, then release C: C uses the empty slot; nothing is evicted.
@@ -36,7 +36,7 @@ def test_oracle_one_token_blocks_capacity_three():
     # Allocate D under pressure: LRU evicts B. A and C stay reusable.
     h.allocate("D")
     assert h.evicted == ["B"]
-    assert set(h.reusable()) == {"A", "C"}
+    assert set(h.cached()) == {"A", "C"}
     assert not h.access("B"), "B's old lookup entry must be gone"
 
     # Hold A active, then allocate E: A cannot be chosen; LRU evicts C.
@@ -48,7 +48,7 @@ def test_oracle_one_token_blocks_capacity_three():
 
 
 def test_release_does_not_refresh_recency():
-    h = BlockHarness(lru(), capacity=2)
+    h = CacheHarness(lru(), capacity=2)
     h.allocate("A")
     h.allocate("B")
     h.release("B")       # B released first...
@@ -58,7 +58,7 @@ def test_release_does_not_refresh_recency():
 
 
 def test_access_order_breaks_timestamp_ties():
-    h = BlockHarness(lru(), capacity=2)
+    h = CacheHarness(lru(), capacity=2)
     # One completed GPU batch may report several events at the same time.
     # Release order is A, B, but the most recent access is to A.
     h._tick = lambda: None
@@ -73,7 +73,7 @@ def test_access_order_breaks_timestamp_ties():
 
 
 def test_least_recent_block_still_active_is_skipped():
-    h = BlockHarness(lru(), capacity=3)
+    h = CacheHarness(lru(), capacity=3)
     h.allocate("A")      # A stays active: the least recent block, but not a candidate
     h.allocate("B")
     h.release("B")

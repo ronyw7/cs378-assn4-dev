@@ -54,7 +54,7 @@ Launch Jupyter (`jupyter lab`), open the notebooks, and select the **CS 378 Assi
 
 ### Model access
 
-Parts 1 and 3 call models on Amazon Bedrock. Set `AWS_REGION` and your AWS credentials (or `AWS_PROFILE`), then set `AGENTKV_BEDROCK_MODEL` for the Part 1 agent and `AGENTKV_RESEARCH_MODEL` for your Part 3 research system. The model ids and your team's token budget are on the course page. Part 1 can also run entirely on the offline `FakeLLM`, but Part 3 needs Bedrock. Contact staff if Bedrock access does not work by the end of the first week.
+We will update this section with details of Bedrock LLM API access.
 
 ## Part 1: Build and analyze a deep research agent
 
@@ -64,7 +64,7 @@ In this part, you will build a LangGraph agent that splits a question into subto
 
 ![Research agent workflow with parallel branches, follow-up, and repair.](docs/figures/research_workflow.svg)
 
-- **1.1** Implement the concurrency cap in `research_app/concurrency.py`.
+- **1.1** Implement the concurrency limiter in `research_app/concurrency.py`.
 - **1.2** Implement the research graph in `research_app/agent.py`.
 - **1.3** Implement the workload analysis functions in `research_app/analysis.py`.
 - **1.4** Run the agent on the 16 public questions at C = 2, at C = 8, and at C = 8 with tool failures, replay your C = 8 run in the simulator, and answer Q1–Q4.
@@ -126,7 +126,7 @@ Total: 100% (+10% extra credit)
 
 **Part 1 — Deep research agent and workload analysis: 20%**
 
-- 1.1 Concurrency cap (correctness): 3%
+- 1.1 Concurrency limiter (correctness): 3%
 - 1.2 Research graph (correctness): 7%
 - 1.3 Workload analysis functions (correctness): 4%
 - 1.4 Runs and answers to Q1–Q4: 6%

@@ -50,7 +50,7 @@ See the [LangGraph documentation](https://langchain-ai.github.io/langgraph/) for
 | `research_app/artifacts.py`, `research_app/citations.py` | `Evidence`, `Claim`, `Report`, `BranchResult`, and the citation checker. |
 | `research_app/data/questions.json` | The questions; you run the 16 marked `public`. |
 
-## 1.1 Concurrency cap
+## 1.1 Concurrency limiter
 
 All 16 reports share one cap C on concurrent LLM calls, enforced by
 `ConcurrencyLimiter` in `research_app/concurrency.py`. Complete its `acquire`,

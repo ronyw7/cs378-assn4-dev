@@ -10,9 +10,8 @@ The defaults are first-principles estimates for Qwen3-8B (bf16, 36 layers,
 32 query and 8 KV heads of dim 128, so 144 KiB of KV per token and 16.4 GB of
 weights) on one NVIDIA A100 (about 1.55 TB/s and an effective 170 TFLOP/s).
 A smaller model makes prefill too cheap for caching to matter (the staff
-pilot measured prefill at 5-14% of busy time for Qwen3-0.6B on an L4). If
-staff fit them to GPU replay logs before release (`agentkv.engine.calibrate`),
-the fitted values are in agentkv/data/timing.json and SIM_VERSION changes.
+pilot measured prefill at 5-14% of busy time for Qwen3-0.6B on an L4). This
+model only drives the teaching engine; scores come from Vidur's measured profile.
 """
 
 from __future__ import annotations

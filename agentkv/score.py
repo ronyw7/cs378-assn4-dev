@@ -1,12 +1,12 @@
 """Score a candidate policy against the baseline.
 
     from agentkv import score
-    r = score("candidates/p17.py", split="public_dev", backend="sim")
+    r = score("candidates/p17.py", split="public_dev")
     r.valid, r.violations, r.speedup, r.points, r.by_family, r.by_trace
 
-    python -m agentkv.score --policy candidates/p17.py --split public_dev --backend sim
+    python -m agentkv.score --policy candidates/p17.py --split public_dev
 
-The sim backend runs Vidur locally with two independent replicas by default;
+Scoring runs Vidur locally with two independent replicas by default;
 use replicas=1 for Part 2. Traces are scored in parallel worker processes
 (AGENTKV_WORKERS overrides the count), so call score() from a saved script
 under `if __name__ == "__main__":`, from a notebook, or with workers=1.
@@ -18,7 +18,6 @@ import argparse
 import json
 import math
 import os
-import random
 import statistics
 import sys
 from concurrent.futures import ProcessPoolExecutor
@@ -27,21 +26,17 @@ from functools import lru_cache
 from pathlib import Path
 
 from . import metric
-from .engine.timing import TimingModel
-from .replay import RunResult, run_policy
+from .replay import RunResult
 from .sandbox.loader import policy_sha256
 from .tokenizer import single_threaded
 from .trace import Trace, load
 
 PACKAGE = Path(__file__).resolve().parent
 REPO = PACKAGE.parent
-REFERENCE_PATH = PACKAGE / "data" / "b0_reference.json"
-B0_PATH = PACKAGE / "baselines" / "b0.py"
 VIDUR_REFERENCE_PATH = PACKAGE / "data" / "vidur_reference.json"
 VIDUR_POLICY_PATH = REPO / "policies" / "reference.py"
 PUBLIC_SPLITS = ("public_dev", "public_val")
 STAFF_SPLITS = ("hidden_feedback", "sealed")
-GPU_REPS = 3
 
 
 class ScoreError(RuntimeError):
@@ -133,18 +128,9 @@ def _load(path: str) -> Trace:
 
 
 def _run(task: dict) -> RunResult:
-    trace = _load(task["trace"])
-    if task["backend"] == "sim":
-        from .vidur_replay import run_policy as run_vidur
-        return run_vidur(trace, task["policy"], params=task["params"], seed=task["seed"],
-                         isolate=task["isolate"], replicas=task.get("replicas", 2))
-    engine = None
-    if task["backend"] == "gpu":   # staff-only GPU replay; the module is not shipped to students
-        from .engine.gpu import make_engine
-        engine = make_engine(trace)
-    timing = TimingModel(**task["timing"]) if task.get("timing") else None
-    return run_policy(trace, task["policy"], params=task["params"], seed=task["seed"],
-                      isolate=task["isolate"], timing=timing, engine=engine)
+    from .vidur_replay import run_policy
+    return run_policy(_load(task["trace"]), task["policy"], params=task["params"], seed=task["seed"],
+                      isolate=task["isolate"], replicas=task["replicas"])
 
 
 def default_workers(n_tasks: int) -> int:
@@ -175,53 +161,32 @@ def _run_all(tasks: list[dict], workers: int | None) -> list[RunResult]:
         return list(ex.map(_run, tasks))
 
 
-def load_reference(path: Path = REFERENCE_PATH) -> dict:
+def load_reference(path: Path = VIDUR_REFERENCE_PATH) -> dict:
     if not path.exists():
         return {"traces": {}}
     return json.loads(path.read_text())
 
 
-def _local_gpu() -> bool:
-    try:
-        import torch
-        return torch.cuda.is_available() and os.environ.get("AGENTKV_GPU_LOCAL") == "1"
-    except Exception:
-        return False
-
-
 def evaluate(policy_path: str, trace_paths: list, backend: str = "sim", *, b0: str = "reference",
              reps: int | None = None, params: dict | None = None, seed: int = 0, isolate: bool = True,
              workers: int | None = None, g_target: float | None = None, split: str = "",
-             timing: TimingModel | None = None, replicas: int = 2) -> ScoreResult:
-    """Score `policy_path` on the given traces. `b0="reference"` uses stored
-    baseline job latencies (sim only); `b0="live"` reruns the baseline (staff).
-    GPU always runs the baseline live, paired with the candidate in random
-    order, `reps` times."""
-    if backend not in ("sim", "legacy_sim", "gpu"):
-        raise ScoreError("backend must be 'sim', 'legacy_sim', or 'gpu'")
-    if backend == "gpu":
-        raise ScoreError("The GPU adapter still targets the previous engine. It cannot validate the Vidur evaluator yet.")
+             replicas: int = 2) -> ScoreResult:
+    """Score `policy_path` on the given traces. `b0="reference"` uses the frozen
+    reference job latencies; `b0="live"` reruns the reference policy (staff)."""
+    from .engine.vidur_profile import fingerprint as vidur_fingerprint
+    if backend != "sim":
+        raise ScoreError(f"unknown backend {backend!r}; the evaluator is backend='sim' (Vidur)")
+    if replicas not in (1, 2):
+        raise ScoreError("replicas must be 1 or 2")
     policy_path = str(Path(policy_path).resolve())
     paths = [str(Path(p).resolve()) for p in trace_paths]
-    timing = timing or TimingModel.load()
-    fingerprint = timing.fingerprint()
-    baseline_path = B0_PATH
-    if backend == "sim":
-        from .engine.vidur_profile import fingerprint as vidur_fingerprint
-        if replicas not in (1, 2):
-            raise ScoreError("replicas must be 1 or 2")
-        fingerprint = vidur_fingerprint(replicas)
-        baseline_path = VIDUR_POLICY_PATH
+    fingerprint = vidur_fingerprint(replicas)
+    baseline_path = VIDUR_POLICY_PATH
     g_target = g_target if g_target is not None else metric.G_TARGET
-    if backend == "gpu":
-        b0 = "live"
-        reps = reps or GPU_REPS
-        workers = 1
     reps = reps or 1
     traces = {p: _load(p) for p in paths}
 
-    ref = (load_reference(VIDUR_REFERENCE_PATH).get("configurations", {}).get(str(replicas), {})
-           if backend == "sim" else load_reference())
+    ref = load_reference().get("configurations", {}).get(str(replicas), {})
     b0_runs: dict[str, list[dict]] = {}
     if b0 == "reference":
         if ref.get("sim") != fingerprint:
@@ -238,18 +203,15 @@ def evaluate(policy_path: str, trace_paths: list, backend: str = "sim", *, b0: s
             raise ScoreError("Live baseline evaluation requires staff code; use b0='reference'")
         b0_sha = policy_sha256(baseline_path)
 
-    tdict = asdict(timing)
     tasks, owners = [], []
-    order = random.Random(seed)
     for p in paths:
         for rep in range(reps):
             pair = [("cand", policy_path, params)]
             if b0 == "live":
                 pair.append(("b0", str(baseline_path), None))
-                order.shuffle(pair)
             for who, pol, prm in pair:
                 tasks.append({"trace": p, "policy": pol, "params": prm, "seed": seed + rep,
-                              "isolate": isolate, "backend": backend, "timing": tdict, "replicas": replicas})
+                              "isolate": isolate, "replicas": replicas})
                 owners.append((p, who))
     results = _run_all(tasks, workers)
 

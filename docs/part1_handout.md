@@ -45,7 +45,7 @@ See the [LangGraph documentation](https://langchain-ai.github.io/langgraph/) for
 | File | Contents |
 |---|---|
 | `research_app/tracing.py` | The tracing client. Every LLM and tool call goes through it; it records the trace and enforces the budgets. |
-| `research_app/prompts.py` | Prompt builders, laid out so that calls share prefixes: instructions first, then documents, then the part that varies. |
+| `research_app/prompts.py` | Prompt builders, laid out so that calls share prefixes: instructions first, then documents, then the part that varies. Every call starts with the same 728-token system prompt, standing in for the long system prompts of production agents. |
 | `research_app/corpus.py` | 48 Wikipedia articles on six systems topics at two revisions, behind `search()` and `fetch()`, with a seeded tool-latency model. |
 | `research_app/llm.py` | `BedrockLLM` (the Converse API) and `FakeLLM` (deterministic and offline). |
 | `research_app/artifacts.py`, `research_app/citations.py` | `Evidence`, `Claim`, `Report`, `BranchResult`, and the citation checker. |

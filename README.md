@@ -559,7 +559,9 @@ Answer **Q1–Q6** in `assignment4_report.pdf`, placing each answer directly und
 
 ### Gradescope: Part 3 leaderboard
 
-Upload `policy.py` (the candidate your campaign selected, unmodified) and, if your policy takes parameters, `params.json`, at the top level rather than inside a folder. Use your team name as the leaderboard name. The leaderboard shows your overall and per-family speedups on 16 hidden traces next to staff benchmark policies, and your feedback shows projected performance credit. It does not determine your grade.
+Submit to [Assignment 4 Leaderboard](https://www.gradescope.com/courses/1421647/assignments/8962063/) on Gradescope. Upload your final solution as `policy.py`.
+
+The leaderboard shows your overall and per-family speedups on 16 hidden traces next to staff benchmark policies, and your feedback shows projected performance credit.
 
 ### Canvas: code, runs, and report
 
